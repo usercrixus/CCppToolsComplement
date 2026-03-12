@@ -10,7 +10,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PYTHON = sys.executable
-
 C_PROGRAM_DIR = ROOT / "test" / "cProgram"
 PROGRAMS = [
     {
@@ -23,17 +22,18 @@ PROGRAMS = [
     },
 ]
 HEADER_PATH = C_PROGRAM_DIR / "subfolder" / "header.h"
-
 SCRIPT_GENERATE_JSON = ROOT / "srcs" / "script" / "generateJsonForMakefile.py"
 SCRIPT_VERIFY_CONFIG = ROOT / "srcs" / "script" / "verifyMakefileConfig.py"
 SCRIPT_GENERATE_MAKEFILE = ROOT / "srcs" / "script" / "generateMakefileFromJson.py"
-
 DEFAULT_FLAGS = "-Wall -Wextra -Werror -MMD -MP"
+ANSI_GREEN = "\033[32m"
+ANSI_ORANGE = "\033[38;5;208m"
+ANSI_PINK = "\033[38;5;213m"
+ANSI_RESET = "\033[0m"
 
 
 def run(
     cmd: list[str],
-    *,
     cwd: Path | None = None,
     input_text: str | None = None,
     env_overrides: dict[str, str] | None = None,
@@ -64,7 +64,6 @@ def reset_artifacts() -> None:
     vscode_dir = ROOT / ".vscode"
     if vscode_dir.exists():
         shutil.rmtree(vscode_dir)
-
     patterns = ["*.o", "*.d", "*.out", "Makefile", "Makefile.*"]
     for pattern in patterns:
         for path in C_PROGRAM_DIR.rglob(pattern):
@@ -125,44 +124,36 @@ def assert_output(actual: str, expected: str, step: str) -> None:
         raise AssertionError(
             f"{step} output mismatch.\nExpected:\n{normalized_expected}\n\nActual:\n{normalized_actual}"
         )
-    print(f"{step} output verified.")
+    print(f"{ANSI_GREEN}{step} output verified.{ANSI_RESET}")
+
+
+def run_pass(define_value: str, expected_output: str, label: str) -> None:
+    print(f"{ANSI_PINK}Run pass: {label}{ANSI_RESET}")
+    print(f'Setting header define to: #define DEFINE_TEST "{define_value}"...')
+    set_define_test(define_value)
+    print(f"Generating config + Makefiles ({label})...")
+    generate_all()
+    print("")
+    print(f"{ANSI_ORANGE}Launching C programs ({label})...{ANSI_RESET}")
+    for program in PROGRAMS:
+        print("")
+        output = run_program(program["program_name"])
+        assert_output(
+            output,
+            expected_output,
+            f"{label.capitalize()} ({program['program_name']})",
+        )
 
 
 def main() -> None:
     print("Resetting generated artifacts...")
     reset_artifacts()
-
-    print('Setting header to baseline: #define DEFINE_TEST "define test"...')
-    set_define_test("define test")
-
-    print("Generating config + Makefiles (first pass)...")
-    generate_all()
-
-    print("Launching C programs (first pass)...")
-    for program in PROGRAMS:
-        output_first = run_program(program["program_name"])
-        assert_output(
-            output_first,
-            "define test\none\ntwo",
-            f"First pass ({program['program_name']})",
-        )
-
-    print('Updating header define to: #define DEFINE_TEST "define test update"...')
-    set_define_test("define test update")
-
-    print("Generating config + Makefiles (second pass)...")
-    generate_all()
-
-    print("Launching C programs (second pass)...")
-    for program in PROGRAMS:
-        output_second = run_program(program["program_name"])
-        assert_output(
-            output_second,
-            "define test update\none\ntwo",
-            f"Second pass ({program['program_name']})",
-        )
-
-    print("All checks passed. You can now launch a debugging session in VSCode.")
+    print("")
+    run_pass("define test", "define test\none\ntwo", "first pass")
+    print("")
+    run_pass("define test update", "define test update\none\ntwo", "second pass")
+    print("")
+    print(f"{ANSI_PINK}All checks passed. You can now launch a debugging session in VSCode.{ANSI_RESET}")
 
 
 if __name__ == "__main__":
