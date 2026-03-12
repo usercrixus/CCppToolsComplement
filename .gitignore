@@ -1,0 +1,4 @@
+*.o
+*.d
+__pycache__/
+testCProgram.out

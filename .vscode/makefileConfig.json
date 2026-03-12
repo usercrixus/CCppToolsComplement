@@ -1,0 +1,22 @@
+[
+  {
+    "output_makefile": "/home/achaisne/Documents/CCppToolsComplement/test/cProgram/Makefile.testCProgram",
+    "compile_profiles": [
+      {
+        "ext": ".c",
+        "compiler": "gcc",
+        "flags": "-Wall -Wextra -Werror -MMD -MP"
+      }
+    ],
+    "link_compiler": "gcc",
+    "link_flags": "-Wall -Wextra -Werror -MMD -MP",
+    "run_args": "",
+    "bin_name": "testCProgram.out",
+    "rel_sources": [
+      "main.c",
+      "one.c",
+      "subfolder/two.c"
+    ],
+    "obj_expr": "main.o one.o subfolder/two.o"
+  }
+]
