@@ -1,4 +1,4 @@
-    ./scripts/generateVscodeMakefileIntegration.py
+    ./scripts/generateVscodeIntegrationFromJson.py
     ./scripts/generateMakefile.py
     ./scripts/generateMakefileFromJson.py
 
@@ -24,5 +24,5 @@ Behavior:
   - one build rule and one run rule per program (e.g. `basicsBuild`, `basicsRun`)
   - `clean`, `fclean`, `re`, `.PHONY`
 
-`generateVscodeMakefileIntegration.py`:
+`generateVscodeIntegrationFromJson.py`:
 - Reads `.vscode/makefileConfig.json` and maps each entry to VSCode task+launch.

@@ -5,7 +5,7 @@ Run commands from the project root.
 ## 1) Create/Update `.vscode/makefileConfig.json`
 
 ```bash
-python3 srcs/script/generateJsonForMakefile.py
+python3 srcs/script/generateJson.py
 ```
 
 Interactive prompts:
@@ -37,7 +37,7 @@ python3 srcs/script/generateMakefileFromJson.py .vscode/makefileConfig.json
 ## 4) Generate VSCode tasks/launch
 
 ```bash
-python3 srcs/script/generateVscodeMakefileIntegration.py
+python3 srcs/script/generateVscodeIntegrationFromJson.py
 ```
 
 ## Base `makefileConfig.json` structure

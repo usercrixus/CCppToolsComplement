@@ -5,7 +5,7 @@ import shlex
 from pathlib import Path
 from typing import Any
 
-from verifyMakefileConfig import verifyMakefileConfig
+from verifyJson import verifyMakefileConfig
 from utils import read_entries, program_from_output_makefile
 
 JsonObject = dict[str, Any]

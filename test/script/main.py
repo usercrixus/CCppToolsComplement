@@ -22,7 +22,7 @@ PROGRAMS = [
     },
 ]
 HEADER_PATH = C_PROGRAM_DIR / "subfolder" / "header.h"
-SCRIPT_GENERATE_JSON = ROOT / "srcs" / "script" / "generateJsonForMakefile.py"
+SCRIPT_GENERATE_JSON = ROOT / "srcs" / "script" / "generateJson.py"
 SCRIPT_GENERATE_MAKEFILE = ROOT / "srcs" / "script" / "generateMakefileFromJson.py"
 DEFAULT_FLAGS = "-Wall -Wextra -Werror -MMD -MP"
 ANSI_GREEN = "\033[32m"
