@@ -5,6 +5,8 @@ from pathlib import Path
 from srcs.script.verifyJson import verifyjson
 from srcs.script.utils import read_entries, program_from_output_makefile
 
+FORCED_DEBUG_FLAGS = ("-g3", "-O0")
+
 
 def compiler_var_key(compiler: str) -> str:
     explicit = {"g++": "GPP", "gcc": "GCC"}
@@ -12,6 +14,14 @@ def compiler_var_key(compiler: str) -> str:
         return explicit[compiler]
     key = re.sub(r"[^A-Za-z0-9]+", "_", compiler).strip("_").upper()
     return key or "CC"
+
+
+def force_flags(flags: str, required_flags: tuple[str, ...] = FORCED_DEBUG_FLAGS) -> str:
+    tokens = flags.split()
+    for required_flag in required_flags:
+        if required_flag not in tokens:
+            tokens.append(required_flag)
+    return " ".join(tokens)
 
 
 def render_child_makefile(
@@ -36,7 +46,7 @@ def render_child_makefile(
         key = var_key_by_compiler[compiler]
         flags = next(profile["flags"] for profile in compile_profiles if profile["compiler"] == compiler)
         var_lines.append(f"COMPILER_{key} = {compiler}")
-        var_lines.append(f"FLAGS_{key} = {flags}")
+        var_lines.append(f"FLAGS_{key} = {force_flags(flags)}")
 
     link_key = var_key_by_compiler[link_compiler]
     pattern_rules = []
@@ -48,7 +58,7 @@ def render_child_makefile(
     lines = [
         *var_lines,
         f"LINK_COMPILER = $(COMPILER_{link_key})",
-        f"LINK_FLAGS = {link_flags}",
+        f"LINK_FLAGS = {force_flags(link_flags)}",
         f"ARGS = {run_args}",
         f"BIN = {bin_name}",
         f"SRCS = {srcs}",

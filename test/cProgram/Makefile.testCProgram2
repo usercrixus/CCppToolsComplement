@@ -1,7 +1,7 @@
 COMPILER_GCC = gcc
-FLAGS_GCC = -Wall -Wextra -Werror -MMD -MP
+FLAGS_GCC = -Wall -Wextra -Werror -MMD -MP -g3 -O0
 LINK_COMPILER = $(COMPILER_GCC)
-LINK_FLAGS = -Wall -Wextra -Werror -MMD -MP
+LINK_FLAGS = -Wall -Wextra -Werror -MMD -MP -g3 -O0
 ARGS = 
 BIN = testCProgram2.out
 SRCS = main2.c one.c subfolder/two.c
