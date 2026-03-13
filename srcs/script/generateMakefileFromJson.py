@@ -2,8 +2,8 @@
 import re
 from pathlib import Path
 
-from verifyJson import verifyMakefileConfig
-from utils import read_entries, program_from_output_makefile
+from srcs.script.verifyJson import verifyjson
+from srcs.script.utils import read_entries, program_from_output_makefile
 
 
 def compiler_var_key(compiler: str) -> str:
@@ -183,8 +183,8 @@ def generatedParentMakefiles(programs_by_dir: dict[Path, set[str]]):
             print(f"  - {prog}")
 
 
-def main() -> None:
-    if verifyMakefileConfig() != 0:
+def generateMakefileFromJson() -> None:
+    if verifyjson() != 0:
         raise SystemExit("Makefile configuration verification failed.")
     config_path = Path(".vscode/makefileConfig.json").resolve()
     entries = read_entries(config_path)
@@ -193,4 +193,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    generateMakefileFromJson()

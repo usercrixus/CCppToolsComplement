@@ -274,7 +274,7 @@ def make_config_payload(
     }
 
 
-def main() -> None:
+def generateJson() -> None:
     project_root = Path.cwd()
     main_input, program_name, args_input, bin_input, output_input = getVariableData()
 
@@ -312,4 +312,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    generateJson()

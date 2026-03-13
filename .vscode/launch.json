@@ -1,0 +1,47 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug graph testCProgram1",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/test/cProgram/testCProgram1.out",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/test/cProgram",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "graph: build testCProgram1 (debug)",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "Debug graph testCProgram2",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/test/cProgram/testCProgram2.out",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/test/cProgram",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "graph: build testCProgram2 (debug)",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

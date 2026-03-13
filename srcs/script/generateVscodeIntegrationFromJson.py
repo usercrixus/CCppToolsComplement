@@ -5,8 +5,8 @@ import shlex
 from pathlib import Path
 from typing import Any
 
-from verifyJson import verifyMakefileConfig
-from utils import read_entries, program_from_output_makefile
+from srcs.script.verifyJson import verifyjson
+from srcs.script.utils import read_entries, program_from_output_makefile
 
 JsonObject = dict[str, Any]
 JsonItems = list[JsonObject]
@@ -141,8 +141,8 @@ def get_tasks_and_launches_from_config(workspace: Path, config_path: Path) -> tu
     return tasks, launches
 
 
-def main() -> None:
-    if verifyMakefileConfig() != 0:
+def generateVscodeIntegrationFromJson() -> None:
+    if verifyjson() != 0:
         raise SystemExit("Makefile configuration verification failed.")
     workspace, config_path, tasks_path, launch_path = get_relevant_paths()
     tasks, launches = get_tasks_and_launches_from_config(workspace, config_path)
@@ -155,4 +155,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    generateVscodeIntegrationFromJson()

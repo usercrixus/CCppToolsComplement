@@ -11,6 +11,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PYTHON = sys.executable
 C_PROGRAM_DIR = ROOT / "test" / "cProgram"
+MODULE_GENERATE_JSON = "srcs.script.generateJson"
+MODULE_GENERATE_MAKEFILE = "srcs.script.generateMakefileFromJson"
+MODULE_GENERATE_VSCODE = "srcs.script.generateVscodeIntegrationFromJson"
 PROGRAMS = [
     {
         "main_rel": "test/cProgram/main1.c",
@@ -22,8 +25,6 @@ PROGRAMS = [
     },
 ]
 HEADER_PATH = C_PROGRAM_DIR / "subfolder" / "header.h"
-SCRIPT_GENERATE_JSON = ROOT / "srcs" / "script" / "generateJson.py"
-SCRIPT_GENERATE_MAKEFILE = ROOT / "srcs" / "script" / "generateMakefileFromJson.py"
 DEFAULT_FLAGS = "-Wall -Wextra -Werror -MMD -MP"
 ANSI_GREEN = "\033[32m"
 ANSI_ORANGE = "\033[38;5;208m"
@@ -100,8 +101,8 @@ def generate_all() -> None:
                 "",
             ]
         )
-        run([PYTHON, str(SCRIPT_GENERATE_JSON)], cwd=ROOT, input_text=generator_input)
-    run([PYTHON, str(SCRIPT_GENERATE_MAKEFILE)], cwd=ROOT)
+        run([PYTHON, "-m", MODULE_GENERATE_JSON], cwd=ROOT, input_text=generator_input)
+    run([PYTHON, "-m", MODULE_GENERATE_MAKEFILE], cwd=ROOT)
 
 
 def run_program(program_name: str) -> str:
@@ -151,6 +152,7 @@ def main() -> None:
     print("")
     run_pass("define test update", "define test update\none\ntwo", "second pass")
     print("")
+    run([PYTHON, "-m", MODULE_GENERATE_VSCODE], cwd=ROOT)
     print(f"{ANSI_PINK}All checks passed. You can now launch a debugging session in VSCode.{ANSI_RESET}")
 
 

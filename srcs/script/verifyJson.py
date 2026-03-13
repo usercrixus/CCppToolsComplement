@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Any, Callable
 
-from utils import program_from_output_makefile
+from srcs.script.utils import program_from_output_makefile
 
 JsonObject = dict[str, Any]
 FieldValidator = Callable[[int, Any], list[str]]
@@ -244,7 +244,7 @@ def printSummary(errors: list[str], config_path: Path, entries: list[JsonObject]
         print(f"Verification passed for {config_path} ({len(entries)} entr{'y' if len(entries) == 1 else 'ies'}).")
 
 
-def verifyMakefileConfig() -> int:
+def verifyjson() -> int:
     config_path = Path(".vscode/makefileConfig.json").resolve()
     entries, errors = load_entries_for_verify(config_path)
     for index, entry in enumerate(entries):
@@ -255,4 +255,4 @@ def verifyMakefileConfig() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(verifyMakefileConfig())
+    raise SystemExit(verifyjson())
