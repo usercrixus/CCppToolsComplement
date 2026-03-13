@@ -1,6 +1,6 @@
 [
   {
-    "output_makefile": "/home/achaisne/Documents/CCppToolsComplement/test/cProgram/Makefile.testCProgram1",
+    "output_makefile": "/home/chaisneau/Documents/CCppToolsComplement/test/cProgram/Makefile.testCProgram1",
     "compile_profiles": [
       {
         "ext": ".c",
@@ -20,7 +20,7 @@
     "obj_expr": "main1.o one.o subfolder/two.o"
   },
   {
-    "output_makefile": "/home/achaisne/Documents/CCppToolsComplement/test/cProgram/Makefile.testCProgram2",
+    "output_makefile": "/home/chaisneau/Documents/CCppToolsComplement/test/cProgram/Makefile.testCProgram2",
     "compile_profiles": [
       {
         "ext": ".c",

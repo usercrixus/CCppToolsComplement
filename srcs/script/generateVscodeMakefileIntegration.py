@@ -5,7 +5,7 @@ import shlex
 from pathlib import Path
 from typing import Any
 
-from srcs.script.verifyMakefileConfig import verifyMakefileConfig
+from verifyMakefileConfig import verifyMakefileConfig
 from utils import read_entries, program_from_output_makefile
 
 JsonObject = dict[str, Any]

@@ -2,7 +2,7 @@
 import re
 from pathlib import Path
 
-from srcs.script.verifyMakefileConfig import verifyMakefileConfig
+from verifyMakefileConfig import verifyMakefileConfig
 from utils import read_entries, program_from_output_makefile
 
 

@@ -23,7 +23,6 @@ PROGRAMS = [
 ]
 HEADER_PATH = C_PROGRAM_DIR / "subfolder" / "header.h"
 SCRIPT_GENERATE_JSON = ROOT / "srcs" / "script" / "generateJsonForMakefile.py"
-SCRIPT_VERIFY_CONFIG = ROOT / "srcs" / "script" / "verifyMakefileConfig.py"
 SCRIPT_GENERATE_MAKEFILE = ROOT / "srcs" / "script" / "generateMakefileFromJson.py"
 DEFAULT_FLAGS = "-Wall -Wextra -Werror -MMD -MP"
 ANSI_GREEN = "\033[32m"
@@ -102,7 +101,6 @@ def generate_all() -> None:
             ]
         )
         run([PYTHON, str(SCRIPT_GENERATE_JSON)], cwd=ROOT, input_text=generator_input)
-    run([PYTHON, str(SCRIPT_VERIFY_CONFIG)], cwd=ROOT)
     run([PYTHON, str(SCRIPT_GENERATE_MAKEFILE)], cwd=ROOT)
 
 
