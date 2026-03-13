@@ -35,31 +35,21 @@ def validate_compile_profiles(entry_index: int, compile_profiles: Any) -> tuple[
 
     for profile_index, profile in enumerate(compile_profiles):
         if not isinstance(profile, dict):
-            errors.append(
-                f"[entry {entry_index}] compile profile #{profile_index} must be an object."
-            )
+            errors.append(f"[entry {entry_index}] compile profile #{profile_index} must be an object.")
             continue
         ext = profile.get("ext")
         compiler = profile.get("compiler")
         flags = profile.get("flags")
         if not is_non_empty_string(ext):
-            errors.append(
-                f"[entry {entry_index}] compile profile #{profile_index} has invalid 'ext'."
-            )
+            errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'ext'.")
         elif not str(ext).startswith("."):
-            errors.append(
-                f"[entry {entry_index}] compile profile #{profile_index} ext must start with '.'."
-            )
+            errors.append(f"[entry {entry_index}] compile profile #{profile_index} ext must start with '.'.")
         else:
             extensions.add(str(ext))
         if not is_non_empty_string(compiler):
-            errors.append(
-                f"[entry {entry_index}] compile profile #{profile_index} has invalid 'compiler'."
-            )
+            errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'compiler'.")
         if not isinstance(flags, str):
-            errors.append(
-                f"[entry {entry_index}] compile profile #{profile_index} has invalid 'flags'."
-            )
+            errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'flags'.")
 
     return errors, extensions
 
@@ -80,9 +70,7 @@ def validate_output_makefile(entry_index: int, value: Any) -> list[str]:
     if not output_path.is_absolute():
         errors.append(f"[entry {entry_index}] 'output_makefile' should be an absolute path.")
     if not program_from_output_makefile(output_path):
-        errors.append(
-            f"[entry {entry_index}] output_makefile filename must match Makefile.<program>."
-        )
+        errors.append(f"[entry {entry_index}] output_makefile filename must match Makefile.<program>.")
     return errors
 
 
@@ -117,9 +105,7 @@ def validate_rel_sources(entry_index: int, value: Any) -> list[str]:
     errors: list[str] = []
     for source_index, source in enumerate(value):
         if not is_non_empty_string(source):
-            errors.append(
-                f"[entry {entry_index}] rel_sources[{source_index}] must be a non-empty string."
-            )
+            errors.append(f"[entry {entry_index}] rel_sources[{source_index}] must be a non-empty string.")
             continue
         source_str = str(source)
         if Path(source_str).is_absolute():
@@ -138,9 +124,7 @@ def validate_obj_expr(entry_index: int, value: Any) -> list[str]:
     errors: list[str] = []
     for token_index, token in enumerate(obj_tokens):
         if Path(token).suffix != ".o":
-            errors.append(
-                f"[entry {entry_index}] obj_expr token #{token_index} ('{token}') must end with .o."
-            )
+            errors.append(f"[entry {entry_index}] obj_expr token #{token_index} ('{token}') must end with .o.")
     return errors
 
 
@@ -251,23 +235,24 @@ def load_entries_for_verify(config_path: Path) -> tuple[list[JsonObject], list[s
     return entries, []
 
 
-def printSummary(errors: list, config_path: Path, entries: list[JsonObject]):
+def printSummary(errors: list[str], config_path: Path, entries: list[JsonObject]):
     if errors:
         print(f"Verification failed for {config_path}:")
         for err in errors:
             print(f"- {err}")
-        raise SystemExit(1)
-    print(f"Verification passed for {config_path} ({len(entries)} entr{'y' if len(entries) == 1 else 'ies'}).")
+    else:
+        print(f"Verification passed for {config_path} ({len(entries)} entr{'y' if len(entries) == 1 else 'ies'}).")
 
 
-def main() -> None:
+def verifyMakefileConfig() -> int:
     config_path = Path(".vscode/makefileConfig.json").resolve()
     entries, errors = load_entries_for_verify(config_path)
     for index, entry in enumerate(entries):
         errors.extend(validate_entry(index, entry))
     errors.extend(find_duplicate_output_makefiles(entries))
     printSummary(errors, config_path, entries)
+    return errors and 1 or 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(verifyMakefileConfig())

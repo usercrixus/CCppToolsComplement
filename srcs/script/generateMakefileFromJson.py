@@ -2,6 +2,7 @@
 import re
 from pathlib import Path
 
+from srcs.script.verifyMakefileConfig import verifyMakefileConfig
 from utils import read_entries, program_from_output_makefile
 
 
@@ -33,9 +34,7 @@ def render_child_makefile(
     var_lines = []
     for compiler in unique_compilers:
         key = var_key_by_compiler[compiler]
-        flags = next(
-            profile["flags"] for profile in compile_profiles if profile["compiler"] == compiler
-        )
+        flags = next(profile["flags"] for profile in compile_profiles if profile["compiler"] == compiler)
         var_lines.append(f"COMPILER_{key} = {compiler}")
         var_lines.append(f"FLAGS_{key} = {flags}")
 
@@ -45,9 +44,7 @@ def render_child_makefile(
         ext = profile["ext"]
         compiler = profile["compiler"]
         key = var_key_by_compiler[compiler]
-        pattern_rules.append(
-            f"%.o: %{ext}\n\t$(COMPILER_{key}) $(FLAGS_{key}) -c $< -o $@\n"
-        )
+        pattern_rules.append(f"%.o: %{ext}\n\t$(COMPILER_{key}) $(FLAGS_{key}) -c $< -o $@\n")
     lines = [
         *var_lines,
         f"LINK_COMPILER = $(COMPILER_{link_key})",
@@ -133,22 +130,14 @@ def normalize_profiles(entry: dict) -> tuple[list[dict], str, str]:
     compile_profiles = require(entry, "compile_profiles")
     link_compiler = require(entry, "link_compiler")
     link_flags = require(entry, "link_flags")
-    if not isinstance(compile_profiles, list):
-        raise SystemExit("Key 'compile_profiles' must be a list.")
     normalized = []
     for profile in compile_profiles:
-        if not isinstance(profile, dict):
-            raise SystemExit("Each compile profile must be an object.")
         ext = profile.get("ext")
         compiler = profile.get("compiler")
         flags = profile.get("flags")
         if not all(isinstance(v, str) and v for v in [ext, compiler, flags]):
             raise SystemExit("Each compile profile needs non-empty string keys: ext, compiler, flags.")
         normalized.append({"ext": ext, "compiler": compiler, "flags": flags})
-    if not isinstance(link_compiler, str) or not link_compiler:
-        raise SystemExit("Key 'link_compiler' must be a non-empty string.")
-    if not isinstance(link_flags, str):
-        raise SystemExit("Key 'link_flags' must be a string.")
     return normalized, link_compiler, link_flags
 
 
@@ -159,8 +148,6 @@ def generate_one(entry: dict) -> tuple[Path, str]:
     rel_sources = require(entry, "rel_sources")
     obj_expr = require(entry, "obj_expr")
     compile_profiles, link_compiler, link_flags = normalize_profiles(entry)
-    if not isinstance(rel_sources, list) or not all(isinstance(x, str) for x in rel_sources):
-        raise SystemExit("Key 'rel_sources' must be a list of strings.")
     makefile_text = render_child_makefile(
         compile_profiles,
         link_compiler,
@@ -173,20 +160,7 @@ def generate_one(entry: dict) -> tuple[Path, str]:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(makefile_text, encoding="utf-8")
     program = program_from_output_makefile(out_path)
-    if not program:
-        raise SystemExit(
-            f"Invalid output_makefile '{out_path}': filename must match Makefile.<program>"
-        )
     return out_path, program
-
-
-def getConfigPath() -> Path:
-    config_path = Path(".vscode/makefileConfig.json").resolve()
-    if not config_path.exists():
-        raise SystemExit(f"JSON config not found: {config_path}")
-    if not config_path.is_file():
-        raise SystemExit(f"JSON config path is not a file: {config_path}")
-    return config_path
 
 
 def generateChildMakefiles(entries: list[dict]) -> dict[Path, set[str]]:
@@ -210,10 +184,13 @@ def generatedParentMakefiles(programs_by_dir: dict[Path, set[str]]):
 
 
 def main() -> None:
-    config_path = getConfigPath()
+    if verifyMakefileConfig() != 0:
+        raise SystemExit("Makefile configuration verification failed.")
+    config_path = Path(".vscode/makefileConfig.json").resolve()
     entries = read_entries(config_path)
     programs_by_dir = generateChildMakefiles(entries)
     generatedParentMakefiles(programs_by_dir)
+
 
 if __name__ == "__main__":
     main()

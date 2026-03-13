@@ -5,6 +5,7 @@ import shlex
 from pathlib import Path
 from typing import Any
 
+from srcs.script.verifyMakefileConfig import verifyMakefileConfig
 from utils import read_entries, program_from_output_makefile
 
 JsonObject = dict[str, Any]
@@ -109,13 +110,6 @@ def get_relevant_paths() -> tuple[Path, Path, Path, Path]:
     return workspace, config_path, tasks_path, launch_path
 
 
-def parse_args() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate VSCode tasks/launch from .vscode/makefileConfig.json."
-    )
-    parser.parse_args()
-
-
 def get_merged_json_version(
     path: Path, generated_items: JsonItems, version: str, collection_key: str, merge_key: str
 ) -> JsonObject:
@@ -148,7 +142,8 @@ def get_tasks_and_launches_from_config(workspace: Path, config_path: Path) -> tu
 
 
 def main() -> None:
-    parse_args()
+    if verifyMakefileConfig() != 0:
+        raise SystemExit("Makefile configuration verification failed.")
     workspace, config_path, tasks_path, launch_path = get_relevant_paths()
     tasks, launches = get_tasks_and_launches_from_config(workspace, config_path)
     tasks_json = get_merged_json_version(tasks_path, tasks, "2.0.0", "tasks", "label")
