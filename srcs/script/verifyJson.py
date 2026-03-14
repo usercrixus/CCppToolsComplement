@@ -6,7 +6,7 @@ from typing import Any, Callable
 from srcs.script.utils import program_from_output_makefile
 
 JsonObject = dict[str, Any]
-FieldValidator = Callable[[int, Any], list[str]]
+FieldValidator = Callable[[int, JsonObject, Any], list[str]]
 REQUIRED_ENTRY_FIELDS = {
     "output_makefile",
     "link_compiler",
@@ -62,7 +62,7 @@ def validate_compile_profile_extensions(entry_index: int, rel_sources: list[str]
     return [f"[entry {entry_index}] Missing compile profile(s) for source extension(s): {', '.join(missing)}."]
 
 
-def validate_output_makefile(entry_index: int, value: Any) -> list[str]:
+def validate_output_makefile(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
     if not is_non_empty_string(value):
         return [f"[entry {entry_index}] 'output_makefile' must be a non-empty string."]
     errors: list[str] = []
@@ -74,31 +74,31 @@ def validate_output_makefile(entry_index: int, value: Any) -> list[str]:
     return errors
 
 
-def validate_link_compiler(entry_index: int, value: Any) -> list[str]:
+def validate_link_compiler(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
     if not is_non_empty_string(value):
         return [f"[entry {entry_index}] 'link_compiler' must be a non-empty string."]
     return []
 
 
-def validate_link_flags(entry_index: int, value: Any) -> list[str]:
+def validate_link_flags(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
     if not isinstance(value, str):
         return [f"[entry {entry_index}] 'link_flags' must be a string."]
     return []
 
 
-def validate_run_args(entry_index: int, value: Any) -> list[str]:
+def validate_run_args(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
     if not isinstance(value, str):
         return [f"[entry {entry_index}] 'run_args' must be a string."]
     return []
 
 
-def validate_bin_name(entry_index: int, value: Any) -> list[str]:
+def validate_bin_name(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
     if not is_non_empty_string(value):
         return [f"[entry {entry_index}] 'bin_name' must be a non-empty string."]
     return []
 
 
-def validate_rel_sources(entry_index: int, value: Any) -> list[str]:
+def validate_rel_sources(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
     if not isinstance(value, list) or not value:
         return [f"[entry {entry_index}] 'rel_sources' must be a non-empty list of strings."]
 
@@ -113,7 +113,7 @@ def validate_rel_sources(entry_index: int, value: Any) -> list[str]:
     return errors
 
 
-def validate_obj_expr(entry_index: int, value: Any) -> list[str]:
+def validate_obj_expr(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
     if not is_non_empty_string(value):
         return [f"[entry {entry_index}] 'obj_expr' must be a non-empty string."]
 
@@ -125,11 +125,15 @@ def validate_obj_expr(entry_index: int, value: Any) -> list[str]:
     for token_index, token in enumerate(obj_tokens):
         if Path(token).suffix != ".o":
             errors.append(f"[entry {entry_index}] obj_expr token #{token_index} ('{token}') must end with .o.")
+    errors.extend(getSrcsObjsMatch(entry_index, extract_rel_sources(entry.get("rel_sources")), obj_tokens))
     return errors
 
 
-def validate_compile_profiles_field(entry_index: int, value: Any) -> list[str]:
-    profile_errors, _ = validate_compile_profiles(entry_index, value)
+def validate_compile_profiles_field(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+    profile_errors, extensions = validate_compile_profiles(entry_index, value)
+    profile_errors.extend(
+        validate_compile_profile_extensions(entry_index, extract_rel_sources(entry.get("rel_sources")), extensions)
+    )
     return profile_errors
 
 
@@ -147,26 +151,7 @@ def extract_rel_sources(value: Any) -> list[str]:
     return rel_sources
 
 
-def extract_obj_tokens(value: Any) -> list[str]:
-    if not is_non_empty_string(value):
-        return []
-    return tokenized_obj_expr(str(value))
-
-
-def extract_compile_profile_extensions(value: Any) -> set[str]:
-    _, extensions = validate_compile_profiles(-1, value)
-    return extensions
-
-
-def collect_cross_field_data(entry: JsonObject) -> tuple[list[str], list[str], set[str]]:
-    rel_sources = extract_rel_sources(entry.get("rel_sources"))
-    obj_tokens = extract_obj_tokens(entry.get("obj_expr"))
-    compile_profile_extensions = extract_compile_profile_extensions(entry.get("compile_profiles"))
-    return rel_sources, obj_tokens, compile_profile_extensions
-
-
-def validate_entry(entry_index: int, entry: JsonObject) -> list[str]:
-    errors: list[str] = []
+def getFieldValidator(key: str):
     field_validators: dict[str, FieldValidator] = {
         "output_makefile": validate_output_makefile,
         "link_compiler": validate_link_compiler,
@@ -177,19 +162,22 @@ def validate_entry(entry_index: int, entry: JsonObject) -> list[str]:
         "obj_expr": validate_obj_expr,
         "compile_profiles": validate_compile_profiles_field,
     }
+    return field_validators[key]
+
+
+def getFieldErrors(entry_index: int, entry: JsonObject):
+    errors: list[str] = []
     for field_key, field_value in entry.items():
-        validator = field_validators.get(field_key)
+        validator = getFieldValidator(field_key)
         if validator is None:
             errors.append(f"[entry {entry_index}] Unsupported field '{field_key}'.")
         else:
-            errors.extend(validator(entry_index, field_value))
-    for missing_field in sorted(REQUIRED_ENTRY_FIELDS - set(entry.keys())):
-        errors.append(f"[entry {entry_index}] Missing required field '{missing_field}'.")
-    rel_sources, obj_tokens, compile_profile_extensions = collect_cross_field_data(entry)
+            errors.extend(validator(entry_index, entry, field_value))
+    return errors
 
-    if isinstance(rel_sources, list) and isinstance(compile_profile_extensions, set):
-        errors.extend(validate_compile_profile_extensions(entry_index, rel_sources, compile_profile_extensions))
 
+def getSrcsObjsMatch(entry_index: int, rel_sources, obj_tokens):
+    errors: list[str] = []
     if (
         isinstance(rel_sources, list)
         and isinstance(obj_tokens, list)
@@ -201,7 +189,20 @@ def validate_entry(entry_index: int, entry: JsonObject) -> list[str]:
             f"[entry {entry_index}] rel_sources count ({len(rel_sources)}) "
             f"does not match obj_expr token count ({len(obj_tokens)})."
         )
+    return errors
 
+
+def getMissingFieldErrors(entry_index: int, entry: JsonObject):
+    errors: list[str] = []
+    for missing_field in sorted(REQUIRED_ENTRY_FIELDS - set(entry.keys())):
+        errors.append(f"[entry {entry_index}] Missing required field '{missing_field}'.")
+    return errors
+
+
+def getErrors(entry_index: int, entry: JsonObject) -> list[str]:
+    errors: list[str] = []
+    errors.extend(getFieldErrors(entry_index, entry))
+    errors.extend(getMissingFieldErrors(entry_index, entry))
     return errors
 
 
@@ -248,7 +249,7 @@ def verifyjson() -> int:
     config_path = Path(".vscode/makefileConfig.json").resolve()
     entries, errors = load_entries_for_verify(config_path)
     for index, entry in enumerate(entries):
-        errors.extend(validate_entry(index, entry))
+        errors.extend(getErrors(index, entry))
     errors.extend(find_duplicate_output_makefiles(entries))
     printSummary(errors, config_path, entries)
     return errors and 1 or 0
