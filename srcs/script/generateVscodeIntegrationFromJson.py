@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from srcs.script.verifyJson import verifyjson
-from srcs.script.utils import read_entries, program_from_output_makefile
+from srcs.script.utils import read_entries, getProgramNameFromMakefileName
 
 JsonObject = dict[str, Any]
 JsonItems = list[JsonObject]
@@ -133,7 +133,7 @@ def get_tasks_and_launches_from_config(workspace: Path, config_path: Path) -> tu
         output_makefile = Path(str(entry.get("output_makefile", ""))).resolve()
         bin_name = str(entry.get("bin_name", ""))
         run_args = str(entry.get("run_args", ""))
-        program = program_from_output_makefile(output_makefile) or ""
+        program = getProgramNameFromMakefileName(output_makefile) or ""
         cwd_vscode = vscode_path_for_fs_path(output_makefile.parent, workspace)
         program_vscode = vscode_path_for_fs_path(output_makefile.parent / bin_name, workspace)
         tasks.append(make_task(program, output_makefile, cwd_vscode))

@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Any, Callable
 
-from srcs.script.utils import program_from_output_makefile
+from srcs.script.utils import compiler_var_key, getCompiler, getProgramNameFromMakefileName
 
 JsonObject = dict[str, Any]
 FieldValidator = Callable[[int, JsonObject, Any], list[str]]
@@ -23,7 +23,7 @@ def tokenized_obj_expr(obj_expr: str) -> list[str]:
     return [part for part in obj_expr.split(" ") if part.strip()]
 
 
-def is_non_empty_string(value: Any) -> bool:
+def isNonEmptyString(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
@@ -40,13 +40,13 @@ def validate_compile_profiles(entry_index: int, compile_profiles: Any) -> tuple[
         ext = profile.get("ext")
         compiler = profile.get("compiler")
         flags = profile.get("flags")
-        if not is_non_empty_string(ext):
+        if not isNonEmptyString(ext):
             errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'ext'.")
         elif not str(ext).startswith("."):
             errors.append(f"[entry {entry_index}] compile profile #{profile_index} ext must start with '.'.")
         else:
             extensions.add(str(ext))
-        if not is_non_empty_string(compiler):
+        if not isNonEmptyString(compiler):
             errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'compiler'.")
         if not isinstance(flags, str):
             errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'flags'.")
@@ -62,30 +62,6 @@ def validate_compile_profile_extensions(entry_index: int, rel_sources: list[str]
     return [f"[entry {entry_index}] Missing compile profile(s) for source extension(s): {', '.join(missing)}."]
 
 
-def validate_output_makefile(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
-    if not is_non_empty_string(value):
-        return [f"[entry {entry_index}] 'output_makefile' must be a non-empty string."]
-    errors: list[str] = []
-    output_path = Path(str(value))
-    if not output_path.is_absolute():
-        errors.append(f"[entry {entry_index}] 'output_makefile' should be an absolute path.")
-    if not program_from_output_makefile(output_path):
-        errors.append(f"[entry {entry_index}] output_makefile filename must match Makefile.<program>.")
-    return errors
-
-
-def validate_link_compiler(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
-    if not is_non_empty_string(value):
-        return [f"[entry {entry_index}] 'link_compiler' must be a non-empty string."]
-    return []
-
-
-def validate_link_flags(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
-    if not isinstance(value, str):
-        return [f"[entry {entry_index}] 'link_flags' must be a string."]
-    return []
-
-
 def validate_run_args(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
     if not isinstance(value, str):
         return [f"[entry {entry_index}] 'run_args' must be a string."]
@@ -93,7 +69,7 @@ def validate_run_args(entry_index: int, entry: JsonObject, value: Any) -> list[s
 
 
 def validate_bin_name(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
-    if not is_non_empty_string(value):
+    if not isNonEmptyString(value):
         return [f"[entry {entry_index}] 'bin_name' must be a non-empty string."]
     return []
 
@@ -104,7 +80,7 @@ def validate_rel_sources(entry_index: int, entry: JsonObject, value: Any) -> lis
 
     errors: list[str] = []
     for source_index, source in enumerate(value):
-        if not is_non_empty_string(source):
+        if not isNonEmptyString(source):
             errors.append(f"[entry {entry_index}] rel_sources[{source_index}] must be a non-empty string.")
             continue
         source_str = str(source)
@@ -114,7 +90,7 @@ def validate_rel_sources(entry_index: int, entry: JsonObject, value: Any) -> lis
 
 
 def validate_obj_expr(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
-    if not is_non_empty_string(value):
+    if not isNonEmptyString(value):
         return [f"[entry {entry_index}] 'obj_expr' must be a non-empty string."]
 
     obj_tokens = tokenized_obj_expr(str(value))
@@ -142,7 +118,7 @@ def extract_rel_sources(value: Any) -> list[str]:
         return []
     rel_sources: list[str] = []
     for source in value:
-        if not is_non_empty_string(source):
+        if not isNonEmptyString(source):
             continue
         source_str = str(source)
         if Path(source_str).is_absolute():
@@ -151,11 +127,65 @@ def extract_rel_sources(value: Any) -> list[str]:
     return rel_sources
 
 
+def getCompilerByExtension(compile_profiles: Any) -> dict[str, str]:
+    if not isinstance(compile_profiles, list):
+        return {}
+    compilers_by_extension: dict[str, str] = {}
+    for profile in compile_profiles:
+        if not isinstance(profile, dict):
+            continue
+        ext = profile.get("ext")
+        compiler = profile.get("compiler")
+        if not isNonEmptyString(ext) or not str(ext).startswith(".") or not isNonEmptyString(compiler):
+            continue
+        compilers_by_extension[str(ext)] = str(compiler)
+    return compilers_by_extension
+
+
+def getMakefileNameErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+    if not isNonEmptyString(value):
+        return [f"[entry {entry_index}] 'output_makefile' must be a non-empty string."]
+    errors: list[str] = []
+    output_path = Path(str(value))
+    if not output_path.is_absolute():
+        errors.append(f"[entry {entry_index}] 'output_makefile' should be an absolute path.")
+    if not getProgramNameFromMakefileName(output_path):
+        errors.append(f"[entry {entry_index}] output_makefile filename must match Makefile.<program>.")
+    return errors
+
+
+def getLinkCompilerErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+    if not isNonEmptyString(value):
+        return [f"[entry {entry_index}] 'link_compiler' must be a non-empty string."]
+    rel_sources = extract_rel_sources(entry.get("rel_sources"))
+    if not rel_sources:
+        return [f"[entry {entry_index}] Cannot validate 'link_compiler': no valid main source found in 'rel_sources'."]
+    main_extension = Path(rel_sources[0]).suffix
+    if not main_extension:
+        return [f"[entry {entry_index}] Cannot validate 'link_compiler': main source '{rel_sources[0]}' has no extension."]
+    try:
+        expected_compiler = getCompiler(main_extension)
+    except ValueError:
+        return [f"[entry {entry_index}] Cannot validate 'link_compiler': unsupported main extension '{main_extension}'."]
+    if value != expected_compiler:
+        return [
+            f"[entry {entry_index}] 'link_compiler' ({value}) must match the compiler for the main source "
+            f"extension '{main_extension}' ({expected_compiler})."
+        ]
+    return []
+
+
+def getLinkFlagErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+    if not isinstance(value, str):
+        return [f"[entry {entry_index}] 'link_flags' must be a string."]
+    return []
+
+
 def getFieldValidator(key: str):
     field_validators: dict[str, FieldValidator] = {
-        "output_makefile": validate_output_makefile,
-        "link_compiler": validate_link_compiler,
-        "link_flags": validate_link_flags,
+        "output_makefile": getMakefileNameErrors,
+        "link_compiler": getLinkCompilerErrors,
+        "link_flags": getLinkFlagErrors,
         "run_args": validate_run_args,
         "bin_name": validate_bin_name,
         "rel_sources": validate_rel_sources,

@@ -1,19 +1,10 @@
 #!/usr/bin/env python3
-import re
 from pathlib import Path
 
 from srcs.script.verifyJson import verifyjson
-from srcs.script.utils import read_entries, program_from_output_makefile
+from srcs.script.utils import compiler_var_key, read_entries, getProgramNameFromMakefileName
 
 FORCED_DEBUG_FLAGS = ("-g3", "-O0")
-
-
-def compiler_var_key(compiler: str) -> str:
-    explicit = {"g++": "GPP", "gcc": "GCC"}
-    if compiler in explicit:
-        return explicit[compiler]
-    key = re.sub(r"[^A-Za-z0-9]+", "_", compiler).strip("_").upper()
-    return key or "CC"
 
 
 def force_flags(flags: str, required_flags: tuple[str, ...] = FORCED_DEBUG_FLAGS) -> str:
@@ -169,7 +160,7 @@ def generate_one(entry: dict) -> tuple[Path, str]:
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(makefile_text, encoding="utf-8")
-    program = program_from_output_makefile(out_path)
+    program = getProgramNameFromMakefileName(out_path)
     return out_path, program
 
 

@@ -5,18 +5,12 @@ import json
 from pathlib import Path
 from typing import Optional
 
+from srcs.script.utils import compiler_var_key, getCompiler
+
 SRC_EXTS = [".cpp", ".cc", ".cxx", ".c"]
 HDR_EXTS = [".hpp", ".hh", ".hxx", ".h"]
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s*"([^"]+)"')
 CONFIG_REL_PATH = Path(".vscode/makefileConfig.json")
-
-
-def getCompiler(ext: str) -> str:
-    if ext == ".c":
-        return "gcc"
-    if ext in {".cpp", ".cc", ".cxx"}:
-        return "g++"
-    raise ValueError(f"Unsupported main extension: {ext}")
 
 
 def parse_local_includes(path: Path):
@@ -93,14 +87,6 @@ def objs_from_sources(rel_sources: list[str]):
         else:
             objs.append(src + ".o")
     return " ".join(objs)
-
-
-def compiler_var_key(compiler: str) -> str:
-    explicit = {"g++": "GPP", "gcc": "GCC"}
-    if compiler in explicit:
-        return explicit[compiler]
-    key = re.sub(r"[^A-Za-z0-9]+", "_", compiler).strip("_").upper()
-    return key or "CC"
 
 
 def program_from_submake(path: Path) -> Optional[str]:
