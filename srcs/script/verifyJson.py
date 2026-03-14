@@ -2,8 +2,7 @@
 import json
 from pathlib import Path
 from typing import Any, Callable
-
-from srcs.script.utils import compiler_var_key, getCompiler, getProgramNameFromMakefileName
+from srcs.script.utils import getCompiler, getProgramNameFromMakefileName
 
 JsonObject = dict[str, Any]
 FieldValidator = Callable[[int, JsonObject, Any], list[str]]
@@ -27,34 +26,17 @@ def isNonEmptyString(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
-def validate_compile_profiles(entry_index: int, compile_profiles: Any) -> tuple[list[str], set[str]]:
-    errors: list[str] = []
-    extensions: set[str] = set()
-    if not isinstance(compile_profiles, list) or not compile_profiles:
-        return [f"[entry {entry_index}] 'compile_profiles' must be a non-empty list."], extensions
-
-    for profile_index, profile in enumerate(compile_profiles):
-        if not isinstance(profile, dict):
-            errors.append(f"[entry {entry_index}] compile profile #{profile_index} must be an object.")
-            continue
-        ext = profile.get("ext")
-        compiler = profile.get("compiler")
-        flags = profile.get("flags")
-        if not isNonEmptyString(ext):
-            errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'ext'.")
-        elif not str(ext).startswith("."):
-            errors.append(f"[entry {entry_index}] compile profile #{profile_index} ext must start with '.'.")
-        else:
-            extensions.add(str(ext))
-        if not isNonEmptyString(compiler):
-            errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'compiler'.")
-        if not isinstance(flags, str):
-            errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'flags'.")
-
-    return errors, extensions
+def getCompilerMatchErrors(entry_index: int, extension: str, compiler: str, context: str) -> list[str]:
+    try:
+        expected_compiler = getCompiler(extension)
+    except ValueError:
+        return [f"[entry {entry_index}] {context}: unsupported extension '{extension}'."]
+    if compiler != expected_compiler:
+        return [f"[entry {entry_index}] {context}: compiler '{compiler}' must match extension '{extension}' ({expected_compiler})."]
+    return []
 
 
-def validate_compile_profile_extensions(entry_index: int, rel_sources: list[str], extensions: set[str]) -> list[str]:
+def getMissingExtensionErrors(entry_index: int, rel_sources: list[str], extensions: set[str]) -> list[str]:
     rel_exts = {Path(src).suffix for src in rel_sources if Path(src).suffix}
     missing = sorted(ext for ext in rel_exts if ext not in extensions)
     if not missing:
@@ -62,12 +44,64 @@ def validate_compile_profile_extensions(entry_index: int, rel_sources: list[str]
     return [f"[entry {entry_index}] Missing compile profile(s) for source extension(s): {', '.join(missing)}."]
 
 
-def validate_compile_profiles_field(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
-    profile_errors, extensions = validate_compile_profiles(entry_index, value)
-    profile_errors.extend(
-        validate_compile_profile_extensions(entry_index, getRelSources(entry.get("rel_sources")), extensions)
-    )
-    return profile_errors
+def getExtensionFromCompileProfiles(entry_index: int, compile_profiles: Any) -> tuple[set[str], list[str]]:
+    extensions: set[str] = set()
+    errors = []
+    if not isinstance(compile_profiles, list) or not compile_profiles:
+            return extensions, [f"[entry {entry_index}] 'compile_profiles' must be a non-empty list."]
+    for profile_index, profile in enumerate(compile_profiles):
+        if not isinstance(profile, dict):
+            errors.append(f"[entry {entry_index}] compile profile #{profile_index} must be an object.")
+        else:
+            ext = profile.get("ext")
+            if not isNonEmptyString(ext):
+                errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'ext'.")
+            elif not str(ext).startswith("."):
+                errors.append(f"[entry {entry_index}] compile profile #{profile_index} ext must start with '.'.")
+            else:
+                extensions.add(str(ext))
+    return extensions, errors
+
+
+def getCompileProfileCompilerErrors(entry_index: int, compile_profiles: Any) -> list[str]:
+    errors = []
+    if not isinstance(compile_profiles, list) or not compile_profiles:
+        return [f"[entry {entry_index}] 'compile_profiles' must be a non-empty list."]
+    for profile_index, profile in enumerate(compile_profiles):
+        if not isinstance(profile, dict):
+            errors.append(f"[entry {entry_index}] compile profile #{profile_index} must be an object.")
+        else:
+            ext = profile.get("ext")
+            compiler = profile.get("compiler")
+            if not isNonEmptyString(compiler):
+                errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'compiler'.")
+            else:
+                if isNonEmptyString(ext) and str(ext).startswith("."):
+                    errors.extend(getCompilerMatchErrors(entry_index, str(ext), str(compiler), f"compile profile #{profile_index}",))
+    return errors
+
+
+def getCompileProfileFlagErrors(entry_index: int, compile_profiles: Any) -> list[str]:
+    errors = []
+    if not isinstance(compile_profiles, list) or not compile_profiles:
+        return [f"[entry {entry_index}] 'compile_profiles' must be a non-empty list."]
+    for profile_index, profile in enumerate(compile_profiles):
+        if not isinstance(profile, dict):
+            errors.append(f"[entry {entry_index}] compile profile #{profile_index} must be an object.")
+        else:
+            if not isinstance(profile.get("flags"), str):
+                errors.append(f"[entry {entry_index}] compile profile #{profile_index} has invalid 'flags'.")
+    return errors
+
+
+def getCompileProfilesErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+    errors: list[str] = []
+    extensions, extension_errors = getExtensionFromCompileProfiles(entry_index, value)
+    errors.extend(extension_errors)
+    errors.extend(getCompileProfileCompilerErrors(entry_index, value))
+    errors.extend(getCompileProfileFlagErrors(entry_index, value))
+    errors.extend(getMissingExtensionErrors(entry_index, getRelSources(entry.get("rel_sources")), extensions))
+    return errors
 
 
 def getRelSources(value: Any) -> list[str]:
@@ -82,21 +116,6 @@ def getRelSources(value: Any) -> list[str]:
             continue
         rel_sources.append(source_str)
     return rel_sources
-
-
-def getCompilerByExtension(compile_profiles: Any) -> dict[str, str]:
-    if not isinstance(compile_profiles, list):
-        return {}
-    compilers_by_extension: dict[str, str] = {}
-    for profile in compile_profiles:
-        if not isinstance(profile, dict):
-            continue
-        ext = profile.get("ext")
-        compiler = profile.get("compiler")
-        if not isNonEmptyString(ext) or not str(ext).startswith(".") or not isNonEmptyString(compiler):
-            continue
-        compilers_by_extension[str(ext)] = str(compiler)
-    return compilers_by_extension
 
 
 def getMakefileNameErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
@@ -120,11 +139,11 @@ def getLinkCompilerErrors(entry_index: int, entry: JsonObject, value: Any) -> li
     main_extension = Path(rel_sources[0]).suffix
     if not main_extension:
         return [f"[entry {entry_index}] Cannot validate 'link_compiler': main source '{rel_sources[0]}' has no extension."]
-    try:
+    mismatch_errors = getCompilerMatchErrors(entry_index, main_extension, str(value), "link_compiler",)
+    if mismatch_errors:
+        if "unsupported extension" in mismatch_errors[0]:
+            return [f"[entry {entry_index}] Cannot validate 'link_compiler': unsupported main extension '{main_extension}'."]
         expected_compiler = getCompiler(main_extension)
-    except ValueError:
-        return [f"[entry {entry_index}] Cannot validate 'link_compiler': unsupported main extension '{main_extension}'."]
-    if value != expected_compiler:
         return [
             f"[entry {entry_index}] 'link_compiler' ({value}) must match the compiler for the main source "
             f"extension '{main_extension}' ({expected_compiler})."
@@ -186,7 +205,7 @@ def getFieldValidator(key: str):
         "bin_name": getBinaryNameErrors,
         "rel_sources": getRelSourceErrors,
         "obj_expr": getObjExprErrors,
-        "compile_profiles": validate_compile_profiles_field,
+        "compile_profiles": getCompileProfilesErrors,
     }
     return field_validators[key]
 
