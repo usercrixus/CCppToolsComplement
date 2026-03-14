@@ -199,14 +199,14 @@ def getMissingFieldErrors(entry_index: int, entry: JsonObject):
     return errors
 
 
-def getErrors(entry_index: int, entry: JsonObject) -> list[str]:
+def getEntryErrors(entry_index: int, entry: JsonObject) -> list[str]:
     errors: list[str] = []
     errors.extend(getFieldErrors(entry_index, entry))
     errors.extend(getMissingFieldErrors(entry_index, entry))
     return errors
 
 
-def find_duplicate_output_makefiles(entries: list[JsonObject]) -> list[str]:
+def getDuplicateOutputMakefileErrors(entries: list[JsonObject]) -> list[str]:
     errors: list[str] = []
     seen: dict[str, int] = {}
     for index, entry in enumerate(entries):
@@ -221,7 +221,7 @@ def find_duplicate_output_makefiles(entries: list[JsonObject]) -> list[str]:
     return errors
 
 
-def load_entries_for_verify(config_path: Path) -> tuple[list[JsonObject], list[str]]:
+def getEntries(config_path: Path) -> tuple[list[JsonObject], list[str]]:
     try:
         data = json.loads(config_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
@@ -247,10 +247,10 @@ def printSummary(errors: list[str], config_path: Path, entries: list[JsonObject]
 
 def verifyjson() -> int:
     config_path = Path(".vscode/makefileConfig.json").resolve()
-    entries, errors = load_entries_for_verify(config_path)
+    entries, errors = getEntries(config_path)
     for index, entry in enumerate(entries):
-        errors.extend(getErrors(index, entry))
-    errors.extend(find_duplicate_output_makefiles(entries))
+        errors.extend(getEntryErrors(index, entry))
+    errors.extend(getDuplicateOutputMakefileErrors(entries))
     printSummary(errors, config_path, entries)
     return errors and 1 or 0
 
