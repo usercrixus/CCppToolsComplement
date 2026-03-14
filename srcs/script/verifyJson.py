@@ -5,7 +5,8 @@ from typing import Any, Callable
 from srcs.script.utils import getCompiler, getProgramNameFromMakefileName
 
 JsonObject = dict[str, Any]
-FieldValidator = Callable[[int, JsonObject, Any], list[str]]
+FieldErrorsByKey = dict[str, list[str]]
+FieldValidator = Callable[[int, JsonObject, Any, FieldErrorsByKey], list[str]]
 REQUIRED_ENTRY_FIELDS = {
     "output_makefile",
     "link_compiler",
@@ -94,13 +95,19 @@ def getCompileProfileFlagErrors(entry_index: int, compile_profiles: Any) -> list
     return errors
 
 
-def getCompileProfilesErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+def getCompileProfilesErrors(
+    entry_index: int,
+    entry: JsonObject,
+    value: Any,
+    field_errors_by_key: FieldErrorsByKey,
+) -> list[str]:
     errors: list[str] = []
     extensions, extension_errors = getExtensionFromCompileProfiles(entry_index, value)
     errors.extend(extension_errors)
     errors.extend(getCompileProfileCompilerErrors(entry_index, value))
     errors.extend(getCompileProfileFlagErrors(entry_index, value))
-    errors.extend(getMissingExtensionErrors(entry_index, getRelSources(entry.get("rel_sources")), extensions))
+    if not field_errors_by_key.get("rel_sources"):
+        errors.extend(getMissingExtensionErrors(entry_index, getRelSources(entry.get("rel_sources")), extensions))
     return errors
 
 
@@ -118,7 +125,7 @@ def getRelSources(value: Any) -> list[str]:
     return rel_sources
 
 
-def getMakefileNameErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+def getMakefileNameErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
     if not isNonEmptyString(value):
         return [f"[entry {entry_index}] 'output_makefile' must be a non-empty string."]
     errors: list[str] = []
@@ -130,9 +137,11 @@ def getMakefileNameErrors(entry_index: int, entry: JsonObject, value: Any) -> li
     return errors
 
 
-def getLinkCompilerErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+def getLinkCompilerErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
     if not isNonEmptyString(value):
         return [f"[entry {entry_index}] 'link_compiler' must be a non-empty string."]
+    if field_errors_by_key.get("rel_sources"):
+        return []
     rel_sources = getRelSources(entry.get("rel_sources"))
     if not rel_sources:
         return [f"[entry {entry_index}] Cannot validate 'link_compiler': no valid main source found in 'rel_sources'."]
@@ -151,25 +160,25 @@ def getLinkCompilerErrors(entry_index: int, entry: JsonObject, value: Any) -> li
     return []
 
 
-def getLinkFlagErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+def getLinkFlagErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
     if not isinstance(value, str):
         return [f"[entry {entry_index}] 'link_flags' must be a string."]
     return []
 
 
-def getRunArgErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+def getRunArgErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
     if not isinstance(value, str):
         return [f"[entry {entry_index}] 'run_args' must be a string."]
     return []
 
 
-def getBinaryNameErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+def getBinaryNameErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
     if not isNonEmptyString(value):
         return [f"[entry {entry_index}] 'bin_name' must be a non-empty string."]
     return []
 
 
-def getRelSourceErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+def getRelSourceErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
     if not isinstance(value, list) or not value:
         return [f"[entry {entry_index}] 'rel_sources' must be a non-empty list of strings."]
     errors: list[str] = []
@@ -182,7 +191,7 @@ def getRelSourceErrors(entry_index: int, entry: JsonObject, value: Any) -> list[
     return errors
 
 
-def getObjExprErrors(entry_index: int, entry: JsonObject, value: Any) -> list[str]:
+def getObjExprErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
     if not isNonEmptyString(value):
         return [f"[entry {entry_index}] 'obj_expr' must be a non-empty string."]
     obj_tokens = tokenized_obj_expr(str(value))
@@ -192,32 +201,35 @@ def getObjExprErrors(entry_index: int, entry: JsonObject, value: Any) -> list[st
     for token_index, token in enumerate(obj_tokens):
         if Path(token).suffix != ".o":
             errors.append(f"[entry {entry_index}] obj_expr token #{token_index} ('{token}') must end with .o.")
-    errors.extend(getSrcsObjsMatch(entry_index, getRelSources(entry.get("rel_sources")), obj_tokens))
+    if not field_errors_by_key.get("rel_sources"):
+        errors.extend(getSrcsObjsMatch(entry_index, getRelSources(entry.get("rel_sources")), obj_tokens))
     return errors
 
 
-def getFieldValidator(key: str):
-    field_validators: dict[str, FieldValidator] = {
-        "output_makefile": getMakefileNameErrors,
-        "link_compiler": getLinkCompilerErrors,
-        "link_flags": getLinkFlagErrors,
-        "run_args": getRunArgErrors,
-        "bin_name": getBinaryNameErrors,
-        "rel_sources": getRelSourceErrors,
-        "obj_expr": getObjExprErrors,
-        "compile_profiles": getCompileProfilesErrors,
-    }
-    return field_validators[key]
+FIELD_VALIDATORS: list[tuple[str, FieldValidator]] = [
+    ("output_makefile", getMakefileNameErrors),
+    ("link_flags", getLinkFlagErrors),
+    ("run_args", getRunArgErrors),
+    ("bin_name", getBinaryNameErrors),
+    ("rel_sources", getRelSourceErrors),
+    ("obj_expr", getObjExprErrors),
+    ("compile_profiles", getCompileProfilesErrors),
+    ("link_compiler", getLinkCompilerErrors),
+]
 
 
 def getFieldErrors(entry_index: int, entry: JsonObject):
     errors: list[str] = []
-    for field_key, field_value in entry.items():
-        validator = getFieldValidator(field_key)
-        if validator is None:
+    field_errors_by_key: FieldErrorsByKey = {}
+    known_keys = {field_key for field_key, _ in FIELD_VALIDATORS}
+    for field_key in entry:
+        if field_key not in known_keys:
             errors.append(f"[entry {entry_index}] Unsupported field '{field_key}'.")
-        else:
-            errors.extend(validator(entry_index, entry, field_value))
+    for field_key, validator in FIELD_VALIDATORS:
+        if field_key in entry:
+            field_errors = validator(entry_index, entry, entry[field_key], field_errors_by_key)
+            field_errors_by_key[field_key] = field_errors
+            errors.extend(field_errors)
     return errors
 
 
