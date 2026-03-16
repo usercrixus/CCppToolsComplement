@@ -1,0 +1,60 @@
+{
+  "name": "ccpp-tools-complement",
+  "displayName": "CCppToolsComplement",
+  "description": "Generate JSON, Makefiles, VSCode integration, then launch debugging for C/C++ programs.",
+  "version": "0.0.1",
+  "publisher": "achaisne",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Debuggers",
+    "Other"
+  ],
+  "extensionDependencies": [
+    "ms-vscode.cpptools"
+  ],
+  "activationEvents": [
+    "onCommand:ccppToolsComplement.generateAndDebugFromCurrentFile",
+    "onLanguage:c",
+    "onLanguage:cpp"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ccppToolsComplement.generateAndDebugFromCurrentFile",
+        "title": "CCppToolsComplement: Generate and Debug Current File",
+        "icon": {
+          "light": "resources/play-light.svg",
+          "dark": "resources/play-dark.svg"
+        }
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "ccppToolsComplement.generateAndDebugFromCurrentFile",
+          "when": "resourceLangId == c || resourceLangId == cpp",
+          "group": "navigation@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "ccppToolsComplement.generateAndDebugFromCurrentFile",
+          "when": "resourceLangId == c || resourceLangId == cpp"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CCppToolsComplement",
+      "properties": {
+        "ccppToolsComplement.pythonPath": {
+          "type": "string",
+          "default": "python3",
+          "description": "Python executable used to run the generation scripts."
+        }
+      }
+    }
+  }
+}
