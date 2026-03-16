@@ -238,28 +238,6 @@ def write_config_entries(config_path: Path, entries: list[dict]) -> None:
     config_path.write_text(json.dumps(entries, indent=2) + "\n", encoding="utf-8")
 
 
-def make_config_payload(
-    out_path: Path,
-    compile_profiles: list[dict],
-    link_compiler: str,
-    link_flags: str,
-    args_input: str,
-    bin_name: str,
-    relative_sources_path: list[str],
-    obj_expr: str,
-) -> dict:
-    return {
-        "output_makefile": str(out_path),
-        "compile_profiles": compile_profiles,
-        "link_compiler": link_compiler,
-        "link_flags": link_flags,
-        "run_args": args_input,
-        "bin_name": bin_name,
-        "rel_sources": relative_sources_path,
-        "obj_expr": obj_expr,
-    }
-
-
 def generateJson() -> None:
     project_root = Path.cwd()
     main_input, program_name, args_input, bin_input, output_input = getVariableData()
@@ -277,16 +255,16 @@ def generateJson() -> None:
     bin_name = bin_input if bin_input else f"{program_name}.out"
     config_path = (project_root / CONFIG_REL_PATH).resolve()
 
-    payload = make_config_payload(
-        out_path,
-        compile_profiles,
-        link_compiler,
-        link_flags,
-        args_input,
-        bin_name,
-        relative_sources_path,
-        obj_expr,
-    )
+    payload = {
+        "output_makefile": str(out_path),
+        "compile_profiles": compile_profiles,
+        "link_compiler": link_compiler,
+        "link_flags": link_flags,
+        "run_args": args_input,
+        "bin_name": bin_name,
+        "rel_sources": relative_sources_path,
+        "obj_expr": obj_expr,
+    }
     current_entries = read_config_entries(config_path)
     next_entries = upsert_config_entry(current_entries, payload)
     write_config_entries(config_path, next_entries)
