@@ -26,6 +26,7 @@ def render_child_makefile(
 ):
     srcs = " ".join(rel_sources)
     unique_compilers: list[str] = []
+    #divide here
     for profile in compile_profiles:
         compiler = profile["compiler"]
         if compiler not in unique_compilers:
