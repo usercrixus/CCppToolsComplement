@@ -98,6 +98,7 @@ def generate_all() -> None:
                 bin_name,
                 output_makefile_rel,
                 DEFAULT_FLAGS,
+                DEFAULT_FLAGS,
                 "",
             ]
         )

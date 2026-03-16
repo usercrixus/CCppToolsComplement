@@ -202,6 +202,13 @@ def pick_linker_compiler(compilers_by_ext: dict[str, str]) -> str:
     raise SystemExit("No supported compiler detected from source files.")
 
 
+def prompt_link_flags(link_compiler: str) -> str:
+    link_flags = input(f"Enter link flags for {link_compiler}: ").strip()
+    if not link_flags:
+        raise SystemExit(f"Link flags are required for compiler '{link_compiler}'.")
+    return link_flags
+
+
 def read_config_entries(config_path: Path) -> list[dict]:
     if not config_path.exists():
         return []
@@ -251,7 +258,7 @@ def generateJson() -> None:
     flags_by_compiler = prompt_flags_by_compiler(compilers_by_ext)
     compile_profiles = build_compile_profiles(compilers_by_ext, flags_by_compiler)
     link_compiler = pick_linker_compiler(compilers_by_ext)
-    link_flags = flags_by_compiler[link_compiler]
+    link_flags = prompt_link_flags(link_compiler)
     bin_name = bin_input if bin_input else f"{program_name}.out"
     config_path = (project_root / CONFIG_REL_PATH).resolve()
 
