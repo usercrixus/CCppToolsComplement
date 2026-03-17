@@ -21,7 +21,12 @@ function getExtentionAbsolutePath(extensionContext, relativePath) {
   return fullPath;
 }
 
+function getPathFromWorkspace(relativePath) {
+  return path.join(getWorkspaceFolder().uri.fsPath, relativePath);
+}
+
 module.exports = {
   getWorkspaceFolder,
-  getExtentionAbsolutePath
+  getExtentionAbsolutePath,
+  getPathFromWorkspace
 };

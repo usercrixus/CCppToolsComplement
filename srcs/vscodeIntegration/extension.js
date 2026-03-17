@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const vscode = require("vscode");
-const { getWorkspaceFolder, getExtentionAbsolutePath } = require("./utilsVsCode");
+const { getWorkspaceFolder, getExtentionAbsolutePath, getPathFromWorkspace } = require("./utilsVsCode");
 const { runPythonModuleTask } = require("./pythonRunner");
 const { readJsonFile, writeJsonFile } = require("./utilsJson");
 
@@ -56,12 +56,8 @@ async function generateAndDebugFromCurrentFile() {
   }
 }
 
-function getConfigPath(workspaceFolder) {
-  return path.join(workspaceFolder.uri.fsPath, CONFIG_REL_PATH);
-}
-
-function getConfigEntries(workspaceFolder) {
-  const configPath = getConfigPath(workspaceFolder);
+function getConfigEntries() {
+  const configPath = getPathFromWorkspace(CONFIG_REL_PATH);
   if (!fs.existsSync(configPath)) {
     return [];
   }
@@ -72,13 +68,13 @@ function getConfigEntries(workspaceFolder) {
   return config.filter((entry) => entry && typeof entry === "object");
 }
 
-function saveConfigEntries(workspaceFolder, entries) {
-  const configPath = getConfigPath(workspaceFolder);
+function saveConfigEntries(entries) {
+  const configPath = getPathFromWorkspace(CONFIG_REL_PATH);
   writeJsonFile(configPath, entries);
 }
 
 async function pickProgram(workspaceFolder) {
-  const entries = getConfigEntries(workspaceFolder);
+  const entries = getConfigEntries();
   const items = entries.map((entry, index) => ({
     label: getProgramNameFromEntry(entry),
     description: getProgramDescription(entry),
@@ -101,7 +97,7 @@ async function pickProgram(workspaceFolder) {
 
 async function handleProgramActions(workspaceFolder, entryIndex, pythonBin, pythonPathRoot) {
   while (true) {
-    const entries = getConfigEntries(workspaceFolder);
+    const entries = getConfigEntries();
     const entry = entries[entryIndex];
     if (!entry) {
       throw new Error("Selected program no longer exists in makefileConfig.json.");
@@ -195,7 +191,7 @@ async function regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot,
 }
 
 async function updateRunArgs(workspaceFolder, entryIndex) {
-  const entries = getConfigEntries(workspaceFolder);
+  const entries = getConfigEntries();
   const entry = entries[entryIndex];
   const value = await vscode.window.showInputBox({
     prompt: `Run args for ${getProgramNameFromEntry(entry)}`,
@@ -206,11 +202,11 @@ async function updateRunArgs(workspaceFolder, entryIndex) {
     throw new Error("Run args update was cancelled.");
   }
   entry.run_args = value.trim();
-  saveConfigEntries(workspaceFolder, entries);
+  saveConfigEntries(entries);
 }
 
 async function updateCompileFlags(workspaceFolder, entryIndex) {
-  const entries = getConfigEntries(workspaceFolder);
+  const entries = getConfigEntries();
   const entry = entries[entryIndex];
   const profiles = Array.isArray(entry.compile_profiles) ? entry.compile_profiles.filter(isObject) : [];
   if (profiles.length === 0) {
@@ -249,11 +245,11 @@ async function updateCompileFlags(workspaceFolder, entryIndex) {
     throw new Error("Compile profile could not be updated.");
   }
   originalProfiles[actualIndex].flags = value.trim();
-  saveConfigEntries(workspaceFolder, entries);
+  saveConfigEntries(entries);
 }
 
 async function updateLinkFlags(workspaceFolder, entryIndex) {
-  const entries = getConfigEntries(workspaceFolder);
+  const entries = getConfigEntries();
   const entry = entries[entryIndex];
   const value = await vscode.window.showInputBox({
     prompt: `Link flags for ${getProgramNameFromEntry(entry)}`,
@@ -264,7 +260,7 @@ async function updateLinkFlags(workspaceFolder, entryIndex) {
     throw new Error("Link flags update was cancelled.");
   }
   entry.link_flags = value.trim();
-  saveConfigEntries(workspaceFolder, entries);
+  saveConfigEntries(entries);
 }
 
 function getProgramNameFromEntry(entry) {
