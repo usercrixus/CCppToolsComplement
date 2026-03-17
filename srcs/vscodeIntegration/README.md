@@ -5,11 +5,14 @@ This folder contains the VSCode extension for the project.
 ## What it does
 
 The command `CCppToolsComplement: Generate and Debug Current File`:
-- runs the bundled `srcs.script.generateJson` Python module in an integrated terminal so you can answer the prompts
-- runs the bundled `srcs.script.generateMakefileFromJson`
-- runs the bundled `srcs.script.generateVscodeIntegrationFromJson`
-- finds the generated debug configuration that matches the current C or C++ file
-- starts the debugger with that generated configuration
+- opens a first quick-pick with the programs found in `.vscode/makefileConfig.json`
+- for each program, opens a second quick-pick with program-specific actions
+- supports `Launch program`, `Set args`, `Set compile flags`, and `Set link flags`
+- writes config changes back into `.vscode/makefileConfig.json`
+- regenerates Makefiles or VSCode launch integration after edits when needed
+- also offers a `Create new launch` action from the first picker
+- when `Create new launch` is selected, runs the bundled `srcs.script.generateJson` Python module in an integrated terminal so you can answer the prompts
+- then regenerates the Makefiles and VSCode integration files
 
 The command is also exposed from the editor title when a `c` or `cpp` file is active.
 
