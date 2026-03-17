@@ -10,11 +10,11 @@ function getWorkspaceFolder() {
   return folders[0];
 }
 
-function getExtentionAbsolutePath(context, relativePath) {
-  if (!context || !context.extensionPath) {
+function getExtentionAbsolutePath(extensionContext, relativePath) {
+  if (!extensionContext || !extensionContext.extensionPath) {
     throw new Error("Extension install path is unavailable.");
   }
-  const fullPath = path.join(context.extensionPath, relativePath);
+  const fullPath = path.join(extensionContext.extensionPath, relativePath);
   if (!fs.existsSync(fullPath)) {
     throw new Error(`Bundled Python resources not found at '${fullPath}'.`);
   }

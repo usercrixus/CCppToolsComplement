@@ -6,6 +6,7 @@
   "publisher": "achaisne",
   "files": [
     "extension.js",
+    "pythonRunner.js",
     "utils.js",
     "package.json",
     "README.md",
