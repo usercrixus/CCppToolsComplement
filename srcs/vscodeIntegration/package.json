@@ -8,6 +8,7 @@
     "extension.js",
     "pythonRunner.js",
     "utils.js",
+    "utilsJson.js",
     "package.json",
     "README.md",
     "resources/**",

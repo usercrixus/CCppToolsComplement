@@ -1,8 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const vscode = require("vscode");
-const { getWorkspaceFolder, getExtentionAbsolutePath } = require("./utils");
+const { getWorkspaceFolder, getExtentionAbsolutePath } = require("./utilsVsCode");
 const { runPythonModuleTask } = require("./pythonRunner");
+const { readJsonFile, writeJsonFile } = require("./utilsJson");
 
 const COMMAND_ID = "ccppToolsComplement.generateAndDebugFromCurrentFile";
 const CREATE_LAUNCH_ACTION = "ccppToolsComplement.createLaunch";
@@ -53,18 +54,6 @@ async function generateAndDebugFromCurrentFile() {
     }
     return;
   }
-}
-
-function readJsonFile(filePath) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, "utf8"));
-  } catch (error) {
-    throw new Error(`Unable to read JSON file '${filePath}'.`);
-  }
-}
-
-function writeJsonFile(filePath, value) {
-  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
 function getConfigPath(workspaceFolder) {
