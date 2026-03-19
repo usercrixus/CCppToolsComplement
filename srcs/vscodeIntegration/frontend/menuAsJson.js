@@ -52,14 +52,16 @@ function createSubAction(/* makefilejsonobject for this specific launch */) {
     ]
 }
 
-function createAction() {
-    new MenuNode(
-        "Launch program",
-        "Build if needed and start the debugger",
-        prototypeLaunchProgram,
-        [],
-        createSubAction()
-    )
+function createAction(/*the root makefilejsonobject*/) {
+    for (obj in makefilejsonobject) {
+        new MenuNode(
+            "Launch program",
+            "Build if needed and start the debugger",
+            prototypeLaunchProgram,
+            [],
+            createSubAction()
+        )
+    }
 }
 
 function createMenu() {
