@@ -31,7 +31,7 @@ function activate(context) {
   context.subscriptions.push(disposable);
 }
 
-function deactivate() {}
+function deactivate() { }
 
 async function generateAndDebugFromCurrentFile() {
   const workspaceFolder = getWorkspaceFolder();
@@ -39,7 +39,7 @@ async function generateAndDebugFromCurrentFile() {
   const pythonPathRoot = getExtentionAbsolutePath(extensionContext, BUNDLED_PYTHON_ROOT);
 
   while (true) {
-    const selection = await pickProgram(workspaceFolder);
+    const selection = await pickProgram(workspaceFolder, pythonBin, pythonPathRoot);
     if (selection === CREATE_LAUNCH_ACTION) {
       await createLaunch(workspaceFolder, pythonBin, pythonPathRoot);
       continue;
@@ -56,16 +56,23 @@ async function generateAndDebugFromCurrentFile() {
   }
 }
 
-function getConfigEntries() {
+async function getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot) {
   const configPath = getPathFromWorkspace(CONFIG_REL_PATH);
   if (!fs.existsSync(configPath)) {
     return [];
   }
-  const config = readJsonFile(configPath);
-  if (!Array.isArray(config)) {
-    throw new Error(`Config file '${configPath}' must contain a JSON array.`);
+  const status = await runPythonModuleTask(
+    workspaceFolder,
+    pythonBin,
+    pythonPathRoot,
+    `${PYTHON_MODULE_PREFIX}.verifyJson`,
+    false,
+    false
+  );
+  if (status !== 0) {
+    throw new Error(`Config file '${configPath}' contain errors.`);
   }
-  return config.filter((entry) => entry && typeof entry === "object");
+  return readJsonFile(configPath);
 }
 
 function saveConfigEntries(entries) {
@@ -73,8 +80,8 @@ function saveConfigEntries(entries) {
   writeJsonFile(configPath, entries);
 }
 
-async function pickProgram(workspaceFolder) {
-  const entries = getConfigEntries();
+async function pickProgram(workspaceFolder, pythonBin, pythonPathRoot) {
+  const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
   const items = entries.map((entry, index) => ({
     label: getProgramNameFromEntry(entry),
     description: getProgramDescription(entry),
@@ -97,7 +104,7 @@ async function pickProgram(workspaceFolder) {
 
 async function handleProgramActions(workspaceFolder, entryIndex, pythonBin, pythonPathRoot) {
   while (true) {
-    const entries = getConfigEntries();
+    const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
     const entry = entries[entryIndex];
     if (!entry) {
       throw new Error("Selected program no longer exists in makefileConfig.json.");
@@ -112,17 +119,17 @@ async function handleProgramActions(workspaceFolder, entryIndex, pythonBin, pyth
       return getLaunchConfiguration(workspaceFolder, getLaunchNameForEntry(entry));
     }
     if (action === ACTION_SET_ARGS) {
-      await updateRunArgs(workspaceFolder, entryIndex);
+      await updateRunArgs(workspaceFolder, entryIndex, pythonBin, pythonPathRoot);
       await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, false);
       continue;
     }
     if (action === ACTION_SET_COMPILE_FLAGS) {
-      await updateCompileFlags(workspaceFolder, entryIndex);
+      await updateCompileFlags(workspaceFolder, entryIndex, pythonBin, pythonPathRoot);
       await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, true);
       continue;
     }
     if (action === ACTION_SET_LINK_FLAGS) {
-      await updateLinkFlags(workspaceFolder, entryIndex);
+      await updateLinkFlags(workspaceFolder, entryIndex, pythonBin, pythonPathRoot);
       await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, true);
     }
   }
@@ -190,8 +197,8 @@ async function regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot,
   );
 }
 
-async function updateRunArgs(workspaceFolder, entryIndex) {
-  const entries = getConfigEntries();
+async function updateRunArgs(workspaceFolder, entryIndex, pythonBin, pythonPathRoot) {
+  const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
   const entry = entries[entryIndex];
   const value = await vscode.window.showInputBox({
     prompt: `Run args for ${getProgramNameFromEntry(entry)}`,
@@ -205,8 +212,8 @@ async function updateRunArgs(workspaceFolder, entryIndex) {
   saveConfigEntries(entries);
 }
 
-async function updateCompileFlags(workspaceFolder, entryIndex) {
-  const entries = getConfigEntries();
+async function updateCompileFlags(workspaceFolder, entryIndex, pythonBin, pythonPathRoot) {
+  const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
   const entry = entries[entryIndex];
   const profiles = Array.isArray(entry.compile_profiles) ? entry.compile_profiles.filter(isObject) : [];
   if (profiles.length === 0) {
@@ -248,8 +255,8 @@ async function updateCompileFlags(workspaceFolder, entryIndex) {
   saveConfigEntries(entries);
 }
 
-async function updateLinkFlags(workspaceFolder, entryIndex) {
-  const entries = getConfigEntries();
+async function updateLinkFlags(workspaceFolder, entryIndex, pythonBin, pythonPathRoot) {
+  const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
   const entry = entries[entryIndex];
   const value = await vscode.window.showInputBox({
     prompt: `Link flags for ${getProgramNameFromEntry(entry)}`,

@@ -11,7 +11,7 @@ function getPythonEnvironment(pythonPathRoot) {
   };
 }
 
-async function runPythonModuleTask(workspaceFolder, pythonBin, pythonPathRoot, moduleName, interactive) {
+async function runPythonModuleTask(workspaceFolder, pythonBin, pythonPathRoot, moduleName, interactive, throwOnError = true) {
   const task = new vscode.Task(
     { type: "shell" },
     workspaceFolder,
@@ -33,9 +33,10 @@ async function runPythonModuleTask(workspaceFolder, pythonBin, pythonPathRoot, m
 
   const execution = await vscode.tasks.executeTask(task);
   const exitCode = await waitForTaskExecution(execution);
-  if (exitCode !== 0) {
+  if (throwOnError && exitCode !== 0) {
     throw new Error(`Task '${moduleName}' failed with exit code ${exitCode}.`);
   }
+  return exitCode;
 }
 
 function waitForTaskExecution(execution) {
