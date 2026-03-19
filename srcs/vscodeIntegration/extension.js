@@ -56,10 +56,6 @@ async function generateAndDebugFromCurrentFile() {
   }
 }
 
-function saveConfigEntries(entries) {
-  const configPath = getPathFromWorkspace(CONFIG_REL_PATH);
-  writeJsonFile(configPath, entries);
-}
 
 async function pickProgram(workspaceFolder, pythonBin, pythonPathRoot) {
   const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
@@ -178,6 +174,79 @@ async function regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot,
   );
 }
 
+
+
+function getProgramNameFromEntry(entry) {
+  const outputMakefile = typeof entry.output_makefile === "string" ? entry.output_makefile : "";
+  const prefix = "Makefile.";
+  const name = path.basename(outputMakefile);
+  if (name.startsWith(prefix)) {
+    const programName = name.slice(prefix.length).trim();
+    if (programName && !programName.includes(".")) {
+      return programName;
+    }
+  }
+  return outputMakefile || "Unnamed program";
+}
+
+function getProgramDescription(entry) {
+  const binName = typeof entry.bin_name === "string" ? entry.bin_name : "";
+  const runArgs = getRunArgsDescription(entry);
+  if (!binName) {
+    return runArgs;
+  }
+  return `${binName} | ${runArgs}`;
+}
+
+function getRunArgsDescription(entry) {
+  return typeof entry.run_args === "string" && entry.run_args ? entry.run_args : "No args";
+}
+
+function getCompileFlagsSummary(entry) {
+  const profiles = Array.isArray(entry.compile_profiles) ? entry.compile_profiles.filter(isObject) : [];
+  if (profiles.length === 0) {
+    return "No compile profiles";
+  }
+  return profiles
+    .map((profile) => {
+      const compiler = typeof profile.compiler === "string" ? profile.compiler : "compiler";
+      const ext = typeof profile.ext === "string" ? profile.ext : "";
+      return `${compiler} ${ext}`.trim();
+    })
+    .join(", ");
+}
+
+function isObject(value) {
+  return Boolean(value) && typeof value === "object";
+}
+
+function getLaunchNameForEntry(entry) {
+  return `Debug graph ${getProgramNameFromEntry(entry)}`;
+}
+
+function getLaunchConfiguration(workspaceFolder, configurationName) {
+  const launchPath = path.join(workspaceFolder.uri.fsPath, LAUNCH_REL_PATH);
+  const launchJson = readJsonFile(launchPath);
+  const configurations = Array.isArray(launchJson.configurations) ? launchJson.configurations : [];
+  const configuration = configurations.find((item) => item && item.name === configurationName);
+  if (!configuration) {
+    throw new Error(`Launch configuration '${configurationName}' was not generated.`);
+  }
+  return configuration;
+}
+
+
+
+
+
+// THAT SHOULD BE PYTHON PROGRAMS. IT IS TO DELETE
+
+
+function saveConfigEntries(entries) {
+  const configPath = getPathFromWorkspace(CONFIG_REL_PATH);
+  writeJsonFile(configPath, entries);
+}
+
 async function updateRunArgs(workspaceFolder, entryIndex, pythonBin, pythonPathRoot) {
   const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
   const entry = entries[entryIndex];
@@ -251,64 +320,7 @@ async function updateLinkFlags(workspaceFolder, entryIndex, pythonBin, pythonPat
   saveConfigEntries(entries);
 }
 
-function getProgramNameFromEntry(entry) {
-  const outputMakefile = typeof entry.output_makefile === "string" ? entry.output_makefile : "";
-  const prefix = "Makefile.";
-  const name = path.basename(outputMakefile);
-  if (name.startsWith(prefix)) {
-    const programName = name.slice(prefix.length).trim();
-    if (programName && !programName.includes(".")) {
-      return programName;
-    }
-  }
-  return outputMakefile || "Unnamed program";
-}
 
-function getProgramDescription(entry) {
-  const binName = typeof entry.bin_name === "string" ? entry.bin_name : "";
-  const runArgs = getRunArgsDescription(entry);
-  if (!binName) {
-    return runArgs;
-  }
-  return `${binName} | ${runArgs}`;
-}
-
-function getRunArgsDescription(entry) {
-  return typeof entry.run_args === "string" && entry.run_args ? entry.run_args : "No args";
-}
-
-function getCompileFlagsSummary(entry) {
-  const profiles = Array.isArray(entry.compile_profiles) ? entry.compile_profiles.filter(isObject) : [];
-  if (profiles.length === 0) {
-    return "No compile profiles";
-  }
-  return profiles
-    .map((profile) => {
-      const compiler = typeof profile.compiler === "string" ? profile.compiler : "compiler";
-      const ext = typeof profile.ext === "string" ? profile.ext : "";
-      return `${compiler} ${ext}`.trim();
-    })
-    .join(", ");
-}
-
-function isObject(value) {
-  return Boolean(value) && typeof value === "object";
-}
-
-function getLaunchNameForEntry(entry) {
-  return `Debug graph ${getProgramNameFromEntry(entry)}`;
-}
-
-function getLaunchConfiguration(workspaceFolder, configurationName) {
-  const launchPath = path.join(workspaceFolder.uri.fsPath, LAUNCH_REL_PATH);
-  const launchJson = readJsonFile(launchPath);
-  const configurations = Array.isArray(launchJson.configurations) ? launchJson.configurations : [];
-  const configuration = configurations.find((item) => item && item.name === configurationName);
-  if (!configuration) {
-    throw new Error(`Launch configuration '${configurationName}' was not generated.`);
-  }
-  return configuration;
-}
 
 module.exports = {
   activate,
