@@ -1,3 +1,8 @@
+/**
+ * @typedef {import("../shared/prototype").CompileProfile} CompileProfile
+ * @typedef {import("../shared/prototype").MakefileConfigEntry} MakefileConfigEntry
+ */
+
 class MenuNode {
     constructor(label, description, runner = null, args = [], sub = []) {
         if (runner && sub.length > 0) {
@@ -11,7 +16,11 @@ class MenuNode {
     }
 }
 
-function createSubAction(/* makefilejsonobject for this specific launch */) {
+/**
+ * @param {MakefileConfigEntry} makefileJsonObject
+ * @returns {MenuNode[]}
+ */
+function createSubAction(makefileJsonObject) {
     return [
         new MenuNode(
             "Launch program",
@@ -52,21 +61,26 @@ function createSubAction(/* makefilejsonobject for this specific launch */) {
     ]
 }
 
-function createAction(/*the root makefilejsonobject*/) {
-    for (obj in makefilejsonobject) {
+/**
+ * @param {MakefileConfigEntry[]} makefileJsonObject
+ */
+function createAction(makefileJsonObject) {
+    for (const obj in makefileJsonObject) {
         new MenuNode(
             "Launch program",
             "Build if needed and start the debugger",
             prototypeLaunchProgram,
             [],
-            createSubAction()
+            createSubAction(makefileJsonObject[obj])
         )
     }
 }
 
 function createMenu() {
+    /** @type {MakefileConfigEntry[]} */
+    const makefileConfigJson = getMakefileConfigJson()
     return [
-        createAction(),
+        createAction(makefileConfigJson),
         new MenuNode(
             "Create new launch",
             "Add a new program entry and regenerate VS Code launch.json",
