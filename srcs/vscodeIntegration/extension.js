@@ -3,7 +3,7 @@ const path = require("path");
 const vscode = require("vscode");
 const { getWorkspaceFolder, getExtentionAbsolutePath, getPathFromWorkspace } = require("./utilsVsCode");
 const { runPythonModuleTask } = require("./pythonRunner");
-const { readJsonFile, writeJsonFile } = require("./utilsJson");
+const { getMakefileConfigJson, readJsonFile, writeJsonFile } = require("./utilsJson");
 
 const COMMAND_ID = "ccppToolsComplement.generateAndDebugFromCurrentFile";
 const CREATE_LAUNCH_ACTION = "ccppToolsComplement.createLaunch";
@@ -54,25 +54,6 @@ async function generateAndDebugFromCurrentFile() {
     }
     return;
   }
-}
-
-async function getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot) {
-  const configPath = getPathFromWorkspace(CONFIG_REL_PATH);
-  if (!fs.existsSync(configPath)) {
-    return [];
-  }
-  const status = await runPythonModuleTask(
-    workspaceFolder,
-    pythonBin,
-    pythonPathRoot,
-    `${PYTHON_MODULE_PREFIX}.verifyJson`,
-    false,
-    false
-  );
-  if (status !== 0) {
-    throw new Error(`Config file '${configPath}' contain errors.`);
-  }
-  return readJsonFile(configPath);
 }
 
 function saveConfigEntries(entries) {
