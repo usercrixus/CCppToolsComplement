@@ -1,58 +1,106 @@
+class MenuNode {
+    constructor(label, description, runner = null, args = [], sub = []) {
+        if (runner && sub.length > 0) {
+            throw new Error("A menu entry cannot define both a runner and a submenu.");
+        }
+        this.label = label;
+        this.description = description;
+        this.runner = runner;
+        this.args = args;
+        this.sub = sub;
+    }
+}
+
+function createSubAction(/* makefilejsonobject for this specific launch */) {
+    return [
+        new MenuNode(
+            "Launch program",
+            "Build if needed and start the debugger",
+            prototypeLaunchProgram,
+            [],
+            []
+        ),
+        new MenuNode(
+            "Set args",
+            "Current run arguments",
+            prototypeUpdateRunArgs,
+            [],
+            []
+        ),
+        new MenuNode(
+            "Set compile flags",
+            "Select the compile profile to edit",
+            null,
+            [],
+            [
+                new MenuNode(
+                    "Compile profile",
+                    "Current flags for this profile",
+                    prototypeUpdateCompileFlagsForProfile,
+                    [],
+                    []
+                )
+            ]
+        ),
+        new MenuNode(
+            "Set link flags",
+            "Current link flags",
+            prototypeUpdateLinkFlags,
+            [],
+            []
+        )
+    ]
+}
+
+function createAction() {
+    new MenuNode(
+        "Launch program",
+        "Build if needed and start the debugger",
+        prototypeLaunchProgram,
+        [],
+        createSubAction()
+    )
+}
+
+function createMenu() {
+    return [
+        createAction(),
+        new MenuNode(
+            "Create new launch",
+            "Add a new program entry and regenerate VS Code launch.json",
+            null,
+            [],
+            []
+        )
+    ]
+}
+
 function prototypeLaunchProgram() { }
 function prototypeUpdateRunArgs() { }
 function prototypeUpdateCompileFlagsForProfile() { }
 function prototypeUpdateLinkFlags() { }
 
-const PROGRAM_ACTION_MENU = [
-    {
-        label: "Launch program",
-        description: "Build if needed and start the debugger",
-        runner: prototypeLaunchProgram,
-        args: [],
-        sub: []
-    },
-    {
-        label: "Set args",
-        description: "Current run arguments",
-        runner: prototypeUpdateRunArgs,
-        args: [],
-        sub: []
-    },
-    {
-        label: "Set compile flags",
-        description: "Select the compile profile to edit",
-        runner: null,
-        args: [],
-        sub: [
-            {
-                label: "Compile profile",
-                description: "Current flags for this profile",
-                runner: prototypeUpdateCompileFlagsForProfile,
-                sub: []
-            }
-        ]
-    },
-    {
-        label: "Set link flags",
-        description: "Current link flags",
-        runner: prototypeUpdateLinkFlags,
-        args: [],
-        sub: []
-    }
+const PROGRAM_ACTION = [
+    new MenuNode(
+        "",
+        "",
+        null,
+        [],
+        PROGRAM_ACTION_MENU
+    ),
+    new MenuNode(
+        "Create new launch",
+        "Add a new program entry and regenerate VS Code launch.json",
+        null,
+        [],
+        []
+    )
 ];
 
-const PROGRAM_ACTION = [
-    {
-        label: "",
-        description: "",
-        runner: null,
-        args: [],
-        sub: PROGRAM_ACTION_MENU
-    }
-]
-
 module.exports = {
+    MenuNode,
     PROGRAM_ACTION_MENU,
+    PROGRAM_ACTION,
     prototypeLaunchProgram,
     prototypeUpdateRunArgs,
     prototypeUpdateCompileFlagsForProfile,
