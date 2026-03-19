@@ -80,23 +80,6 @@ function prototypeUpdateRunArgs() { }
 function prototypeUpdateCompileFlagsForProfile() { }
 function prototypeUpdateLinkFlags() { }
 
-const PROGRAM_ACTION = [
-    new MenuNode(
-        "",
-        "",
-        null,
-        [],
-        PROGRAM_ACTION_MENU
-    ),
-    new MenuNode(
-        "Create new launch",
-        "Add a new program entry and regenerate VS Code launch.json",
-        null,
-        [],
-        []
-    )
-];
-
 module.exports = {
     MenuNode,
     PROGRAM_ACTION_MENU,
