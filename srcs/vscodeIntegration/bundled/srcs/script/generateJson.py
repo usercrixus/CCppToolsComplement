@@ -172,10 +172,7 @@ def detect_compilers_by_ext(relative_sources_path: list[str]) -> dict[str, str]:
 def prompt_flags_by_compiler(compilers_by_ext: dict[str, str]) -> dict[str, str]:
     flags_by_compiler: dict[str, str] = {}
     for compiler in sorted(set(compilers_by_ext.values())):
-        flags = input(f"Enter flags for {compiler}: ").strip()
-        if not flags:
-            raise SystemExit(f"Flags are required for compiler '{compiler}'.")
-        flags_by_compiler[compiler] = flags
+        flags_by_compiler[compiler] = input(f"Enter flags for {compiler} (optional): ").strip()
     return flags_by_compiler
 
 
@@ -203,10 +200,7 @@ def pick_linker_compiler(compilers_by_ext: dict[str, str]) -> str:
 
 
 def prompt_link_flags(link_compiler: str) -> str:
-    link_flags = input(f"Enter link flags for {link_compiler}: ").strip()
-    if not link_flags:
-        raise SystemExit(f"Link flags are required for compiler '{link_compiler}'.")
-    return link_flags
+    return input(f"Enter link flags for {link_compiler} (optional): ").strip()
 
 
 def read_config_entries(config_path: Path) -> list[dict]:

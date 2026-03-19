@@ -1,0 +1,22 @@
+[
+  {
+    "output_makefile": "/home/chaisneau/Documents/CCppToolsComplement/test/cProgram/Makefile.main1",
+    "compile_profiles": [
+      {
+        "ext": ".c",
+        "compiler": "gcc",
+        "flags": ""
+      }
+    ],
+    "link_compiler": "gcc",
+    "link_flags": "",
+    "run_args": "",
+    "bin_name": "main1.out",
+    "rel_sources": [
+      "main1.c",
+      "one.c",
+      "subfolder/two.c"
+    ],
+    "obj_expr": "main1.o one.o subfolder/two.o"
+  }
+]

@@ -2,3 +2,5 @@
 *.d
 __pycache__/
 *.out
+test/cProgram/Makefile
+test/cProgram/Makefile.*
