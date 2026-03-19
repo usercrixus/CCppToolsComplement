@@ -63,6 +63,27 @@
           "ignoreFailures": true
         }
       ]
+    },
+    {
+      "name": "Debug graph main2",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/main2.out",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "graph: build main2 (debug)",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
     }
   ]
 }

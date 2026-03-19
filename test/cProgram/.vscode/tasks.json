@@ -48,6 +48,22 @@
       "problemMatcher": [
         "$gcc"
       ]
+    },
+    {
+      "label": "graph: build main2 (debug)",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "Makefile.main2",
+        "all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
     }
   ]
 }
