@@ -3,6 +3,8 @@
  * @typedef {import("../shared/prototype").MakefileConfigEntry} MakefileConfigEntry
  */
 
+const { getMakefileConfigJson } = require("./utilsJson");
+
 class MenuNode {
     constructor(label, description, runner = null, args = [], sub = []) {
         if (runner && sub.length > 0) {
@@ -21,6 +23,18 @@ class MenuNode {
  * @returns {MenuNode[]}
  */
 function createSubAction(makefileJsonObject) {
+    const runArgsDescription =
+        typeof makefileJsonObject.run_args === "string" && makefileJsonObject.run_args
+            ? makefileJsonObject.run_args
+            : "No args";
+    const linkFlagsDescription =
+        typeof makefileJsonObject.link_flags === "string" && makefileJsonObject.link_flags
+            ? makefileJsonObject.link_flags
+            : "(empty)";
+    const compileProfiles = Array.isArray(makefileJsonObject.compile_profiles)
+        ? makefileJsonObject.compile_profiles
+        : [];
+
     return [
         new MenuNode(
             "Launch program",
@@ -31,29 +45,27 @@ function createSubAction(makefileJsonObject) {
         ),
         new MenuNode(
             "Set args",
-            "Current run arguments",
+            runArgsDescription,
             prototypeUpdateRunArgs,
             [],
             []
         ),
         new MenuNode(
             "Set compile flags",
-            "Select the compile profile to edit",
+            compileProfiles.length > 0 ? "Select the compile profile to edit" : "No compile profiles",
             null,
             [],
-            [
-                new MenuNode(
-                    "Compile profile",
-                    "Current flags for this profile",
-                    prototypeUpdateCompileFlagsForProfile,
-                    [],
-                    []
-                )
-            ]
+            compileProfiles.map((compileProfile) => new MenuNode(
+                `${compileProfile.compiler} ${compileProfile.ext}`.trim(),
+                typeof compileProfile.flags === "string" && compileProfile.flags ? compileProfile.flags : "(empty)",
+                prototypeUpdateCompileFlagsForProfile,
+                [],
+                []
+            ))
         ),
         new MenuNode(
             "Set link flags",
-            "Current link flags",
+            linkFlagsDescription,
             prototypeUpdateLinkFlags,
             [],
             []
@@ -65,20 +77,25 @@ function createSubAction(makefileJsonObject) {
  * @param {MakefileConfigEntry[]} makefileJsonObject
  */
 function createAction(makefileJsonObject) {
-    for (const obj in makefileJsonObject) {
+    for (const entry of makefileJsonObject) {
         new MenuNode(
             "Launch program",
             "Build if needed and start the debugger",
             prototypeLaunchProgram,
             [],
-            createSubAction(makefileJsonObject[obj])
+            createSubAction(entry)
         )
     }
 }
 
-function createMenu() {
+/**
+ * @param {import("vscode").WorkspaceFolder} workspaceFolder
+ * @param {string} pythonBin
+ * @param {string} pythonPathRoot
+ */
+async function createMenu(workspaceFolder, pythonBin, pythonPathRoot) {
     /** @type {MakefileConfigEntry[]} */
-    const makefileConfigJson = getMakefileConfigJson()
+    const makefileConfigJson = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot)
     return [
         createAction(makefileConfigJson),
         new MenuNode(
