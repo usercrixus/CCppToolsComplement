@@ -10,7 +10,7 @@ function activate(context) {
   extensionContext = context;
   const disposable = vscode.commands.registerCommand(COMMAND_ID, async () => {
     try {
-      await generateAndDebugFromCurrentFile();
+      await rooting();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       vscode.window.showErrorMessage(message);
@@ -21,14 +21,11 @@ function activate(context) {
 
 function deactivate() { }
 
-async function generateAndDebugFromCurrentFile() {
+async function rooting() {
   const workspaceFolder = getWorkspaceFolder();
   const pythonBin = vscode.workspace.getConfiguration("ccppToolsComplement").get("pythonPath", "python3");
   const pythonPathRoot = getExtentionAbsolutePath(extensionContext, BACKEND_PYTHON_ROOT);
-  let didStartDebugging = false;
-  while (!didStartDebugging) {
-    didStartDebugging = await pickProgram(workspaceFolder, pythonBin, pythonPathRoot);
-  }
+  await pickProgram(workspaceFolder, pythonBin, pythonPathRoot);
 }
 
 module.exports = {

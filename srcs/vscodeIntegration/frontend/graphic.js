@@ -1,62 +1,65 @@
 const vscode = require("vscode");
 const { createMenu } = require("./menuAsJson");
-const { deleteEntry } = require("./bridge");
-
-const MENU_RESULT_BACK = Symbol("menuBack");
-const MENU_RESULT_REFRESH = Symbol("menuRefresh");
+const { launchProgram } = require("./bridge");
 
 async function pickProgram(workspaceFolder, pythonBin, pythonPathRoot) {
   const menu = await createMenu(workspaceFolder, pythonBin, pythonPathRoot);
-  return runMenu(menu, null, {
-    placeHolder: "Select a program",
-    includeBack: false
-  });
+  await runMenu(menu);
 }
 
-async function runMenu(menuNodes, context, options) {
-  const items = menuNodes.map((node) => ({
-    label: node.label,
-    description: node.description,
-    node
-  }));
+async function runMenu(rootMenuNodes) {
+  const menuStack = [
+    {
+      menuNodes: rootMenuNodes,
+      placeHolder: "Select a program"
+    }
+  ];
 
-  if (options.includeBack) {
-    items.push({
-      label: options.backLabel,
-      description: options.backDescription,
-      node: null
-    });
+  while (menuStack.length > 0) {
+    const currentMenu = menuStack[menuStack.length - 1];
+    const items = currentMenu.menuNodes.map((node) => ({
+      label: node.label,
+      description: node.description,
+      node
+    }));
+
+    if (menuStack.length > 1) {
+      items.push({
+        label: "Back",
+        description: "Return to the previous menu",
+        node: null
+      });
+    }
+
+    const selected = await pickQuickPickItem(items, currentMenu.placeHolder);
+
+    if (!selected.node) {
+      menuStack.pop();
+      continue;
+    }
+
+    if (Array.isArray(selected.node.sub) && selected.node.sub.length > 0) {
+      menuStack.push({
+        menuNodes: selected.node.sub,
+        placeHolder: selected.node.label
+      });
+      continue;
+    }
+
+    const shouldExitMenu = await executeMenuNode(selected.node);
+    if (shouldExitMenu) {
+      break;
+    }
   }
-
-  const selected = await pickQuickPickItem(items, options.placeHolder);
-
-  if (!selected.node) {
-    return MENU_RESULT_BACK;
-  }
-
-  if (Array.isArray(selected.node.sub) && selected.node.sub.length > 0) {
-    const childResult = await runMenu(selected.node.sub, context, {
-      placeHolder: selected.node.label,
-      includeBack: true,
-      backLabel: "Back",
-      backDescription: "Return to the previous menu"
-    });
-    return childResult === MENU_RESULT_BACK ? MENU_RESULT_REFRESH : childResult;
-  }
-
-  return executeMenuNode(selected.node);
 }
 
 async function executeMenuNode(node) {
   if (typeof node.runner !== "function") {
-    return MENU_RESULT_REFRESH;
+    return false;
   }
 
-  const result = await node.runner(node.args);
-  if (node.runner === deleteEntry) {
-    return MENU_RESULT_BACK;
-  }
-  return result;
+  await node.runner(node.args);
+  return node.runner === launchProgram;
 }
 
 async function pickQuickPickItem(items, placeHolder) {
