@@ -1,7 +1,7 @@
-clean frontend/extension.js
-possibly refactor tree with backend/frontend folder (back in python front in js)
+create delete option backend python script
 create input box / input logic from the front to replace the terminal input logic from the back
 update include before every launch
+
 
 ---------------
 
