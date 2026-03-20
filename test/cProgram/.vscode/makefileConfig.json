@@ -1,85 +1,5 @@
 [
   {
-    "output_makefile": "Makefile.okv1",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": ""
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "",
-    "bin_name": "okv1.out",
-    "rel_sources": [
-      "main1.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main1.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.testv002",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": ""
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "",
-    "bin_name": "testv002.out",
-    "rel_sources": [
-      "main1.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main1.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.ff",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": ""
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "",
-    "bin_name": "ff.out",
-    "rel_sources": [
-      "main1.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main1.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.main2",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": ""
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "",
-    "bin_name": "main2.out",
-    "rel_sources": [
-      "main2.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main2.o one.o subfolder/two.o"
-  },
-  {
     "output_makefile": "Makefile.john",
     "compile_profiles": [
       {
@@ -92,26 +12,6 @@
     "link_flags": "",
     "run_args": "",
     "bin_name": "john.out",
-    "rel_sources": [
-      "main2.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main2.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.main2test",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": ""
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "",
-    "bin_name": "main2test.out",
     "rel_sources": [
       "main2.c",
       "one.c",

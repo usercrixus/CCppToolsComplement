@@ -25,6 +25,26 @@ async function launchProgram(args) {
   return true;
 }
 
+
+async function deleteEntry(args) {
+  const [workspaceFolder, entryIndex, pythonBin, pythonPathRoot] = args;
+  if (!Number.isInteger(entryIndex) || entryIndex < 0) {
+    throw new Error("Selected program index is invalid.");
+  }
+  await runPythonModuleTask(
+    workspaceFolder,
+    pythonBin,
+    pythonPathRoot,
+    `${PYTHON_MODULE_PREFIX}.deleteEntry`,
+    false,
+    true,
+    [String(entryIndex)]
+  );
+  await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, true);
+}
+
+// TODO: FROM HERE VERIFY THAT WHAT SHOULD BE BACKEND IS EFFECTIVELY BACKEND
+
 async function updateRunArgs(args) {
   const [workspaceFolder, entryIndex, pythonBin, pythonPathRoot] = args;
   const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
@@ -79,17 +99,6 @@ async function updateLinkFlags(args) {
     throw new Error("Link flags update was cancelled.");
   }
   entry.link_flags = value.trim();
-  saveConfigEntries(entries);
-  await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, true);
-}
-
-async function deleteEntry(args) {
-  const [workspaceFolder, entryIndex, pythonBin, pythonPathRoot] = args;
-  const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
-  if (entryIndex < 0 || entryIndex >= entries.length) {
-    throw new Error("Selected program no longer exists in makefileConfig.json.");
-  }
-  entries.splice(entryIndex, 1);
   saveConfigEntries(entries);
   await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, true);
 }

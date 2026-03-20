@@ -35,6 +35,14 @@ python3 -m srcs.script.generateMakefileFromJson
 python3 -m srcs.script.generateVscodeIntegrationFromJson
 ```
 
+## 5) Delete one config entry
+
+Delete by `output_makefile`:
+
+```bash
+python3 -m srcs.script.deleteEntry src/Makefile.myprog
+```
+
 ## Base `makefileConfig.json` structure
 
 File: `.vscode/makefileConfig.json` (JSON array of entries)

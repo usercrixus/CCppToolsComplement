@@ -3,8 +3,8 @@ const { createMenu } = require("./menuAsJson");
 const { launchProgram } = require("./bridge");
 
 async function pickProgram(workspaceFolder, pythonBin, pythonPathRoot) {
-  const menu = await createMenu(workspaceFolder, pythonBin, pythonPathRoot);
-  await runMenu(menu);
+  const loadMenu = () => createMenu(workspaceFolder, pythonBin, pythonPathRoot);
+  await runMenu(loadMenu);
 }
 
 function getMenuItems(currentMenu, includeBack) {
@@ -23,8 +23,8 @@ function getMenuItems(currentMenu, includeBack) {
   return items;
 }
 
-async function runMenu(rootMenuNodes) {
-  const menuStack = createMenuStack(rootMenuNodes);
+async function runMenu(loadMenu) {
+  let menuStack = createMenuStack(await loadMenu());
   let shouldExitMenu = false;
   while (!shouldExitMenu && menuStack.length > 0) {
     const currentMenu = getCurrentMenu(menuStack);
@@ -35,7 +35,11 @@ async function runMenu(rootMenuNodes) {
     } else if (hasSubMenu(selected.node)) {
       openSubMenu(menuStack, selected.node);
     } else {
-      shouldExitMenu = await executeMenuNode(selected.node);
+      const actionResult = await executeMenuNode(selected.node);
+      if (actionResult.refreshMenu) {
+        menuStack = createMenuStack(await loadMenu());
+      }
+      shouldExitMenu = actionResult.shouldExitMenu;
     }
   }
 }
@@ -72,22 +76,22 @@ function openSubMenu(menuStack, node) {
 
 async function executeMenuNode(node) {
   if (typeof node.runner !== "function") {
-    return false;
+    return { shouldExitMenu: false, refreshMenu: false };
   }
-
   await node.runner(node.args);
-  return node.runner === launchProgram;
+  return {
+    shouldExitMenu: node.runner === launchProgram,
+    refreshMenu: node.runner !== launchProgram
+  };
 }
 
 async function pickQuickPickItem(items, placeHolder) {
   const selected = await vscode.window.showQuickPick(items, {
     placeHolder
   });
-
   if (!selected) {
     throw new Error("Menu selection was cancelled.");
   }
-
   return selected;
 }
 

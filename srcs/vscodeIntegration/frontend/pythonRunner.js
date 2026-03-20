@@ -11,13 +11,21 @@ function getPythonEnvironment(pythonPathRoot) {
   };
 }
 
-async function runPythonModuleTask(workspaceFolder, pythonBin, pythonPathRoot, moduleName, interactive, throwOnError = true) {
+async function runPythonModuleTask(
+  workspaceFolder,
+  pythonBin,
+  pythonPathRoot,
+  moduleName,
+  interactive,
+  throwOnError = true,
+  moduleArgs = []
+) {
   const task = new vscode.Task(
     { type: "shell" },
     workspaceFolder,
     `CCppToolsComplement: ${moduleName}`,
     "CCppToolsComplement",
-    new vscode.ShellExecution(pythonBin, ["-m", moduleName], {
+    new vscode.ShellExecution(pythonBin, ["-m", moduleName, ...moduleArgs], {
       cwd: workspaceFolder.uri.fsPath,
       env: getPythonEnvironment(pythonPathRoot)
     })

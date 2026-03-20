@@ -2,12 +2,12 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "graph: build okv1 (debug)",
+      "label": "graph: build john (debug)",
       "type": "shell",
       "command": "make",
       "args": [
         "-f",
-        "Makefile.okv1",
+        "Makefile.john",
         "all"
       ],
       "options": {
@@ -18,28 +18,12 @@
       ]
     },
     {
-      "label": "graph: build testv002 (debug)",
+      "label": "graph: build main2test (debug)",
       "type": "shell",
       "command": "make",
       "args": [
         "-f",
-        "Makefile.testv002",
-        "all"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    },
-    {
-      "label": "graph: build ff (debug)",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "-f",
-        "Makefile.ff",
+        "Makefile.main2test",
         "all"
       ],
       "options": {
@@ -66,12 +50,12 @@
       ]
     },
     {
-      "label": "graph: build john (debug)",
+      "label": "graph: build ff (debug)",
       "type": "shell",
       "command": "make",
       "args": [
         "-f",
-        "Makefile.john",
+        "Makefile.ff",
         "all"
       ],
       "options": {
@@ -82,12 +66,28 @@
       ]
     },
     {
-      "label": "graph: build main2test (debug)",
+      "label": "graph: build testv002 (debug)",
       "type": "shell",
       "command": "make",
       "args": [
         "-f",
-        "Makefile.main2test",
+        "Makefile.testv002",
+        "all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "graph: build okv1 (debug)",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "Makefile.okv1",
         "all"
       ],
       "options": {
