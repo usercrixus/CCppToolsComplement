@@ -62,7 +62,7 @@ async function createLaunch(args) {
 async function launchProgram(args) {
   const [workspaceFolder, entry, pythonBin, pythonPathRoot] = args;
   await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, false);
-  const launchConfig = getLaunchConfiguration(workspaceFolder, getLaunchNameForEntry(entry));
+  const launchConfig = getLaunchConfiguration(workspaceFolder, getProgramNameFromEntry(entry));
   const started = await vscode.debug.startDebugging(workspaceFolder, launchConfig);
   if (!started) {
     throw new Error("VSCode did not start the debugger.");
@@ -132,10 +132,6 @@ function getProgramNameFromEntry(entry) {
     }
   }
   return outputMakefile || "Unnamed program";
-}
-
-function getLaunchNameForEntry(entry) {
-  return getProgramNameFromEntry(entry);
 }
 
 function getCompileProfileLabel(profile) {
