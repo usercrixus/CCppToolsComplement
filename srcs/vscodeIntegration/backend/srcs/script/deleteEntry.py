@@ -55,7 +55,7 @@ def delete_launch_entry(program_name: str, workspace_root: Path) -> None:
     configurations = launch_json.get("configurations", [])
     if not isinstance(configurations, list):
         configurations = []
-    launch_name = f"Debug graph {program_name}"
+    launch_name = program_name
     launch_json["configurations"] = [
         configuration
         for configuration in configurations

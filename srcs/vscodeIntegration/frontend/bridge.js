@@ -8,9 +8,54 @@ const CONFIG_REL_PATH = path.join(".vscode", "makefileConfig.json");
 const LAUNCH_REL_PATH = path.join(".vscode", "launch.json");
 const PYTHON_MODULE_PREFIX = "srcs.script";
 
-async function createLaunch(args) {
+async function generateJson(args) {
   const [workspaceFolder, pythonBin, pythonPathRoot] = args;
-  await runPythonModuleTask(workspaceFolder, pythonBin, pythonPathRoot, `${PYTHON_MODULE_PREFIX}.generateJson`, true);
+  await runPythonModuleTask(
+    workspaceFolder,
+    pythonBin,
+    pythonPathRoot,
+    `${PYTHON_MODULE_PREFIX}.generateJson`,
+    true
+  );
+}
+
+async function verifyJson(args, throwOnError = true) {
+  const [workspaceFolder, pythonBin, pythonPathRoot] = args;
+  return runPythonModuleTask(
+    workspaceFolder,
+    pythonBin,
+    pythonPathRoot,
+    `${PYTHON_MODULE_PREFIX}.verifyJson`,
+    false,
+    throwOnError
+  );
+}
+
+async function generateMakefile(args) {
+  const [workspaceFolder, pythonBin, pythonPathRoot] = args;
+  await runPythonModuleTask(
+    workspaceFolder,
+    pythonBin,
+    pythonPathRoot,
+    `${PYTHON_MODULE_PREFIX}.generateMakefile`,
+    false
+  );
+}
+
+async function generateVscodeIntegration(args) {
+  const [workspaceFolder, pythonBin, pythonPathRoot] = args;
+  await runPythonModuleTask(
+    workspaceFolder,
+    pythonBin,
+    pythonPathRoot,
+    `${PYTHON_MODULE_PREFIX}.generateVscodeIntegration`,
+    false
+  );
+}
+
+async function createLaunch(args) {
+  await generateJson(args);
+  const [workspaceFolder, pythonBin, pythonPathRoot] = args;
   await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, true);
 }
 
@@ -59,93 +104,21 @@ async function deleteAllMakefiles(args) {
 }
 
 async function generateAllMakefiles(args) {
-  const [workspaceFolder, pythonBin, pythonPathRoot] = args;
-  await runPythonModuleTask(
-    workspaceFolder,
-    pythonBin,
-    pythonPathRoot,
-    `${PYTHON_MODULE_PREFIX}.generateMakefile`,
-    false
-  );
+  await generateMakefile(args);
 }
 
 // TODO: FROM HERE VERIFY THAT WHAT SHOULD BE BACKEND IS EFFECTIVELY BACKEND
 
 async function updateRunArgs(args) {
-  const [workspaceFolder, entryIndex, pythonBin, pythonPathRoot] = args;
-  const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
-  const entry = entries[entryIndex];
-  const value = await vscode.window.showInputBox({
-    prompt: `Run args for ${getProgramNameFromEntry(entry)}`,
-    value: typeof entry.run_args === "string" ? entry.run_args : "",
-    placeHolder: "--verbose 42"
-  });
-  if (value === undefined) {
-    throw new Error("Run args update was cancelled.");
-  }
-  entry.run_args = value.trim();
-  saveConfigEntries(entries);
-  await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, false);
+  // TODO
 }
 
 async function updateCompileFlagsForProfile(args) {
-  const [workspaceFolder, entryIndex, profileIndex, pythonBin, pythonPathRoot] = args;
-  const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
-  const entry = entries[entryIndex];
-  const originalProfiles = Array.isArray(entry.compile_profiles) ? entry.compile_profiles : [];
-  const profile = originalProfiles[profileIndex];
-  if (!isObject(profile)) {
-    throw new Error("Compile profile could not be updated.");
-  }
-
-  const value = await vscode.window.showInputBox({
-    prompt: `Compile flags for ${getCompileProfileLabel(profile)}`,
-    value: typeof profile.flags === "string" ? profile.flags : "",
-    placeHolder: "-Wall -Wextra -Werror -MMD -MP"
-  });
-  if (value === undefined) {
-    throw new Error("Compile flags update was cancelled.");
-  }
-
-  originalProfiles[profileIndex].flags = value.trim();
-  saveConfigEntries(entries);
-  await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, true);
+  // TODO
 }
 
 async function updateLinkFlags(args) {
-  const [workspaceFolder, entryIndex, pythonBin, pythonPathRoot] = args;
-  const entries = await getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot);
-  const entry = entries[entryIndex];
-  const value = await vscode.window.showInputBox({
-    prompt: `Link flags for ${getProgramNameFromEntry(entry)}`,
-    value: typeof entry.link_flags === "string" ? entry.link_flags : "",
-    placeHolder: "-g3 -O0"
-  });
-  if (value === undefined) {
-    throw new Error("Link flags update was cancelled.");
-  }
-  entry.link_flags = value.trim();
-  saveConfigEntries(entries);
-  await regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, true);
-}
-
-async function regenerateLaunchFiles(workspaceFolder, pythonBin, pythonPathRoot, regenerateMakefiles) {
-  if (regenerateMakefiles) {
-    await runPythonModuleTask(
-      workspaceFolder,
-      pythonBin,
-      pythonPathRoot,
-      `${PYTHON_MODULE_PREFIX}.generateMakefile`,
-      false
-    );
-  }
-  await runPythonModuleTask(
-    workspaceFolder,
-    pythonBin,
-    pythonPathRoot,
-    `${PYTHON_MODULE_PREFIX}.generateVscodeIntegration`,
-    false
-  );
+  // TODO
 }
 
 function getProgramNameFromEntry(entry) {
@@ -161,14 +134,14 @@ function getProgramNameFromEntry(entry) {
   return outputMakefile || "Unnamed program";
 }
 
+function getLaunchNameForEntry(entry) {
+  return getProgramNameFromEntry(entry);
+}
+
 function getCompileProfileLabel(profile) {
   const compiler = typeof profile.compiler === "string" ? profile.compiler : "compiler";
   const ext = typeof profile.ext === "string" ? profile.ext : "";
   return `${compiler} ${ext}`.trim();
-}
-
-function getLaunchNameForEntry(entry) {
-  return `Debug graph ${getProgramNameFromEntry(entry)}`;
 }
 
 function getLaunchConfiguration(workspaceFolder, configurationName) {
@@ -182,17 +155,12 @@ function getLaunchConfiguration(workspaceFolder, configurationName) {
   return configuration;
 }
 
-function saveConfigEntries(entries) {
-  const configPath = getPathFromWorkspace(CONFIG_REL_PATH);
-  writeJsonFile(configPath, entries);
-}
-
-function isObject(value) {
-  return Boolean(value) && typeof value === "object";
-}
-
 module.exports = {
   createLaunch,
+  generateJson,
+  verifyJson,
+  generateMakefile,
+  generateVscodeIntegration,
   launchProgram,
   updateRunArgs,
   updateCompileFlagsForProfile,

@@ -78,7 +78,7 @@ def make_task(program: str, output_makefile: Path, cwd_vscode: str) -> JsonObjec
 
 def make_launch(program: str, launch_args: list[str], program_vscode: str, cwd_vscode: str) -> JsonObject:
     return {
-        "name": f"Debug graph {program}",
+        "name": program,
         "type": "cppdbg",
         "request": "launch",
         "program": program_vscode,
