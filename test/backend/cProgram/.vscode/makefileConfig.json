@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "output_makefile": "Makefile.main02",
+    "parent_makefile": "Makefile",
+    "compile_profiles": [
+      {
+        "ext": ".c",
+        "compiler": "gcc",
+        "flags": ""
+      }
+    ],
+    "link_compiler": "gcc",
+    "link_flags": "",
+    "run_args": "",
+    "bin_name": "main02.out",
+    "rel_sources": [
+      "main1.c",
+      "one.c",
+      "subfolder/two.c"
+    ],
+    "obj_expr": "main1.o one.o subfolder/two.o"
+  }
+]

@@ -7,7 +7,8 @@ const {
   deleteEntryHelper,
   updateRunArgsHelper,
   updateCompileFlagsForProfileHelper,
-  updateLinkFlagsHelper
+  updateLinkFlagsHelper,
+  deleteAllMakefiles
 } = require("./bridge");
 const { getMakefileConfigJson } = require("./utilsJson");
 const { getProgramNameFromEntry, getLaunchConfiguration } = require("./utilsOthers");
@@ -204,8 +205,10 @@ async function launchProgram(args) {
 }
 
 async function deleteEntry(args) {
+  const [workspaceFolder, , pythonBin, pythonPathRoot] = args;
   await deleteEntryHelper(args);
-  await generateAllMakefiles(args);
+  await deleteAllMakefiles([workspaceFolder, pythonBin, pythonPathRoot]);
+  await generateAllMakefiles([workspaceFolder, pythonBin, pythonPathRoot]);
 }
 
 async function generateAllMakefiles(args) {
