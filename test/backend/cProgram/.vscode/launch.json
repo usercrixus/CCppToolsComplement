@@ -69,7 +69,11 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/test001.out",
-      "args": [],
+      "args": [
+        "rerw",
+        "ere",
+        "ere"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],

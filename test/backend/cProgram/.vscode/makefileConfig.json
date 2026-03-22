@@ -70,7 +70,7 @@
     ],
     "link_compiler": "gcc",
     "link_flags": "",
-    "run_args": "",
+    "run_args": "rerw ere ere ",
     "bin_name": "test001.out",
     "rel_sources": [
       "main2.c",
