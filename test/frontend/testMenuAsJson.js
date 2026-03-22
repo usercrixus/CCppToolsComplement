@@ -24,7 +24,18 @@ Module._load = function patchedLoad(request, parent, isMain) {
         };
     }
 
-    if (request === "./bridge" && parent && parent.filename.endsWith(path.join("frontend", "menuAsJson.js"))) {
+    if (request === "./action" && parent && parent.filename.endsWith(path.join("frontend", "menuAsJson.js"))) {
+        return {
+            createLaunch: async () => true,
+            launchProgram: async () => true,
+            updateRunArgs: async () => true,
+            updateCompileFlagsForProfile: async () => true,
+            updateLinkFlags: async () => true,
+            deleteEntry: async () => true
+        };
+    }
+
+    if (request === "./utilsOthers" && parent && parent.filename.endsWith(path.join("frontend", "menuAsJson.js"))) {
         return {
             getProgramNameFromEntry: (entry) => {
                 const outputMakefile = typeof entry.output_makefile === "string" ? entry.output_makefile : "";

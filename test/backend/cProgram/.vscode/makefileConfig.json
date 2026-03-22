@@ -58,5 +58,25 @@
       "subfolder/two.c"
     ],
     "obj_expr": "main2.o one.o subfolder/two.o"
+  },
+  {
+    "output_makefile": "Makefile.test001",
+    "compile_profiles": [
+      {
+        "ext": ".c",
+        "compiler": "gcc",
+        "flags": ""
+      }
+    ],
+    "link_compiler": "gcc",
+    "link_flags": "",
+    "run_args": "",
+    "bin_name": "test001.out",
+    "rel_sources": [
+      "main2.c",
+      "one.c",
+      "subfolder/two.c"
+    ],
+    "obj_expr": "main2.o one.o subfolder/two.o"
   }
 ]

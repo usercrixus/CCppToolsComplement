@@ -39,6 +39,5 @@ async function getMakefileConfigJson(workspaceFolder, pythonBin, pythonPathRoot)
 
 module.exports = {
   getMakefileConfigJson,
-  readJsonFile,
-  writeJsonFile
+  readJsonFile
 };

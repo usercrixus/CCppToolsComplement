@@ -10,9 +10,9 @@ const {
     updateRunArgs,
     updateCompileFlagsForProfile,
     updateLinkFlags,
-    deleteEntry,
-    getProgramNameFromEntry
-} = require("./bridge");
+    deleteEntry
+} = require("./action");
+const { getProgramNameFromEntry } = require("./utilsOthers");
 
 class MenuNode {
     constructor(label, description, runner = null, args = [], sub = []) {
@@ -136,6 +136,5 @@ async function createMenu(workspaceFolder, pythonBin, pythonPathRoot) {
 }
 
 module.exports = {
-    MenuNode,
     createMenu,
 };
