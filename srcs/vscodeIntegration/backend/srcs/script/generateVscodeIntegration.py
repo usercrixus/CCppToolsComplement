@@ -67,7 +67,7 @@ def vscode_path_for_fs_path(path: Path, workspace: Path) -> str:
 
 def make_task(program: str, output_makefile: Path, cwd_vscode: str) -> JsonObject:
     return {
-        "label": f"graph: build {program} (debug)",
+        "label": f"build {program} (debug)",
         "type": "shell",
         "command": "make",
         "args": ["-f", output_makefile.name, "all"],
@@ -89,7 +89,7 @@ def make_launch(program: str, launch_args: list[str], program_vscode: str, cwd_v
         "externalConsole": False,
         "MIMode": "gdb",
         "miDebuggerPath": "/usr/bin/gdb",
-        "preLaunchTask": f"graph: build {program} (debug)",
+        "preLaunchTask": f"build {program} (debug)",
         "setupCommands": [
             {
                 "description": "Enable pretty-printing for gdb",

@@ -1,37 +1,4 @@
 {
   "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "graph: build main (debug)",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "-f",
-        "Makefile.main",
-        "all"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    },
-    {
-      "label": "graph: build main00001 (debug)",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "-f",
-        "Makefile.main00001",
-        "all"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    }
-  ]
+  "tasks": []
 }

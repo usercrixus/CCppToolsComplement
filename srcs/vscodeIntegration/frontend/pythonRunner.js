@@ -1,3 +1,4 @@
+const { execFile } = require("child_process");
 const path = require("path");
 const vscode = require("vscode");
 
@@ -20,6 +21,20 @@ async function runPythonModuleTask(
   throwOnError = true,
   moduleArgs = []
 ) {
+  if (!interactive) {
+    const exitCode = await runPythonModuleProcess(
+      workspaceFolder,
+      pythonBin,
+      pythonPathRoot,
+      moduleName,
+      moduleArgs
+    );
+    if (throwOnError && exitCode !== 0) {
+      throw new Error(`Task '${moduleName}' failed with exit code ${exitCode}.`);
+    }
+    return exitCode;
+  }
+
   const task = new vscode.Task(
     { type: "shell" },
     workspaceFolder,
@@ -45,6 +60,36 @@ async function runPythonModuleTask(
     throw new Error(`Task '${moduleName}' failed with exit code ${exitCode}.`);
   }
   return exitCode;
+}
+
+function runPythonModuleProcess(workspaceFolder, pythonBin, pythonPathRoot, moduleName, moduleArgs) {
+  return new Promise((resolve, reject) => {
+    execFile(
+      pythonBin,
+      ["-m", moduleName, ...moduleArgs],
+      {
+        cwd: workspaceFolder.uri.fsPath,
+        env: getPythonEnvironment(pythonPathRoot)
+      },
+      (error, stdout, stderr) => {
+        if (!error) {
+          resolve(0);
+          return;
+        }
+        if (typeof stdout === "string" && stdout.trim()) {
+          console.log(stdout.trim());
+        }
+        if (typeof stderr === "string" && stderr.trim()) {
+          console.error(stderr.trim());
+        }
+        if (typeof error.code === "number") {
+          resolve(error.code);
+          return;
+        }
+        reject(error);
+      }
+    );
+  });
 }
 
 function waitForTaskExecution(execution) {

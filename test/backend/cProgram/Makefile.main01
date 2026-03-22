@@ -1,9 +1,9 @@
 COMPILER_GCC = gcc
-FLAGS_GCC = -Wall -Wextra -Werror -g3 -O0
+FLAGS_GCC = -g3 -O0
 LINK_COMPILER = $(COMPILER_GCC)
-LINK_FLAGS = -Wall -g3 -O0
-ARGS = try this string
-BIN = main1.out
+LINK_FLAGS = -g3 -O0
+ARGS = 
+BIN = main01.out
 SRCS = main1.c one.c subfolder/two.c
 OBJS = main1.o one.o subfolder/two.o
 DEPS = $(OBJS:.o=.d)

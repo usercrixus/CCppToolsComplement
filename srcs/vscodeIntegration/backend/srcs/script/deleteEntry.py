@@ -35,13 +35,24 @@ def get_program_name(entry: dict[str, Any]) -> str | None:
     return getProgramNameFromMakefileName(Path(output_makefile))
 
 
+def delete_removed_makefile(entry: dict[str, Any], workspace_root: Path) -> None:
+    output_makefile = entry.get("output_makefile")
+    if not isinstance(output_makefile, str) or not output_makefile.strip():
+        return
+    makefile_path = (workspace_root / output_makefile).resolve()
+    if not makefile_path.exists() or not makefile_path.is_file():
+        return
+    makefile_path.unlink()
+    print(f"Deleted {makefile_path}")
+
+
 def delete_task_entry(program_name: str, workspace_root: Path) -> None:
     tasks_path = (workspace_root / TASKS_REL_PATH).resolve()
     tasks_json = read_json_object(tasks_path, {"version": "2.0.0", "tasks": []})
     tasks = tasks_json.get("tasks", [])
     if not isinstance(tasks, list):
         tasks = []
-    task_label = f"graph: build {program_name} (debug)"
+    task_label = f"build {program_name} (debug)"
     tasks_json["tasks"] = [
         task for task in tasks if not (isinstance(task, dict) and task.get("label") == task_label)
     ]
@@ -92,6 +103,7 @@ def deleteEntry() -> None:
     write_config_entries(config_path, entries)
     print(f"Updated {config_path}")
     print(f"Removed entry at index {args.entry_index}")
+    delete_removed_makefile(removed_entry, workspace_root)
 
     program_name = get_program_name(removed_entry)
     if program_name:

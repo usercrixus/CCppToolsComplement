@@ -7,8 +7,7 @@ const {
   deleteEntryHelper,
   updateRunArgsHelper,
   updateCompileFlagsForProfileHelper,
-  updateLinkFlagsHelper,
-  deleteAllMakefiles
+  updateLinkFlagsHelper
 } = require("./bridge");
 const { getMakefileConfigJson } = require("./utilsJson");
 const { getProgramNameFromEntry, getLaunchConfiguration } = require("./utilsOthers");
@@ -206,7 +205,6 @@ async function launchProgram(args) {
 
 async function deleteEntry(args) {
   await deleteEntryHelper(args);
-  await deleteAllMakefiles(args);
   await generateAllMakefiles(args);
 }
 

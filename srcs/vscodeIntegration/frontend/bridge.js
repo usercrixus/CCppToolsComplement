@@ -128,17 +128,6 @@ async function updateLinkFlagsHelper(args) {
   );
 }
 
-async function deleteAllMakefiles(args) {
-  const [workspaceFolder, pythonBin, pythonPathRoot] = args;
-  await runPythonModuleTask(
-    workspaceFolder,
-    pythonBin,
-    pythonPathRoot,
-    `${PYTHON_MODULE_PREFIX}.deleteAllMakeFiles`,
-    false
-  );
-}
-
 module.exports = {
   generateJson,
   verifyJson,
@@ -147,6 +136,5 @@ module.exports = {
   deleteEntryHelper,
   updateRunArgsHelper,
   updateCompileFlagsForProfileHelper,
-  updateLinkFlagsHelper,
-  deleteAllMakefiles
+  updateLinkFlagsHelper
 };
