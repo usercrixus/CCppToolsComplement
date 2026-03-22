@@ -2,77 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "maintest",
+      "name": "main1",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/maintest.out",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/gdb",
-      "preLaunchTask": "graph: build maintest (debug)",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "test2",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/test2.out",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/gdb",
-      "preLaunchTask": "graph: build test2 (debug)",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "test3",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/test3.out",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/gdb",
-      "preLaunchTask": "graph: build test3 (debug)",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "test001",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/test001.out",
+      "program": "${workspaceFolder}/main1.out",
       "args": [
-        "rerw",
-        "ere",
-        "ere"
+        "try",
+        "this",
+        "string"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
@@ -80,7 +17,7 @@
       "externalConsole": false,
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
-      "preLaunchTask": "graph: build test001 (debug)",
+      "preLaunchTask": "graph: build main1 (debug)",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",

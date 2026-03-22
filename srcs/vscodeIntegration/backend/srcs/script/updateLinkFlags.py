@@ -19,7 +19,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "new_link_flags",
-        type=str,
+        nargs=argparse.REMAINDER,
         help="New link flags string.",
     )
     return parser.parse_args()
@@ -31,15 +31,16 @@ def updateLinkFlags() -> None:
     config_path = (workspace_root / CONFIG_REL_PATH).resolve()
     entries = read_config_entries(config_path)
     entry = getEntryByIndex(entries, args.entry_index)
+    new_link_flags = " ".join(args.new_link_flags)
 
     previous_link_flags = entry.get("link_flags", "")
-    entry["link_flags"] = args.new_link_flags
+    entry["link_flags"] = new_link_flags
     write_config_entries(config_path, entries)
 
     print(f"Updated {config_path}")
     print(
         f"Updated link_flags for entry {args.entry_index}: "
-        f"{previous_link_flags!r} -> {args.new_link_flags!r}"
+        f"{previous_link_flags!r} -> {new_link_flags!r}"
     )
 
 

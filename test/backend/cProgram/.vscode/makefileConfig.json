@@ -1,82 +1,22 @@
 [
   {
-    "output_makefile": "Makefile.maintest",
+    "output_makefile": "Makefile.main1",
     "compile_profiles": [
       {
         "ext": ".c",
         "compiler": "gcc",
-        "flags": ""
+        "flags": "-Wall -Wextra -Werror"
       }
     ],
     "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "",
-    "bin_name": "maintest.out",
+    "link_flags": "-Wall -Werror",
+    "run_args": "try this string",
+    "bin_name": "main1.out",
     "rel_sources": [
-      "main2.c",
+      "main1.c",
       "one.c",
       "subfolder/two.c"
     ],
-    "obj_expr": "main2.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.test2",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": ""
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "",
-    "bin_name": "test2.out",
-    "rel_sources": [
-      "main2.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main2.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.test3",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": ""
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "",
-    "bin_name": "test3.out",
-    "rel_sources": [
-      "main2.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main2.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.test001",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": ""
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "",
-    "run_args": "rerw ere ere ",
-    "bin_name": "test001.out",
-    "rel_sources": [
-      "main2.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main2.o one.o subfolder/two.o"
+    "obj_expr": "main1.o one.o subfolder/two.o"
   }
 ]

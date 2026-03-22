@@ -2,60 +2,12 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "graph: build maintest (debug)",
+      "label": "graph: build main1 (debug)",
       "type": "shell",
       "command": "make",
       "args": [
         "-f",
-        "Makefile.maintest",
-        "all"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    },
-    {
-      "label": "graph: build test2 (debug)",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "-f",
-        "Makefile.test2",
-        "all"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    },
-    {
-      "label": "graph: build test3 (debug)",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "-f",
-        "Makefile.test3",
-        "all"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    },
-    {
-      "label": "graph: build test001 (debug)",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "-f",
-        "Makefile.test001",
+        "Makefile.main1",
         "all"
       ],
       "options": {

@@ -25,7 +25,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "new_flags",
-        type=str,
+        nargs=argparse.REMAINDER,
         help="New compile flags string.",
     )
     return parser.parse_args()
@@ -50,15 +50,16 @@ def updateCompileFlagsForProfile() -> None:
     entries = read_config_entries(config_path)
     entry = getEntryByIndex(entries, args.entry_index)
     compile_profile = getCompileProfile(entry, args.profile_index)
+    new_flags = " ".join(args.new_flags)
 
     previous_flags = compile_profile.get("flags", "")
-    compile_profile["flags"] = args.new_flags
+    compile_profile["flags"] = new_flags
     write_config_entries(config_path, entries)
 
     print(f"Updated {config_path}")
     print(
         f"Updated compile profile flags for entry {args.entry_index}, profile {args.profile_index}: "
-        f"{previous_flags!r} -> {args.new_flags!r}"
+        f"{previous_flags!r} -> {new_flags!r}"
     )
 
 

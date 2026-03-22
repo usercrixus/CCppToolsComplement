@@ -19,7 +19,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "new_args",
-        type=str,
+        nargs=argparse.REMAINDER,
         help="New run arguments string.",
     )
     return parser.parse_args()
@@ -30,15 +30,16 @@ def updateRunArgs() -> None:
     config_path = (workspace_root / CONFIG_REL_PATH).resolve()
     entries = read_config_entries(config_path)
     entry = getEntryByIndex(entries, args.entry_index)
+    new_args = " ".join(args.new_args)
 
     previous_run_args = entry.get("run_args", "")
-    entry["run_args"] = args.new_args
+    entry["run_args"] = new_args
     write_config_entries(config_path, entries)
 
     print(f"Updated {config_path}")
     print(
         f"Updated run_args for entry {args.entry_index}: "
-        f"{previous_run_args!r} -> {args.new_args!r}"
+        f"{previous_run_args!r} -> {new_args!r}"
     )
 
 
