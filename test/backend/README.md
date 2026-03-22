@@ -4,17 +4,17 @@ Run commands from the project root.
 
 ## Integration test for script generation
 
-`test/script/main.py` exercises the full script pipeline against the sample C programs in `test/cProgram`.
+`test/backend/script/main.py` exercises the full script pipeline against the sample C programs in `test/backend/cProgram`.
 
 Run it with:
 
 ```bash
-python3 test/script/main.py
+python3 test/backend/script/main.py
 ```
 
 What it does:
-- removes generated artifacts from `.vscode/` and `test/cProgram/`
-- updates `test/cProgram/subfolder/header.h`
+- removes generated artifacts from `.vscode/` and `test/backend/cProgram/`
+- updates `test/backend/cProgram/subfolder/header.h`
 - runs `srcs.script.generateJson` for both sample programs
 - runs `srcs.script.generateMakefile`
 - builds and executes both generated programs
@@ -22,11 +22,11 @@ What it does:
 - runs `srcs.script.generateVscodeIntegration`
 
 Files used by the test:
-- `test/cProgram/main1.c`
-- `test/cProgram/main2.c`
-- `test/cProgram/one.c`
-- `test/cProgram/subfolder/two.c`
-- `test/cProgram/subfolder/header.h`
+- `test/backend/cProgram/main1.c`
+- `test/backend/cProgram/main2.c`
+- `test/backend/cProgram/one.c`
+- `test/backend/cProgram/subfolder/two.c`
+- `test/backend/cProgram/subfolder/header.h`
 
 The test is intended as an end-to-end validation of:
 - source discovery

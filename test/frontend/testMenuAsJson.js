@@ -36,7 +36,7 @@ Module._load = function patchedLoad(request, parent, isMain) {
     return originalLoad.call(this, request, parent, isMain);
 };
 
-const { createMenu } = require("../menuAsJson");
+const { createMenu } = require("../../srcs/vscodeIntegration/frontend/menuAsJson");
 
 Module._load = originalLoad;
 

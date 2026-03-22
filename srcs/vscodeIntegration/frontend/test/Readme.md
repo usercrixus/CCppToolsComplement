@@ -1,1 +1,0 @@
-node srcs/vscodeIntegration/frontend/test/testMenuAsJson.js

@@ -11,7 +11,7 @@
         "all"
       ],
       "options": {
-        "cwd": "${workspaceFolder}/test/cProgram"
+        "cwd": "${workspaceFolder}/test/backend/cProgram"
       },
       "problemMatcher": [
         "$gcc"
@@ -27,7 +27,7 @@
         "all"
       ],
       "options": {
-        "cwd": "${workspaceFolder}/test/cProgram"
+        "cwd": "${workspaceFolder}/test/backend/cProgram"
       },
       "problemMatcher": [
         "$gcc"
