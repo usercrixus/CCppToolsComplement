@@ -82,6 +82,47 @@ async function updateRunArgsHelper(args) {
   );
 }
 
+async function updateCompileFlagsForProfileHelper(args) {
+  const [workspaceFolder, entryIndex, profileIndex, newFlags, pythonBin, pythonPathRoot] = args;
+  if (!Number.isInteger(entryIndex) || entryIndex < 0) {
+    throw new Error("Selected program index is invalid.");
+  }
+  if (!Number.isInteger(profileIndex) || profileIndex < 0) {
+    throw new Error("Selected compile profile index is invalid.");
+  }
+  if (typeof newFlags !== "string") {
+    throw new Error("New compile flags must be a string.");
+  }
+  await runPythonModuleTask(
+    workspaceFolder,
+    pythonBin,
+    pythonPathRoot,
+    `${PYTHON_MODULE_PREFIX}.updateCompileFlagsForProfile`,
+    false,
+    true,
+    [String(entryIndex), String(profileIndex), newFlags]
+  );
+}
+
+async function updateLinkFlagsHelper(args) {
+  const [workspaceFolder, entryIndex, newFlags, pythonBin, pythonPathRoot] = args;
+  if (!Number.isInteger(entryIndex) || entryIndex < 0) {
+    throw new Error("Selected program index is invalid.");
+  }
+  if (typeof newFlags !== "string") {
+    throw new Error("New link flags must be a string.");
+  }
+  await runPythonModuleTask(
+    workspaceFolder,
+    pythonBin,
+    pythonPathRoot,
+    `${PYTHON_MODULE_PREFIX}.updateLinkFlags`,
+    false,
+    true,
+    [String(entryIndex), newFlags]
+  );
+}
+
 async function deleteAllMakefiles(args) {
   const [workspaceFolder, pythonBin, pythonPathRoot] = args;
   await runPythonModuleTask(
@@ -100,5 +141,7 @@ module.exports = {
   generateVscodeIntegration,
   deleteEntryHelper,
   updateRunArgsHelper,
+  updateCompileFlagsForProfileHelper,
+  updateLinkFlagsHelper,
   deleteAllMakefiles
 };

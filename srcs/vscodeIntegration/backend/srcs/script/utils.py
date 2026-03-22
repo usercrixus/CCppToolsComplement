@@ -20,6 +20,17 @@ def read_entries(path: Path) -> list[dict[str, Any]]:
     return [item for item in data if isinstance(item, dict)]
 
 
+def getEntryByIndex(entries: list[dict[str, Any]], entry_index: int) -> dict[str, Any]:
+    if not entries:
+        raise SystemExit("No program entries found in .vscode/makefileConfig.json")
+    if entry_index < 0 or entry_index >= len(entries):
+        raise SystemExit(f"Entry index {entry_index} is out of range.")
+    entry = entries[entry_index]
+    if not isinstance(entry, dict):
+        raise SystemExit(f"Entry at index {entry_index} is invalid.")
+    return entry
+
+
 def compiler_var_key(compiler: str) -> str:
     explicit = {"g++": "GPP", "gcc": "GCC"}
     if compiler in explicit:
