@@ -138,9 +138,8 @@ function buildFormHtml(title, description, fields) {
 
     input:focus, textarea:focus {
       outline: none;
-      border-color: var(--focus-accent);
-      box-shadow:
-        0 0 0 1px rgba(143, 143, 149, 0.28);
+      border-color: color-mix(in srgb, var(--input-border) 88%, rgba(255, 255, 255, 0.04) 12%);
+      box-shadow: none;
     }
 
     .help {
