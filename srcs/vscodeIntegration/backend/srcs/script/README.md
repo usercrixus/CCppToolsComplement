@@ -38,7 +38,12 @@ python3 -m srcs.script.generateVscodeIntegration
 ## 4b) Set one config field
 
 ```bash
+python3 -m srcs.script.setOutputMakefile <entry_index> <output_makefile>
+python3 -m srcs.script.setLinkCompiler <entry_index> <link_compiler>
 python3 -m srcs.script.setRunArgs <entry_index> [args...]
+python3 -m srcs.script.setBinName <entry_index> <bin_name>
+python3 -m srcs.script.setRelSources <entry_index> [rel_sources...]
+python3 -m srcs.script.setObjExpr <entry_index> [obj_expr...]
 python3 -m srcs.script.setLinkFlags <entry_index> [flags...]
 python3 -m srcs.script.setCompileFlagsForProfile <entry_index> <profile_index> [flags...]
 python3 -m srcs.script.setJsonSources <entry_index>
