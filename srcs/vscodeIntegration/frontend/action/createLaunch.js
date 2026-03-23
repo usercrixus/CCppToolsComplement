@@ -28,8 +28,7 @@ async function createLaunch(args) {
   const resolvedOutputPath = resolveGenerateJsonOutputPath(
     workspaceFolder,
     values.mainPath.trim(),
-    values.programName.trim(),
-    values.outputPath ?? ""
+    values.programName.trim()
   );
   const outputMakefile = normalizeConfigPath(
     path.relative(workspaceFolder.uri.fsPath, resolvedOutputPath)

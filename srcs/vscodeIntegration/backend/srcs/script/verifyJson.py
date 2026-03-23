@@ -9,7 +9,6 @@ FieldErrorsByKey = dict[str, list[str]]
 FieldValidator = Callable[[int, JsonObject, Any, FieldErrorsByKey], list[str]]
 REQUIRED_ENTRY_FIELDS = {
     "output_makefile",
-    "parent_makefile",
     "link_compiler",
     "link_flags",
     "run_args",
@@ -136,15 +135,6 @@ def getMakefileNameErrors(entry_index: int, entry: JsonObject, value: Any, field
     return errors
 
 
-def getParentMakefileErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
-    if not isNonEmptyString(value):
-        return [f"[entry {entry_index}] 'parent_makefile' must be a non-empty string."]
-    parent_path = Path(str(value))
-    if parent_path.name != "Makefile":
-        return [f"[entry {entry_index}] parent_makefile filename must be exactly 'Makefile'."]
-    return []
-
-
 def getLinkCompilerErrors(entry_index: int, entry: JsonObject, value: Any, field_errors_by_key: FieldErrorsByKey) -> list[str]:
     if not isNonEmptyString(value):
         return [f"[entry {entry_index}] 'link_compiler' must be a non-empty string."]
@@ -216,7 +206,6 @@ def getObjExprErrors(entry_index: int, entry: JsonObject, value: Any, field_erro
 
 FIELD_VALIDATORS: list[tuple[str, FieldValidator]] = [
     ("output_makefile", getMakefileNameErrors),
-    ("parent_makefile", getParentMakefileErrors),
     ("link_flags", getLinkFlagErrors),
     ("run_args", getRunArgErrors),
     ("bin_name", getBinaryNameErrors),
@@ -232,6 +221,8 @@ def getFieldErrors(entry_index: int, entry: JsonObject):
     field_errors_by_key: FieldErrorsByKey = {}
     known_keys = {field_key for field_key, _ in FIELD_VALIDATORS}
     for field_key in entry:
+        if field_key == "parent_makefile":
+            continue
         if field_key not in known_keys:
             errors.append(f"[entry {entry_index}] Unsupported field '{field_key}'.")
     for field_key, validator in FIELD_VALIDATORS:

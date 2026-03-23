@@ -39,14 +39,6 @@ async function promptGenerateJsonArgs() {
         presetValue: "",
         regexValidator: "^[\\s\\S]*$",
         helpText: "Leave empty to use <program>.out."
-      },
-      {
-        name: "outputPath",
-        label: "Output Makefile path",
-        type: "text",
-        presetValue: "",
-        regexValidator: "^[\\s\\S]*$",
-        helpText: "Leave empty to use the main file directory with Makefile.<program>."
       }
     ]
   });

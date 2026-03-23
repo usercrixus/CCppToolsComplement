@@ -125,11 +125,6 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Binary name. Defaults to <program>.out.",
     )
-    parser.add_argument(
-        "--output-path",
-        default="",
-        help="Output Makefile path. Defaults to <main-dir>/Makefile.<program>.",
-    )
     return parser.parse_args()
 
 
@@ -153,14 +148,8 @@ def getSource(main_path: Path, project_root: Path) -> list[Path]:
     return sources
 
 
-def getOutputPath(output_input: str, project_root: Path, main_path: Path, program_name: str) -> Path:
-    if output_input:
-        out_path = Path(output_input)
-        if not out_path.is_absolute():
-            out_path = (project_root / out_path).resolve()
-    else:
-        out_path = (main_path.parent / f"Makefile.{program_name}").resolve()
-
+def getOutputPath(main_path: Path, program_name: str) -> Path:
+    out_path = (main_path.parent / f"Makefile.{program_name}").resolve()
     if out_path.name == "Makefile":
         raise SystemExit("Output path must be a sub-Makefile, not the parent Makefile.")
     if not out_path.name.startswith("Makefile."):
@@ -244,8 +233,15 @@ def upsert_config_entry(entries: list[dict], payload: dict) -> list[dict]:
 
 
 def write_config_entries(config_path: Path, entries: list[dict]) -> None:
+    cleaned_entries = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        cleaned_entry = dict(entry)
+        cleaned_entry.pop("parent_makefile", None)
+        cleaned_entries.append(cleaned_entry)
     config_path.parent.mkdir(parents=True, exist_ok=True)
-    config_path.write_text(json.dumps(entries, indent=2) + "\n", encoding="utf-8")
+    config_path.write_text(json.dumps(cleaned_entries, indent=2) + "\n", encoding="utf-8")
 
 
 def generateJson() -> None:
@@ -255,11 +251,10 @@ def generateJson() -> None:
     program_name = args.program_name
     args_input = args.run_args
     bin_input = args.bin_name
-    output_input = args.output_path
 
     main_path = getMainPath(main_input, project_root)
     sources = getSource(main_path, project_root)
-    out_path = getOutputPath(output_input, project_root, main_path, program_name)
+    out_path = getOutputPath(main_path, program_name)
     relative_sources_path = getRelativePath(sources, out_path.parent)
     obj_expr = objs_from_sources(relative_sources_path)
     compilers_by_ext = detect_compilers_by_ext(relative_sources_path)
@@ -272,7 +267,6 @@ def generateJson() -> None:
 
     payload = {
         "output_makefile": os.path.relpath(out_path, project_root).replace("\\", "/"),
-        "parent_makefile": os.path.relpath(out_path.parent / "Makefile", project_root).replace("\\", "/"),
         "compile_profiles": compile_profiles,
         "link_compiler": link_compiler,
         "link_flags": link_flags,

@@ -22,11 +22,7 @@ def deleteAllMakeFiles() -> None:
             continue
 
         makefile_path = (workspace_root / output_makefile).resolve()
-        parent_makefile = entry.get("parent_makefile")
-        if isinstance(parent_makefile, str) and parent_makefile.strip():
-            parent_makefiles.add((workspace_root / parent_makefile).resolve())
-        else:
-            parent_makefiles.add(makefile_path.parent / "Makefile")
+        parent_makefiles.add(makefile_path.parent / "Makefile")
         if not makefile_path.exists() or not makefile_path.is_file():
             continue
 

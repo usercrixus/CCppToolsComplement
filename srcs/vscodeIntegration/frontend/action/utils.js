@@ -5,13 +5,7 @@ function normalizeConfigPath(filePath) {
   return filePath.split(path.sep).join("/");
 }
 
-function resolveGenerateJsonOutputPath(workspaceFolder, mainPathInput, programName, outputPathInput) {
-  if (typeof outputPathInput === "string" && outputPathInput.trim()) {
-    const explicitOutputPath = outputPathInput.trim();
-    return path.isAbsolute(explicitOutputPath)
-      ? explicitOutputPath
-      : path.resolve(workspaceFolder.uri.fsPath, explicitOutputPath);
-  }
+function resolveGenerateJsonOutputPath(workspaceFolder, mainPathInput, programName) {
   const resolvedMainPath = path.isAbsolute(mainPathInput)
     ? mainPathInput
     : path.resolve(workspaceFolder.uri.fsPath, mainPathInput);
@@ -23,7 +17,6 @@ function getGenerateJsonModuleArgs(workspaceFolder, values) {
   const programName = values.programName.trim();
   const runArgs = values.runArgs ?? "";
   const binName = values.binName ?? "";
-  const outputPath = values.outputPath ?? "";
   const moduleArgs = [
     "--main-path",
     mainPath,
@@ -35,9 +28,6 @@ function getGenerateJsonModuleArgs(workspaceFolder, values) {
   }
   if (binName) {
     moduleArgs.push("--bin-name", binName);
-  }
-  if (outputPath) {
-    moduleArgs.push("--output-path", outputPath);
   }
   return moduleArgs;
 }
