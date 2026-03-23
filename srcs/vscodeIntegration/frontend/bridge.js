@@ -42,36 +42,36 @@ async function deleteEntryHelper(entryIndex) {
   );
 }
 
-async function updateRunArgsHelper(entryIndex, newArgs) {
+async function setRunArgsHelper(entryIndex, newArgs) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.updateRunArgs`,
+    `${PYTHON_MODULE_PREFIX}.setRunArgs`,
     false,
     true,
     [String(entryIndex), newArgs]
   );
 }
 
-async function updateCompileFlagsForProfileHelper(entryIndex, profileIndex, newFlags) {
+async function setCompileFlagsForProfileHelper(entryIndex, profileIndex, newFlags) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.updateCompileFlagsForProfile`,
+    `${PYTHON_MODULE_PREFIX}.setCompileFlagsForProfile`,
     false,
     true,
     [String(entryIndex), String(profileIndex), newFlags]
   );
 }
 
-async function updateLinkFlagsHelper(entryIndex, newFlags) {
+async function setLinkFlagsHelper(entryIndex, newFlags) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.updateLinkFlags`,
+    `${PYTHON_MODULE_PREFIX}.setLinkFlags`,
     false,
     true,
     [String(entryIndex), newFlags]
   );
 }
 
-async function updateJsonSourcesHelper(entryIndex) {
+async function setJsonSourcesHelper(entryIndex) {
   return runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.updateJsonSources`,
+    `${PYTHON_MODULE_PREFIX}.setJsonSources`,
     false,
     false,
     [String(entryIndex)]
@@ -91,9 +91,9 @@ module.exports = {
   generateMakefile,
   generateVscodeIntegration,
   deleteEntryHelper,
-  updateRunArgsHelper,
-  updateCompileFlagsForProfileHelper,
-  updateLinkFlagsHelper,
-  updateJsonSourcesHelper,
+  setRunArgsHelper,
+  setCompileFlagsForProfileHelper,
+  setLinkFlagsHelper,
+  setJsonSourcesHelper,
   deleteAllMakefiles
 };

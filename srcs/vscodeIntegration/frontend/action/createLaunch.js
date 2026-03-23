@@ -2,8 +2,8 @@ const path = require("path");
 const globals = require("../globals");
 const {
   generateJson,
-  updateLinkFlagsHelper,
-  updateCompileFlagsForProfileHelper
+  setLinkFlagsHelper,
+  setCompileFlagsForProfileHelper
 } = require("../bridge");
 const { getMakefileConfigJson } = require("../utils/various");
 const { promptGenerateJsonArgs } = require("./form/promptGenerateJsonArgs");
@@ -37,12 +37,12 @@ async function createLaunch(args) {
   if (flagsValues === undefined) {
     return false;
   }
-  await updateLinkFlagsHelper(entryIndex, flagsValues.linkFlags ?? "");
+  await setLinkFlagsHelper(entryIndex, flagsValues.linkFlags ?? "");
   const compileProfiles = Array.isArray(entries[entryIndex].compile_profiles)
     ? entries[entryIndex].compile_profiles
     : [];
   for (const [profileIndex] of compileProfiles.entries()) {
-    await updateCompileFlagsForProfileHelper(
+    await setCompileFlagsForProfileHelper(
       entryIndex,
       profileIndex,
       flagsValues[`compileFlags_${profileIndex}`] ?? ""

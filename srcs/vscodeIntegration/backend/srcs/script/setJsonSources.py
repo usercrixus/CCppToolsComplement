@@ -83,7 +83,7 @@ def getCompilers(entry: dict[str, Any]) -> set[str]:
     return compilers
 
 
-def updateJsonSources() -> int:
+def setJsonSources() -> int:
     args = parse_args()
     workspace_root = Path.cwd().resolve()
     config_path = (workspace_root / CONFIG_REL_PATH).resolve()
@@ -114,4 +114,4 @@ def updateJsonSources() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(updateJsonSources())
+    sys.exit(setJsonSources())

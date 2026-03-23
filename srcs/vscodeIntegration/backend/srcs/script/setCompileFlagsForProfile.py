@@ -11,17 +11,17 @@ CONFIG_REL_PATH = Path(".vscode/makefileConfig.json")
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Update one compile profile flags entry in .vscode/makefileConfig.json.",
+        description="Set one compile profile flags entry in .vscode/makefileConfig.json.",
     )
     parser.add_argument(
         "entry_index",
         type=int,
-        help="Update the entry at this index.",
+        help="Set the entry at this index.",
     )
     parser.add_argument(
         "profile_index",
         type=int,
-        help="Update the compile profile at this index.",
+        help="Set the compile profile at this index.",
     )
     parser.add_argument(
         "new_flags",
@@ -43,7 +43,7 @@ def getCompileProfile(entry: dict[str, Any], profile_index: int) -> dict[str, An
     return profile
 
 
-def updateCompileFlagsForProfile() -> None:
+def setCompileFlagsForProfile() -> None:
     args = parse_args()
     workspace_root = Path.cwd().resolve()
     config_path = (workspace_root / CONFIG_REL_PATH).resolve()
@@ -64,4 +64,4 @@ def updateCompileFlagsForProfile() -> None:
 
 
 if __name__ == "__main__":
-    updateCompileFlagsForProfile()
+    setCompileFlagsForProfile()

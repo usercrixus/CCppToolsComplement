@@ -1,9 +1,9 @@
 const vscode = require("vscode");
 const globals = require("../globals");
 const {
-  updateJsonSourcesHelper,
-  updateLinkFlagsHelper,
-  updateCompileFlagsForProfileHelper
+  setJsonSourcesHelper,
+  setLinkFlagsHelper,
+  setCompileFlagsForProfileHelper
 } = require("../bridge");
 const {
   getMakefileConfigJson,
@@ -13,8 +13,8 @@ const {
 const { promptFlagsForEntry } = require("./form/promptFlagsForEntry");
 const { regenerateLaunchFiles } = require("./utils");
 
-async function tryUpdateJsonSources(entryIndex) {
-  const status = await updateJsonSourcesHelper(entryIndex);
+async function trySetJsonSources(entryIndex) {
+  const status = await setJsonSourcesHelper(entryIndex);
   const entries = await getMakefileConfigJson();
   const entry = entries[entryIndex];
   if (status === 1) {
@@ -22,10 +22,10 @@ async function tryUpdateJsonSources(entryIndex) {
     if (flagsValues === undefined) {
       return false;
     }
-    await updateLinkFlagsHelper(entryIndex, flagsValues.linkFlags ?? "");
+    await setLinkFlagsHelper(entryIndex, flagsValues.linkFlags ?? "");
     const compileProfiles = Array.isArray(entry.compile_profiles) ? entry.compile_profiles : [];
     for (const [profileIndex] of compileProfiles.entries()) {
-      await updateCompileFlagsForProfileHelper(
+      await setCompileFlagsForProfileHelper(
         entryIndex,
         profileIndex,
         flagsValues[`compileFlags_${profileIndex}`] ?? ""
@@ -37,7 +37,7 @@ async function tryUpdateJsonSources(entryIndex) {
 
 async function launchProgram(args) {
   const [entryIndex] = args;
-  const entry = await tryUpdateJsonSources(entryIndex);
+  const entry = await trySetJsonSources(entryIndex);
   if (entry === false) {
     return false;
   }

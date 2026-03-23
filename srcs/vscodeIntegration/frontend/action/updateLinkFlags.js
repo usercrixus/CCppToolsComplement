@@ -1,4 +1,4 @@
-const { updateLinkFlagsHelper } = require("../bridge");
+const { setLinkFlagsHelper } = require("../bridge");
 const { getMakefileConfigJson } = require("../utils/various");
 const { promptLinkFlags } = require("./form/promptLinkFlags");
 const { generateAllMakefiles } = require("./utils");
@@ -14,7 +14,7 @@ async function updateLinkFlags(args) {
     return false;
   }
   const newFlags = values.linkFlags;
-  await updateLinkFlagsHelper(entryIndex, newFlags);
+  await setLinkFlagsHelper(entryIndex, newFlags);
   await generateAllMakefiles();
   return true;
 }

@@ -1,4 +1,4 @@
-const { updateRunArgsHelper } = require("../bridge");
+const { setRunArgsHelper } = require("../bridge");
 const { getMakefileConfigJson } = require("../utils/various");
 const { promptRunArgs } = require("./form/promptRunArgs");
 const { regenerateLaunchFiles } = require("./utils");
@@ -13,7 +13,7 @@ async function updateRunArgs(args) {
     return false;
   }
   const newArgs = values.runArgs;
-  await updateRunArgsHelper(entryIndex, newArgs);
+  await setRunArgsHelper(entryIndex, newArgs);
   await regenerateLaunchFiles(true);
   return true;
 }
