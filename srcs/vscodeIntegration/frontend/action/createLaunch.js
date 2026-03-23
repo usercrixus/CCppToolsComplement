@@ -22,10 +22,8 @@ async function createLaunch(args) {
   if (values === undefined) {
     return false;
   }
-
   const moduleArgs = getGenerateJsonModuleArgs(values);
   await generateJson(moduleArgs);
-
   const resolvedOutputPath = resolveGenerateJsonOutputPath(
     values.mainPath.trim(),
     values.programName.trim()
@@ -35,17 +33,11 @@ async function createLaunch(args) {
   );
   const entries = await getMakefileConfigJson();
   const entryIndex = findEntryIndexByOutputMakefile(entries, outputMakefile);
-  if (entryIndex < 0) {
-    throw new Error(`Created entry '${outputMakefile}' was not found in makefileConfig.json.`);
-  }
-
   const flagsValues = await promptFlagsForEntry(entries[entryIndex]);
   if (flagsValues === undefined) {
     return false;
   }
-
   await updateLinkFlagsHelper(entryIndex, flagsValues.linkFlags ?? "");
-
   const compileProfiles = Array.isArray(entries[entryIndex].compile_profiles)
     ? entries[entryIndex].compile_profiles
     : [];
@@ -56,7 +48,6 @@ async function createLaunch(args) {
       flagsValues[`compileFlags_${profileIndex}`] ?? ""
     );
   }
-
   await regenerateLaunchFiles(true);
   return true;
 }
