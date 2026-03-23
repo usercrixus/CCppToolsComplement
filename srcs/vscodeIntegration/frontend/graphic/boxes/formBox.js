@@ -20,6 +20,7 @@ function sanitizeField(field, index) {
     type,
     presetValue: typeof field?.presetValue === "string" ? field.presetValue : "",
     regexValidator: typeof field?.regexValidator === "string" ? field.regexValidator : "",
+    regexErrorMessage: typeof field?.regexErrorMessage === "string" ? field.regexErrorMessage : "",
     placeholder: typeof field?.placeholder === "string" ? field.placeholder : "",
     required: Boolean(field?.required),
     helpText: typeof field?.helpText === "string" ? field.helpText : ""
@@ -275,7 +276,7 @@ function buildFormHtml(title, description, fields) {
       if (field.regexValidator) {
         const regex = new RegExp(field.regexValidator);
         if (!regex.test(value)) {
-          return "Value does not match the expected format.";
+          return field.regexErrorMessage || "Value does not match the expected format.";
         }
       }
       return "";
