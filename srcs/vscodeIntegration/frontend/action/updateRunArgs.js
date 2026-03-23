@@ -1,5 +1,5 @@
 const { updateRunArgsHelper } = require("../bridge");
-const { getMakefileConfigJson } = require("../utilsJson");
+const { getMakefileConfigJson } = require("../utils/various");
 const { promptRunArgs } = require("./form/promptRunArgs");
 const { regenerateLaunchFiles } = require("./utils");
 

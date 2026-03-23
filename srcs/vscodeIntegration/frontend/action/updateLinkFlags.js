@@ -1,5 +1,5 @@
 const { updateLinkFlagsHelper } = require("../bridge");
-const { getMakefileConfigJson } = require("../utilsJson");
+const { getMakefileConfigJson } = require("../utils/various");
 const { promptLinkFlags } = require("./form/promptLinkFlags");
 const { generateAllMakefiles } = require("./utils");
 

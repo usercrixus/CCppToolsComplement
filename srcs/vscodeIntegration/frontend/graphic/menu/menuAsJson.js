@@ -3,14 +3,13 @@
  * @typedef {import("../../../shared/prototype").MakefileConfigEntry} MakefileConfigEntry
  */
 
-const { getMakefileConfigJson } = require("../../utilsJson");
+const { getMakefileConfigJson, getProgramNameFromEntry } = require("../../utils/various");
 const { createLaunch } = require("../../action/createLaunch");
 const { launchProgram } = require("../../action/launchProgram");
 const { updateRunArgs } = require("../../action/updateRunArgs");
 const { updateCompileFlagsForProfile } = require("../../action/updateCompileFlagsForProfile");
 const { updateLinkFlags } = require("../../action/updateLinkFlags");
 const { deleteEntry } = require("../../action/deleteEntry");
-const { getProgramNameFromEntry } = require("../../utilsOthers");
 
 class MenuNode {
   constructor(label, description, runner = null, args = [], sub = []) {

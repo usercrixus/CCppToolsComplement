@@ -5,7 +5,7 @@ const {
   updateLinkFlagsHelper,
   updateCompileFlagsForProfileHelper
 } = require("../bridge");
-const { getMakefileConfigJson } = require("../utilsJson");
+const { getMakefileConfigJson } = require("../utils/various");
 const { promptGenerateJsonArgs } = require("./form/promptGenerateJsonArgs");
 const { promptFlagsForEntry } = require("./form/promptFlagsForEntry");
 const {

@@ -1,5 +1,5 @@
 const { updateCompileFlagsForProfileHelper } = require("../bridge");
-const { getMakefileConfigJson } = require("../utilsJson");
+const { getMakefileConfigJson } = require("../utils/various");
 const { promptCompileFlagsForProfile } = require("./form/promptCompileFlagsForProfile");
 const { generateAllMakefiles } = require("./utils");
 

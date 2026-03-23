@@ -1,7 +1,7 @@
 const { execFile } = require("child_process");
 const path = require("path");
 const vscode = require("vscode");
-const globals = require("./globals");
+const globals = require("../globals");
 
 function getPythonEnvironment(pythonPathRoot) {
   const existingPythonPath = process.env.PYTHONPATH;

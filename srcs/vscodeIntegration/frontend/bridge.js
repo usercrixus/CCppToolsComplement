@@ -1,4 +1,4 @@
-const { runPythonModuleTask } = require("./pythonRunner");
+const { runPythonModuleTask } = require("./utils/pythonRunner");
 
 const PYTHON_MODULE_PREFIX = "srcs.script";
 

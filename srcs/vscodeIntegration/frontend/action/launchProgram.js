@@ -5,8 +5,11 @@ const {
   updateLinkFlagsHelper,
   updateCompileFlagsForProfileHelper
 } = require("../bridge");
-const { getMakefileConfigJson } = require("../utilsJson");
-const { getProgramNameFromEntry, getLaunchConfiguration } = require("../utilsOthers");
+const {
+  getMakefileConfigJson,
+  getProgramNameFromEntry,
+  getLaunchConfiguration
+} = require("../utils/various");
 const { promptFlagsForEntry } = require("./form/promptFlagsForEntry");
 const { regenerateLaunchFiles } = require("./utils");
 
