@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
+import json
 from pathlib import Path
+from typing import Any
 
 
 @dataclass
@@ -16,6 +18,21 @@ class CompileProfile:
 
     def setFlags(self, flags: str) -> None:
         self.flags = flags
+
+    def toJsonObject(self) -> dict[str, str]:
+        return {
+            "ext": self.ext,
+            "compiler": self.compiler,
+            "flags": self.flags,
+        }
+
+    @classmethod
+    def fromJsonObject(cls, data: Any) -> "CompileProfile":
+        return cls(
+            ext=str(data.get("ext", "")),
+            compiler=str(data.get("compiler", "")),
+            flags=str(data.get("flags", "")),
+        )
 
 
 @dataclass
@@ -102,6 +119,39 @@ class MakefileConfigEntry:
     def addRelSource(self, rel_source: str) -> None:
         self.setRelSources([*self.rel_sources, rel_source])
 
+    def toJsonObject(self) -> dict[str, Any]:
+        return {
+            "output_makefile": self.output_makefile,
+            "compile_profiles": [
+                compile_profile.toJsonObject()
+                for compile_profile in self.compile_profiles
+            ],
+            "link_compiler": self.link_compiler,
+            "link_flags": self.link_flags,
+            "run_args": self.run_args,
+            "bin_name": self.bin_name,
+            "rel_sources": self.rel_sources,
+            "obj_expr": self.obj_expr,
+        }
+
+    @classmethod
+    def fromJsonObject(cls, data: Any) -> "MakefileConfigEntry":
+        compile_profiles_data = data.get("compile_profiles", [])
+        rel_sources_data = data.get("rel_sources", [])
+        return cls(
+            output_makefile=str(data.get("output_makefile", "")),
+            compile_profiles=[
+                CompileProfile.fromJsonObject(profile_data)
+                for profile_data in compile_profiles_data
+            ],
+            link_compiler=str(data.get("link_compiler", "")),
+            link_flags=str(data.get("link_flags", "")),
+            run_args=str(data.get("run_args", "")),
+            bin_name=str(data.get("bin_name", "")),
+            rel_sources=[str(rel_source) for rel_source in rel_sources_data],
+            obj_expr=str(data.get("obj_expr", "")),
+        )
+
 
 def makeEmptyCompileProfile() -> CompileProfile:
     return CompileProfile()
@@ -109,3 +159,21 @@ def makeEmptyCompileProfile() -> CompileProfile:
 
 def makeEmptyMakefileConfigEntry() -> MakefileConfigEntry:
     return MakefileConfigEntry()
+
+
+def parseMakefileConfigEntries(data: Any) -> list[MakefileConfigEntry]:
+    if not isinstance(data, list):
+        raise ValueError("makefile config must be a JSON array")
+    return [MakefileConfigEntry.fromJsonObject(entry_data) for entry_data in data]
+
+
+def parseMakefileConfigEntriesJson(json_text: str) -> list[MakefileConfigEntry]:
+    return parseMakefileConfigEntries(json.loads(json_text))
+
+
+def makefileConfigEntriesToJsonObject(entries: list[MakefileConfigEntry]) -> list[dict[str, Any]]:
+    return [entry.toJsonObject() for entry in entries]
+
+
+def makefileConfigEntriesToJson(entries: list[MakefileConfigEntry]) -> str:
+    return json.dumps(makefileConfigEntriesToJsonObject(entries), indent=2)
