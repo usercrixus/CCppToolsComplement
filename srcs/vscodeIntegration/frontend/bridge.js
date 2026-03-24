@@ -110,7 +110,7 @@ async function refreshEntrySourcesHelper(entryIndex, relSourcesJson) {
 
 async function deleteAllMakefiles() {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.helper.deleteAllMakeFiles`,
+    `${PYTHON_MODULE_PREFIX}.action.makefile.deleteAllMakeFiles`,
     false
   );
 }
