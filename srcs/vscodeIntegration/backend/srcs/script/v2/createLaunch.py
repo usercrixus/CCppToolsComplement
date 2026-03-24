@@ -3,8 +3,8 @@ import argparse
 import os
 from pathlib import Path
 
-from srcs.script.generateJson import getMainPath, getOutputPath
 from srcs.script.v2.getRelSources import getRelSources
+from srcs.script.v2.getRelSources import getMainPath, getOutputPath
 from srcs.script.v2.jsonModel import (
     MakefileConfigEntry,
     makefileConfigEntriesToJson,
