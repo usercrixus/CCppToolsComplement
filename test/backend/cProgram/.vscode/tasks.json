@@ -32,6 +32,22 @@
       "problemMatcher": [
         "$gcc"
       ]
+    },
+    {
+      "label": "build main03 (debug)",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "Makefile.main03",
+        "all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
     }
   ]
 }

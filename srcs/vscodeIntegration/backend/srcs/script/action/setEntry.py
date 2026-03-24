@@ -8,8 +8,8 @@ from typing import Any
 from srcs.script.action.helper.getRelSources import getRelSources
 from srcs.script.MakefileConfigEntry.MakefileConfigEntry import MakefileConfigEntry
 from srcs.script.MakefileConfigEntry.utils import (
-    makefileConfigEntriesToJson,
-    parseMakefileConfigEntriesJson,
+    readEntries,
+    writeEntries,
 )
 from srcs.script.action.helper.utils import getProgramNameFromMakefileName
 
@@ -47,19 +47,6 @@ def parse_args() -> argparse.Namespace:
         help="New rel_sources JSON array.",
     )
     return parser.parse_args()
-
-
-def readEntries(config_path: Path) -> list[MakefileConfigEntry]:
-    if not config_path.exists():
-        raise ValueError(f"No config file found at {config_path}")
-    return parseMakefileConfigEntriesJson(config_path.read_text(encoding="utf-8"))
-
-
-def writeEntries(config_path: Path, entries: list[MakefileConfigEntry]) -> None:
-    config_path.parent.mkdir(parents=True, exist_ok=True)
-    config_path.write_text(makefileConfigEntriesToJson(entries) + "\n", encoding="utf-8")
-
-
 def getEntryByIndex(entries: list[MakefileConfigEntry], entry_index: int) -> MakefileConfigEntry:
     if not entries:
         raise ValueError("No program entries found in .vscode/makefileConfig.json")
