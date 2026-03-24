@@ -1,9 +1,6 @@
-V2 Patched:
-  createEntry.py OK
-  deleteEntry.py OK
-
+create a class for makefiles representation
 update include before every launch
-carefull on generateVscodeIntegration.py to not erase field that are not managed by our extension
+carefull on generateVscodeIntegration.py to not erase field that are not managed by our extension ; now in jsonLaunch and jsonTask
 
 ---------------
 
