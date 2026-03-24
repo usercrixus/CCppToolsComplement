@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any
 
 from srcs.script.v2.jsonModel import (
-    CompileProfile,
     MakefileConfigEntry,
     makefileConfigEntriesToJson,
     parseMakefileConfigEntriesJson,
@@ -24,16 +23,13 @@ def parse_args() -> argparse.Namespace:
         help="Set the entry at this index.",
     )
     parser.add_argument(
-        "--output-makefile",
-        help="New output Makefile path.",
+        "--link-flag-compile-profiles",
+        help="New flags value for one compile profile.",
     )
     parser.add_argument(
-        "--compile-profiles-json",
-        help="New compile_profiles JSON array.",
-    )
-    parser.add_argument(
-        "--link-compiler",
-        help="New link compiler.",
+        "--compile-profile-index",
+        type=int,
+        help="Compile profile index to update.",
     )
     parser.add_argument(
         "--link-flags",
@@ -44,16 +40,8 @@ def parse_args() -> argparse.Namespace:
         help="New run arguments string.",
     )
     parser.add_argument(
-        "--bin-name",
-        help="New binary name.",
-    )
-    parser.add_argument(
         "--rel-sources-json",
         help="New rel_sources JSON array.",
-    )
-    parser.add_argument(
-        "--obj-expr",
-        help="New object expression.",
     )
     return parser.parse_args()
 
@@ -77,13 +65,6 @@ def getEntryByIndex(entries: list[MakefileConfigEntry], entry_index: int) -> Mak
     return entries[entry_index]
 
 
-def parseCompileProfilesJson(json_text: str) -> list[CompileProfile]:
-    data = json.loads(json_text)
-    if not isinstance(data, list):
-        raise ValueError("compile_profiles must be a JSON array")
-    return [CompileProfile.fromJsonObject(item) for item in data]
-
-
 def parseRelSourcesJson(json_text: str) -> list[str]:
     data = json.loads(json_text)
     if not isinstance(data, list):
@@ -91,23 +72,23 @@ def parseRelSourcesJson(json_text: str) -> list[str]:
     return [str(item) for item in data]
 
 
+def setCompileProfileFlags(entry: MakefileConfigEntry, profile_index: int, flags: str) -> None:
+    if profile_index < 0 or profile_index >= len(entry.compile_profiles):
+        raise ValueError(f"Compile profile index {profile_index} is out of range.")
+    entry.compile_profiles[profile_index].setFlags(flags)
+
+
 def updateEntry(entry: MakefileConfigEntry, args: argparse.Namespace) -> None:
-    if args.output_makefile is not None:
-        entry.setOutputMakefile(args.output_makefile)
     if args.rel_sources_json is not None:
         entry.setRelSources(parseRelSourcesJson(args.rel_sources_json))
-    if args.compile_profiles_json is not None:
-        entry.setCompileProfiles(parseCompileProfilesJson(args.compile_profiles_json))
-    if args.link_compiler is not None:
-        entry.setLinkCompiler(args.link_compiler)
+    if args.link_flag_compile_profiles is not None:
+        if args.compile_profile_index is None:
+            raise ValueError("--compile-profile-index is required with --link-flag-compile-profiles")
+        setCompileProfileFlags(entry, args.compile_profile_index, args.link_flag_compile_profiles)
     if args.link_flags is not None:
         entry.setLinkFlags(args.link_flags)
     if args.run_args is not None:
         entry.setRunArgs(args.run_args)
-    if args.bin_name is not None:
-        entry.setBinName(args.bin_name)
-    if args.obj_expr is not None:
-        entry.setObjExpr(args.obj_expr)
 
 
 def main() -> None:
