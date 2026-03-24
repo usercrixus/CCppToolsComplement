@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 
 from srcs.script.MakefileConfigEntry.CompileProfile import CompileProfile
+from srcs.script.exception.exceptionJsonErrorsList import JsonValidationError
 
 
 @dataclass
@@ -115,13 +116,24 @@ class MakefileConfigEntry:
     @classmethod
     def fromJsonObject(cls, data: Any) -> "MakefileConfigEntry":
         compile_profiles_data = data.get("compile_profiles", [])
+        compile_profiles: list[CompileProfile] = []
+        compile_profile_errors: list[str] = []
+        for profile_index, profile_data in enumerate(compile_profiles_data):
+            try:
+                compile_profiles.append(CompileProfile.fromJsonObject(profile_data))
+            except JsonValidationError as error:
+                compile_profile_errors.extend(
+                    [
+                        f"compile_profiles[{profile_index}]: {message}"
+                        for message in error.errors
+                    ]
+                )
+        if compile_profile_errors:
+            raise JsonValidationError(compile_profile_errors)
         rel_sources_data = data.get("rel_sources", [])
         return cls(
             output_makefile=str(data.get("output_makefile", "")),
-            compile_profiles=[
-                CompileProfile.fromJsonObject(profile_data)
-                for profile_data in compile_profiles_data
-            ],
+            compile_profiles=compile_profiles,
             link_compiler=str(data.get("link_compiler", "")),
             link_flags=str(data.get("link_flags", "")),
             run_args=str(data.get("run_args", "")),
