@@ -2,6 +2,38 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "build testCProgram1 (debug)",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "Makefile.testCProgram1",
+        "all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/test/backend/cProgram"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "build testCProgram2 (debug)",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "Makefile.testCProgram2",
+        "all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/test/backend/cProgram"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
       "label": "graph: build testCProgram1 (debug)",
       "type": "shell",
       "command": "make",

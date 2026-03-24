@@ -47,6 +47,8 @@ def parse_args() -> argparse.Namespace:
         help="New rel_sources JSON array.",
     )
     return parser.parse_args()
+
+
 def getEntryByIndex(entries: list[MakefileConfigEntry], entry_index: int) -> MakefileConfigEntry:
     if not entries:
         raise ValueError("No program entries found in .vscode/makefileConfig.json")

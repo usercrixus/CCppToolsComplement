@@ -1,5 +1,5 @@
 const path = require("path");
-const { generateMakefile, generateVscodeIntegration } = require("../bridge");
+const { generateLaunch, generateMakefile, generateTask } = require("../bridge");
 const globals = require("../globals");
 
 function normalizeConfigPath(filePath) {
@@ -46,7 +46,8 @@ async function regenerateLaunchFiles(regenerateMakefiles) {
   if (regenerateMakefiles) {
     await generateMakefile();
   }
-  await generateVscodeIntegration();
+  await generateTask();
+  await generateLaunch();
 }
 
 module.exports = {

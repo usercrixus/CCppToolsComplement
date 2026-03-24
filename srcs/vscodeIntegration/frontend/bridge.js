@@ -4,7 +4,7 @@ const PYTHON_MODULE_PREFIX = "srcs.script";
 
 async function generateJson(args) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.createEntry`,
+    `${PYTHON_MODULE_PREFIX}.action.jsonMakefileConfig.generateEntry`,
     false,
     true,
     args
@@ -26,25 +26,50 @@ async function generateMakefile() {
   );
 }
 
-async function generateVscodeIntegration() {
+async function generateTask() {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.generateVscodeIntegration`,
+    `${PYTHON_MODULE_PREFIX}.action.jsonTask.generateTask`,
+    false
+  );
+}
+
+async function generateLaunch() {
+  await runPythonModuleTask(
+    `${PYTHON_MODULE_PREFIX}.action.jsonLaunch.generateLaunch`,
     false
   );
 }
 
 async function deleteEntryHelper(entryIndex) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.deleteEntry`,
+    `${PYTHON_MODULE_PREFIX}.action.jsonMakefileConfig.deleteEntry`,
     false,
     true,
     [String(entryIndex)]
   );
 }
 
+async function deleteTask(programName) {
+  await runPythonModuleTask(
+    `${PYTHON_MODULE_PREFIX}.action.jsonTask.deleteTask`,
+    false,
+    true,
+    [String(programName)]
+  );
+}
+
+async function deleteLaunch(programName) {
+  await runPythonModuleTask(
+    `${PYTHON_MODULE_PREFIX}.action.jsonLaunch.deleteLaunch`,
+    false,
+    true,
+    [String(programName)]
+  );
+}
+
 async function setRunArgsHelper(entryIndex, newArgs) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.setEntry`,
+    `${PYTHON_MODULE_PREFIX}.action.jsonMakefileConfig.setEntry`,
     false,
     true,
     [String(entryIndex), `--run-args=${newArgs}`]
@@ -53,7 +78,7 @@ async function setRunArgsHelper(entryIndex, newArgs) {
 
 async function setCompileFlagsForProfileHelper(entryIndex, profileIndex, newFlags) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.setEntry`,
+    `${PYTHON_MODULE_PREFIX}.action.jsonMakefileConfig.setEntry`,
     false,
     true,
     [
@@ -67,7 +92,7 @@ async function setCompileFlagsForProfileHelper(entryIndex, profileIndex, newFlag
 
 async function setLinkFlagsHelper(entryIndex, newFlags) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.setEntry`,
+    `${PYTHON_MODULE_PREFIX}.action.jsonMakefileConfig.setEntry`,
     false,
     true,
     [String(entryIndex), `--link-flags=${newFlags}`]
@@ -76,7 +101,7 @@ async function setLinkFlagsHelper(entryIndex, newFlags) {
 
 async function refreshEntrySourcesHelper(entryIndex, relSourcesJson) {
   return runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.setEntry`,
+    `${PYTHON_MODULE_PREFIX}.action.jsonMakefileConfig.setEntry`,
     false,
     false,
     [String(entryIndex), `--rel-sources-json=${relSourcesJson}`]
@@ -94,8 +119,11 @@ module.exports = {
   generateJson,
   verifyJson,
   generateMakefile,
-  generateVscodeIntegration,
+  generateTask,
+  generateLaunch,
   deleteEntryHelper,
+  deleteTask,
+  deleteLaunch,
   setRunArgsHelper,
   setCompileFlagsForProfileHelper,
   setLinkFlagsHelper,
