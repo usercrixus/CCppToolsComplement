@@ -4,11 +4,13 @@ import json
 from pathlib import Path
 from typing import Any
 
+from srcs.script.v2.getRelSources import getRelSources
 from srcs.script.v2.jsonModel import (
     MakefileConfigEntry,
     makefileConfigEntriesToJson,
     parseMakefileConfigEntriesJson,
 )
+from srcs.script.v2.utils import getProgramNameFromMakefileName
 
 CONFIG_REL_PATH = Path(".vscode/makefileConfig.json")
 
@@ -72,6 +74,18 @@ def parseRelSourcesJson(json_text: str) -> list[str]:
     return [str(item) for item in data]
 
 
+def rebuildRelSources(entry: MakefileConfigEntry, rel_sources: list[str]) -> list[str]:
+    if not rel_sources:
+        raise ValueError("rel_sources must contain at least one source path")
+    project_root = Path.cwd().resolve()
+    output_makefile_path = (project_root / entry.output_makefile).resolve()
+    program_name = getProgramNameFromMakefileName(output_makefile_path)
+    if not program_name:
+        raise ValueError(f"Invalid output_makefile for entry: {entry.output_makefile!r}")
+    main_source_path = (output_makefile_path.parent / rel_sources[0]).resolve()
+    return getRelSources(str(main_source_path), program_name, project_root)
+
+
 def setCompileProfileFlags(entry: MakefileConfigEntry, profile_index: int, flags: str) -> None:
     if profile_index < 0 or profile_index >= len(entry.compile_profiles):
         raise ValueError(f"Compile profile index {profile_index} is out of range.")
@@ -80,7 +94,7 @@ def setCompileProfileFlags(entry: MakefileConfigEntry, profile_index: int, flags
 
 def updateEntry(entry: MakefileConfigEntry, args: argparse.Namespace) -> None:
     if args.rel_sources_json is not None:
-        entry.setRelSources(parseRelSourcesJson(args.rel_sources_json))
+        entry.setRelSources(rebuildRelSources(entry, parseRelSourcesJson(args.rel_sources_json)))
     if args.link_flag_compile_profiles is not None:
         if args.compile_profile_index is None:
             raise ValueError("--compile-profile-index is required with --link-flag-compile-profiles")
