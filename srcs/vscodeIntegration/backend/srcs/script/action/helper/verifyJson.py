@@ -48,3 +48,11 @@ def verifyJson() -> int:
     entries, errors = getEntries(config_path.resolve())
     printSummary(errors, config_path.resolve(), entries)
     return 1 if errors else 0
+
+
+def verifyjson() -> int:
+    return verifyJson()
+
+
+if __name__ == "__main__":
+    raise SystemExit(verifyJson())

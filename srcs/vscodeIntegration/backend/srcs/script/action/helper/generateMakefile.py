@@ -6,7 +6,7 @@ from srcs.script.action.helper.utils import (
     getProgramNameFromMakefileName,
     read_entries,
 )
-from srcs.script.verifyJson import verifyjson
+from srcs.script.action.helper.verifyJson import verifyJson
 
 FORCED_DEBUG_FLAGS = ("-g3", "-O0")
 
@@ -201,7 +201,7 @@ def generatedParentMakefiles(programs_by_dir: dict[Path, set[str]]):
 
 
 def generateMakefile() -> None:
-    if verifyjson() != 0:
+    if verifyJson() != 0:
         raise SystemExit("Makefile configuration verification failed.")
     config_path = Path(".vscode/makefileConfig.json").resolve()
     entries = read_entries(config_path)
