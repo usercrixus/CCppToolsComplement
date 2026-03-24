@@ -69,16 +69,6 @@ def getProgramName(entry: MakefileConfigEntry) -> str | None:
     return getProgramNameFromMakefileName(Path(entry.output_makefile))
 
 
-def deleteRemovedMakefile(entry: MakefileConfigEntry, workspace_root: Path) -> None:
-    if not entry.output_makefile.strip():
-        return
-    makefile_path = (workspace_root / entry.output_makefile).resolve()
-    if not makefile_path.exists() or not makefile_path.is_file():
-        return
-    makefile_path.unlink()
-    print(f"Deleted {makefile_path}")
-
-
 def deleteTaskEntry(program_name: str, workspace_root: Path) -> None:
     tasks_path = (workspace_root / TASKS_REL_PATH).resolve()
     tasks_json = readJsonObject(tasks_path, {"version": "2.0.0", "tasks": []})
@@ -118,7 +108,6 @@ def main() -> None:
 
     print(f"Updated {config_path}")
     print(f"Removed entry at index {args.entry_index}")
-    deleteRemovedMakefile(removed_entry, workspace_root)
 
     program_name = getProgramName(removed_entry)
     if program_name:

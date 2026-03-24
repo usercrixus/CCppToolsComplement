@@ -80,7 +80,7 @@ async function setJsonSourcesHelper(entryIndex) {
 
 async function deleteAllMakefiles() {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.deleteAllMakeFiles`,
+    `${PYTHON_MODULE_PREFIX}.v2.deleteAllMakeFiles`,
     false
   );
 }
