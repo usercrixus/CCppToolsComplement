@@ -6,7 +6,7 @@ from srcs.script.action.helper.utils import (
     getProgramNameFromMakefileName,
     read_entries,
 )
-from srcs.script.action.helper.verifyJson import verifyJson
+from srcs.script.action.jsonMakefileConfig.verify import verifyJson
 
 FORCED_DEBUG_FLAGS = ("-g3", "-O0")
 

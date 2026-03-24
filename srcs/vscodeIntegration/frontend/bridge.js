@@ -13,7 +13,7 @@ async function generateJson(args) {
 
 async function verifyJson(args, throwOnError = true) {
   return runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.helper.verifyJson`,
+    `${PYTHON_MODULE_PREFIX}.action.jsonMakefileConfig.verify`,
     false,
     throwOnError
   );

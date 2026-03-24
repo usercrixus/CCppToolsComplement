@@ -6,7 +6,7 @@ from typing import Any
 from srcs.script.MakefileConfigEntry.MakefileConfigEntry import MakefileConfigEntry
 from srcs.script.MakefileConfigEntry.utils import readEntries
 from srcs.script.action.helper.utils import getProgramNameFromMakefileName, readJsonObject, writeJsonObject
-from srcs.script.action.helper.verifyJson import verifyJson
+from srcs.script.action.jsonMakefileConfig.verify import verifyJson
 
 JsonObject = dict[str, Any]
 JsonItems = list[JsonObject]
