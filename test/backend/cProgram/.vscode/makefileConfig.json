@@ -1,6 +1,6 @@
 [
   {
-    "output_makefile": "Makefile.main01",
+    "output_makefile": "Makefile.main02",
     "compile_profiles": [
       {
         "ext": ".c",
@@ -11,47 +11,7 @@
     "link_compiler": "gcc",
     "link_flags": "",
     "run_args": "",
-    "bin_name": "main01.out",
-    "rel_sources": [
-      "main1.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main1.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.main02",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": "-Wall"
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "-Wall",
-    "run_args": "",
     "bin_name": "main02.out",
-    "rel_sources": [
-      "main1.c",
-      "one.c",
-      "subfolder/two.c"
-    ],
-    "obj_expr": "main1.o one.o subfolder/two.o"
-  },
-  {
-    "output_makefile": "Makefile.main03",
-    "compile_profiles": [
-      {
-        "ext": ".c",
-        "compiler": "gcc",
-        "flags": "-Wall"
-      }
-    ],
-    "link_compiler": "gcc",
-    "link_flags": "-Wall",
-    "run_args": "hello",
-    "bin_name": "main03.out",
     "rel_sources": [
       "main1.c",
       "one.c",
