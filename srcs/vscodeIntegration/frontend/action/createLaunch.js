@@ -48,7 +48,7 @@ async function createLaunch(args) {
       flagsValues[`compileFlags_${profileIndex}`] ?? ""
     );
   }
-  await regenerateLaunchFiles(true);
+  await regenerateLaunchFiles(entryIndex, true);
   return true;
 }
 

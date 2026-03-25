@@ -1,7 +1,7 @@
 const { setCompileFlagsForProfileHelper } = require("../bridge");
 const { getMakefileConfigJson } = require("../utils/various");
 const { promptCompileFlagsForProfile } = require("./form/promptCompileFlagsForProfile");
-const { generateAllMakefiles } = require("./utils");
+const { generateOneMakefile } = require("./utils");
 
 async function updateCompileFlagsForProfile(args) {
   const [entryIndex, profileIndex] = args;
@@ -17,7 +17,7 @@ async function updateCompileFlagsForProfile(args) {
   }
   const newFlags = values.compileFlags;
   await setCompileFlagsForProfileHelper(entryIndex, profileIndex, newFlags);
-  await generateAllMakefiles();
+  await generateOneMakefile(entryIndex);
   return true;
 }
 

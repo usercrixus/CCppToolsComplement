@@ -38,13 +38,13 @@ function findEntryIndexByOutputMakefile(entries, outputMakefile) {
   return entries.findIndex((entry) => entry?.output_makefile === outputMakefile);
 }
 
-async function generateAllMakefiles() {
-  await generateMakefile();
+async function generateOneMakefile(entryIndex) {
+  await generateMakefile(entryIndex);
 }
 
-async function regenerateLaunchFiles(regenerateMakefiles) {
-  if (regenerateMakefiles) {
-    await generateMakefile();
+async function regenerateLaunchFiles(entryIndex, regenerateMakefileForEntry) {
+  if (regenerateMakefileForEntry) {
+    await generateMakefile(entryIndex);
   }
   await generateTask();
   await generateLaunch();
@@ -55,6 +55,6 @@ module.exports = {
   resolveGenerateJsonOutputPath,
   getGenerateJsonModuleArgs,
   findEntryIndexByOutputMakefile,
-  generateAllMakefiles,
+  generateOneMakefile,
   regenerateLaunchFiles
 };

@@ -14,7 +14,7 @@ async function updateRunArgs(args) {
   }
   const newArgs = values.runArgs;
   await setRunArgsHelper(entryIndex, newArgs);
-  await regenerateLaunchFiles(true);
+  await regenerateLaunchFiles(entryIndex, true);
   return true;
 }
 

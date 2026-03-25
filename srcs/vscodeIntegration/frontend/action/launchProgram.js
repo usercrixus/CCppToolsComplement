@@ -39,7 +39,7 @@ async function launchProgram(args) {
       );
     }
   }
-  await regenerateLaunchFiles(true);
+  await regenerateLaunchFiles(entryIndex, true);
   const launchConfig = getLaunchConfiguration(getProgramNameFromEntry(entry));
   const started = await vscode.debug.startDebugging(globals.workspaceFolder, launchConfig);
   if (!started) {

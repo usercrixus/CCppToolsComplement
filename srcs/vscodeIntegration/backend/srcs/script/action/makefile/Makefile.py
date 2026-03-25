@@ -32,6 +32,11 @@ class Makefile:
         self._pattern_rules: list[str] = []
         self.setPatternRules()
 
+    def outputMakefilePath(self, workspace_root: Path | None = None) -> Path:
+        if workspace_root is None:
+            workspace_root = Path.cwd().resolve()
+        return (workspace_root / self.output_makefile).resolve()
+
     @property
     def output_makefile(self) -> str:
         return self._output_makefile

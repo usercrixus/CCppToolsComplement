@@ -19,10 +19,12 @@ async function verifyJson(args, throwOnError = true) {
   );
 }
 
-async function generateMakefile() {
+async function generateMakefile(entryIndex) {
   await runPythonModuleTask(
     `${PYTHON_MODULE_PREFIX}.action.makefile.generateMakefile`,
-    false
+    false,
+    true,
+    [String(entryIndex)]
   );
 }
 
@@ -108,10 +110,12 @@ async function refreshEntrySourcesHelper(entryIndex, relSourcesJson) {
   );
 }
 
-async function deleteAllMakefiles() {
+async function deleteMakefile(entryIndex) {
   await runPythonModuleTask(
-    `${PYTHON_MODULE_PREFIX}.action.makefile.deleteAllMakeFiles`,
-    false
+    `${PYTHON_MODULE_PREFIX}.action.makefile.deleteMakefile`,
+    false,
+    true,
+    [String(entryIndex)]
   );
 }
 
@@ -128,5 +132,5 @@ module.exports = {
   setCompileFlagsForProfileHelper,
   setLinkFlagsHelper,
   refreshEntrySourcesHelper,
-  deleteAllMakefiles
+  deleteMakefile
 };

@@ -1,9 +1,33 @@
 #!/usr/bin/env python3
+import argparse
 from pathlib import Path
 
+from srcs.script.MakefileConfigEntry.MakefileConfigEntry import MakefileConfigEntry
+from srcs.script.MakefileConfigEntry.utils import readEntries
 from srcs.script.action.jsonMakefileConfig.verify import verifyJson
 from srcs.script.action.makefile.Makefile import Makefile
-from srcs.script.action.makefile.utils import buildMakefiles, getOutputMakefilePath
+
+CONFIG_REL_PATH = Path(".vscode/makefileConfig.json")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Generate one makefile from .vscode/makefileConfig.json.",
+    )
+    parser.add_argument(
+        "entry_index",
+        type=int,
+        help="Generate the makefile for the entry at this index.",
+    )
+    return parser.parse_args()
+
+
+def getEntryByIndex(entries: list[MakefileConfigEntry], entry_index: int) -> MakefileConfigEntry:
+    if not entries:
+        raise ValueError("No program entries found in .vscode/makefileConfig.json")
+    if entry_index < 0 or entry_index >= len(entries):
+        raise ValueError(f"Entry index {entry_index} is out of range.")
+    return entries[entry_index]
 
 
 def renderParentMakefile(programs: list[str]) -> str:
@@ -45,39 +69,37 @@ def renderParentMakefile(programs: list[str]) -> str:
     )
 
 
-def generateChildMakefiles(makefiles: list[Makefile]) -> dict[Path, set[str]]:
-    programs_by_dir: dict[Path, set[str]] = {}
-
-    for makefile in makefiles:
-        output_makefile = getOutputMakefilePath(makefile)
-        output_makefile.parent.mkdir(parents=True, exist_ok=True)
-        output_makefile.write_text(makefile.generate(), encoding="utf-8")
-
+def getProgramsForDirectory(entries: list[MakefileConfigEntry], directory: Path, workspace_root: Path) -> list[str]:
+    programs: set[str] = set()
+    for entry in entries:
+        output_makefile = (workspace_root / entry.output_makefile).resolve()
+        if output_makefile.parent != directory:
+            continue
         program = Makefile.getProgramNameFromMakefileName(output_makefile)
         if program is not None:
-            programs_by_dir.setdefault(output_makefile.parent, set()).add(program)
-
-        print(f"Generated {output_makefile}")
-
-    return programs_by_dir
+            programs.add(program)
+    return sorted(programs)
 
 
-def generateParentMakefiles(programs_by_dir: dict[Path, set[str]]) -> None:
-    for directory in sorted(programs_by_dir):
-        programs = sorted(programs_by_dir[directory])
-        parent_makefile = directory / "Makefile"
-        parent_makefile.write_text(renderParentMakefile(programs), encoding="utf-8")
-        print(f"Updated parent {parent_makefile}")
-
-
-def generateMakefile() -> None:
+def generateMakefile(entry_index: int) -> None:
     if verifyJson() != 0:
         raise SystemExit("Makefile configuration verification failed.")
 
-    makefiles = buildMakefiles()
-    programs_by_dir = generateChildMakefiles(makefiles)
-    generateParentMakefiles(programs_by_dir)
+    workspace_root = Path.cwd().resolve()
+    config_path = (workspace_root / CONFIG_REL_PATH).resolve()
+    entries = readEntries(config_path)
+    entry = getEntryByIndex(entries, entry_index)
+    makefile = Makefile(entry)
+    output_makefile = makefile.outputMakefilePath(workspace_root)
+    output_makefile.parent.mkdir(parents=True, exist_ok=True)
+    output_makefile.write_text(makefile.generate(), encoding="utf-8")
+    print(f"Generated {output_makefile}")
+
+    programs = getProgramsForDirectory(entries, output_makefile.parent, workspace_root)
+    parent_makefile = output_makefile.parent / "Makefile"
+    parent_makefile.write_text(renderParentMakefile(programs), encoding="utf-8")
+    print(f"Updated parent {parent_makefile}")
 
 
 if __name__ == "__main__":
-    generateMakefile()
+    generateMakefile(parse_args().entry_index)
