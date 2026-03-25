@@ -2,5 +2,5 @@
 *.d
 __pycache__/
 *.out
-test/cProgram/Makefile
-test/cProgram/Makefile.*
+test/backend/cProgram/Makefile
+test/backend/cProgram/Makefile.*
