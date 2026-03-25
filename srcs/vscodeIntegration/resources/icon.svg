@@ -11,7 +11,6 @@
   </defs>
   <rect x="14" y="14" width="228" height="228" rx="52" fill="url(#bg)"/>
   <rect x="14" y="14" width="228" height="228" rx="52" fill="none" stroke="#ff9ccc" stroke-width="4" opacity="0.28"/>
-  <circle cx="128" cy="128" r="76" fill="url(#accent)"/>
-  <circle cx="128" cy="128" r="70" fill="none" stroke="#ffd1e5" stroke-width="6" opacity="0.42"/>
+  <circle cx="128" cy="128" r="76" fill="#ff4fa3"/>
   <path fill="#111111" d="M204 128 89 194.395V61.605z"/>
 </svg>
