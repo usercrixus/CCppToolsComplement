@@ -8,20 +8,20 @@ import os
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 PYTHON = sys.executable
-C_PROGRAM_DIR = ROOT / "test" / "backend" / "cProgram"
+C_PROGRAM_DIR = ROOT / "srcs" / "test" / "backend" / "cProgram"
 BACKEND_PYTHON_ROOT = ROOT / "srcs" / "vscodeIntegration" / "backend"
 MODULE_GENERATE_JSON = "srcs.script.generateJson"
 MODULE_GENERATE_MAKEFILE = "srcs.script.generateMakefile"
 MODULE_GENERATE_VSCODE = "srcs.script.generateVscodeIntegration"
 PROGRAMS = [
     {
-        "main_rel": "test/backend/cProgram/main1.c",
+        "main_rel": "srcs/test/backend/cProgram/main1.c",
         "program_name": "testCProgram1",
     },
     {
-        "main_rel": "test/backend/cProgram/main2.c",
+        "main_rel": "srcs/test/backend/cProgram/main2.c",
         "program_name": "testCProgram2",
     },
 ]
@@ -97,7 +97,7 @@ def generate_all() -> None:
         main_rel = program["main_rel"]
         program_name = program["program_name"]
         bin_name = f"{program_name}.out"
-        output_makefile_rel = f"test/backend/cProgram/Makefile.{program_name}"
+        output_makefile_rel = f"srcs/test/backend/cProgram/Makefile.{program_name}"
         generator_input = "\n".join(
             [
                 main_rel,

@@ -1,0 +1,30 @@
+LINK_COMPILER = gcc
+LINK_FLAGS = -g3 -O0
+ARGS = 
+BIN = main01.out
+SRCS = main1.c one.c subfolder/two.c
+OBJS = main1.o one.o subfolder/two.o
+DEPS = $(OBJS:.o=.d)
+
+all: $(BIN)
+
+$(BIN): $(OBJS)
+	$(LINK_COMPILER) $(LINK_FLAGS) $^ -o $@
+
+%.o: %.c
+	gcc -g3 -O0 -c $< -o $@
+
+run: $(BIN)
+	./$(BIN) $(ARGS)
+
+clean:
+	rm -f $(OBJS) $(DEPS)
+
+fclean: clean
+	rm -f $(BIN)
+
+re: fclean all
+
+.PHONY: all run clean fclean re
+
+-include $(DEPS)
