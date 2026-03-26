@@ -7,6 +7,10 @@
     "type": "git",
     "url": "https://github.com/usercrixus/CCppToolsComplement.git"
   },
+  "vsce": {
+    "baseContentUrl": "https://github.com/usercrixus/CCppToolsComplement/blob/HEAD/srcs/vscodeIntegration",
+    "baseImagesUrl": "https://github.com/usercrixus/CCppToolsComplement/raw/HEAD/srcs/vscodeIntegration"
+  },
   "homepage": "https://github.com/usercrixus/CCppToolsComplement",
   "bugs": {
     "url": "https://github.com/usercrixus/CCppToolsComplement/issues"

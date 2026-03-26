@@ -99,10 +99,16 @@ If the publisher ID does not match, update `package.json` before publishing.
 
 ## 6. Build a `.vsix` package
 
+From root
+
+```bash
+npm install --save-dev @vscode/vsce
+```
+
 From `srcs/vscodeIntegration`:
 
 ```bash
-vsce package
+npx vsce package
 ```
 
 Expected result:
