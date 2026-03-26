@@ -44,22 +44,12 @@ Before using the extension, make sure the following are available:
 
 This extension works against the first workspace folder and expects project configuration files under that folder.
 
-## Expected Project Files
-
-The extension expects a workspace layout based on `.vscode/makefileConfig.json`.
-
-- `.vscode/makefileConfig.json`
-  This is the main source of truth for program entries.
-- `.vscode/launch.json`
-  Generated or refreshed by the extension workflow.
-
-If `.vscode/makefileConfig.json` does not exist yet, you can create a first entry through the extension by using `Create new launch`.
 
 ## How To Use
 
 1. Open your project folder in VS Code.
 2. Open a `.c` or `.cpp` file.
-3. Run `CCppToolsComplement: Generate and Debug Current File` from the Command Palette, or click the editor title button.
+3. Click the editor title button : <img src="resources/play-dark.svg" alt="Play icon" width="14" height="14" />.
 4. Pick an existing program entry, or choose `Create new launch`.
 
 ### Create a New Launch
