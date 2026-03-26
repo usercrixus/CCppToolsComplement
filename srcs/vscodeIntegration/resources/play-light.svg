@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <circle cx="8" cy="8" r="7.85" fill="#ff4fa3"/>
-  <path fill="#111111" d="M15.85 8 4.275 14.452 4.275 1.548z"/>
+  <defs>
+    <linearGradient id="accent-light" x1="4.125" y1="3.375" x2="11.875" y2="12.625" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff83bc"/>
+      <stop offset="1" stop-color="#ff4fa3"/>
+    </linearGradient>
+  </defs>
+  <circle cx="8" cy="8" r="7.875" fill="url(#accent-light)"/>
+  <polygon fill="#111111" points="15.875,8 4.0625,14.8199 4.0625,1.1801"/>
 </svg>
