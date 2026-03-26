@@ -21,25 +21,8 @@ Do these checks:
 1. Make sure the extension works from `srcs/vscodeIntegration`.
 2. Make sure the README in `srcs/vscodeIntegration/README.md` explains what the extension does, how to use it, and any prerequisites.
 3. Confirm the packaged files are only the ones you want to ship. This is controlled by the `files` field in `srcs/vscodeIntegration/package.json`.
-4. Update `.gitignore` because test artifacts moved from `test/...` to `srcs/test/...`. The current ignore rules still point to the old location.
-5. Remove generated artifacts from `srcs/test/backend/cProgram/` before tagging or publishing if they are not meant to be committed.
 
 ## 2. Improve `package.json` before first public publish
-
-Your current manifest is sufficient to package the extension, but I would add the following before publishing publicly:
-
-1. `icon`
-   Use a Marketplace icon such as `resources/icon.png`.
-2. `repository`
-   Point to the git repository URL.
-3. `license`
-   Declare the license you want to publish under.
-4. `keywords`
-   Add discoverability terms such as `c`, `cpp`, `makefile`, `debug`, `cpptools`.
-5. `homepage`
-   Optional, but useful if you want a landing page beyond the Marketplace listing.
-6. `bugs`
-   Optional, but useful if you want issue links in the Marketplace.
 
 Minimal example:
 

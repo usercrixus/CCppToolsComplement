@@ -3,6 +3,27 @@
   "displayName": "CCppToolsComplement",
   "description": "Generate JSON, Makefiles, VSCode integration, then launch debugging for C/C++ programs.",
   "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usercrixus/CCppToolsComplement.git"
+  },
+  "homepage": "https://github.com/usercrixus/CCppToolsComplement",
+  "bugs": {
+    "url": "https://github.com/usercrixus/CCppToolsComplement/issues"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "c",
+    "cpp",
+    "c++",
+    "makefile",
+    "debug",
+    "debugger",
+    "cpptools",
+    "vscode",
+    "launch",
+    "tasks"
+  ],
   "version": "0.0.1",
   "publisher": "achaisne",
   "files": [
