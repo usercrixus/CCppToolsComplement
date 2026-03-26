@@ -5,4 +5,4 @@ __pycache__/
 srcs/test/backend/cProgram/Makefile
 srcs/test/backend/cProgram/Makefile.*
 *.vsix
-ccpp-tools-complement-0.0.1
+ccpp-tools-complement-0*

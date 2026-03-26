@@ -111,6 +111,12 @@ From `srcs/vscodeIntegration`:
 npx vsce package
 ```
 
+then to check the result (relace the x)
+```bash
+unzip ccpp-tools-complement-x.x.x.vsix -d ccpp-tools-complement-x.x.x
+```
+
+
 Expected result:
 
 - a file like `ccpp-tools-complement-0.0.1.vsix`
