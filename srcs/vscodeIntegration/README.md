@@ -12,7 +12,7 @@ It is designed for projects that generate build and debug configuration from tha
 ## Features
 
 - Adds the command `CCppToolsComplement: Generate and Debug Current File`.
-- Shows the command in the top-right corner of the editor when a `c` or `cpp` file is active : <img src="resources/play-dark.svg" alt="Play icon" width="14" height="14" />
+- Shows the command in the top-right corner of the editor when a `c` or `cpp` file is active : <img src="resources/play-dark.png" alt="Play icon" width="14" height="14" />
 - Reads program entries from `.vscode/makefileConfig.json`.
 - Lets you create a new program entry from inside VS Code.
 - Lets you update run arguments, compile flags, and link flags for an existing entry.
@@ -49,7 +49,7 @@ This extension works against the first workspace folder and expects project conf
 
 1. Open your project folder in VS Code.
 2. Open a `.c` or `.cpp` file.
-3. Click the editor title button : <img src="resources/play-dark.svg" alt="Play icon" width="14" height="14" />
+3. Click the editor title button : <img src="resources/play-dark.png" alt="Play icon" width="14" height="14" />
 4. Pick an existing program entry, or choose `Create new launch`.
 
 ### Create a New Launch

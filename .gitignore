@@ -4,3 +4,4 @@ __pycache__/
 *.out
 srcs/test/backend/cProgram/Makefile
 srcs/test/backend/cProgram/Makefile.*
+*.vsix
