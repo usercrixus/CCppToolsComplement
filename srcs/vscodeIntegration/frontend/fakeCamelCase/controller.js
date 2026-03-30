@@ -10,6 +10,14 @@ function getFakeCamelCaseConfiguration() {
   return vscode.workspace.getConfiguration("ccppToolsComplement.fakeCamelCase");
 }
 
+async function setEnabled(enabled) {
+  await getFakeCamelCaseConfiguration().update(
+    "enabled",
+    Boolean(enabled),
+    vscode.ConfigurationTarget.Workspace
+  );
+}
+
 function isEnabled() {
   return getFakeCamelCaseConfiguration().get("enabled", true);
 }
@@ -159,5 +167,7 @@ function createFakeCamelCaseController() {
 }
 
 module.exports = {
-  createFakeCamelCaseController
+  createFakeCamelCaseController,
+  setEnabled,
+  isEnabled
 };

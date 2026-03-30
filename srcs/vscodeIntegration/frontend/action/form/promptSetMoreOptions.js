@@ -22,7 +22,7 @@ async function promptSetMoreOptions(currentHiddenSuffixes = "", currentForceCame
         type: "text",
         presetValue: currentForceCamelCase,
         placeholder: "on or off",
-        regexValidator: "^(?i:(on|off|true|false|yes|no|0|1))$",
+        regexValidator: "^(?i:(on|off))$",
         regexErrorMessage: "Use on or off.",
         helpText: "Enter on or off."
       }

@@ -5,7 +5,7 @@ from models.MakefileConfigEntry.CompileProfile import CompileProfile
 from models.MakefileConfigEntry.MakefileConfigEntry import MakefileConfigEntry
 from models.Exeption.exceptionJsonErrorsList import JsonErrorsList, JsonValidationError
 
-FORCED_DEBUG_FLAGS = ("-g3", "-O0")
+FORCED_DEBUG_FLAGS = ("-g3", "-O0", "-MMD", "-MP")
 
 
 class Makefile:

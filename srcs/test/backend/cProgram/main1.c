@@ -5,6 +5,7 @@
 
 int main()
 {
+    int test_ok = 10;
     printf(DEFINE_TEST);
     printf("\n");
     print_one();

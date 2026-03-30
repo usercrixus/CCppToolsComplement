@@ -108,6 +108,15 @@ async function refreshEntrySourcesHelper(entryIndex, relSourcesJson) {
   );
 }
 
+async function setJsonSettingsFileExcludeHelper(fileExcludeExts) {
+  await runPythonModuleTask(
+    "jsonSettings.setJsonSettings",
+    false,
+    true,
+    [`--file-exclude-exts=${fileExcludeExts}`]
+  );
+}
+
 async function deleteMakefile(entryIndex) {
   await runPythonModuleTask(
     "makefile.deleteMakefile",
@@ -130,5 +139,6 @@ module.exports = {
   setCompileFlagsForProfileHelper,
   setLinkFlagsHelper,
   refreshEntrySourcesHelper,
+  setJsonSettingsFileExcludeHelper,
   deleteMakefile
 };

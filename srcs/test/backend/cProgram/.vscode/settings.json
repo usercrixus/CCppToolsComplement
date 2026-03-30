@@ -1,0 +1,8 @@
+{
+  "files.exclude": {
+    "**/*.o": true,
+    "**/*.out": true,
+    "**/*.d": true
+  },
+  "ccppToolsComplement.fakeCamelCase.enabled": true
+}

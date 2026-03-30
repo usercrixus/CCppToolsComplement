@@ -18,6 +18,7 @@ function activate(context) {
 
   const previewGearIconCommand = vscode.commands.registerCommand("ccppToolsComplement.previewGearIcon", async () => {
     try {
+      setGlobals(context);
       await pickGearMenu();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
