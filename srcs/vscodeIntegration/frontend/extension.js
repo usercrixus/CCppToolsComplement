@@ -6,7 +6,7 @@ const { pickProgram } = require("./graphic/menu/menu");
 function activate(context) {
   context.subscriptions.push(createFakeCamelCaseController());
 
-  const disposable = vscode.commands.registerCommand("ccppToolsComplement.generateAndDebugFromCurrentFile", async () => {
+  const generateAndDebugCommand = vscode.commands.registerCommand("ccppToolsComplement.generateAndDebugFromCurrentFile", async () => {
     try {
       setGlobals(context);
       await pickProgram();
@@ -15,7 +15,12 @@ function activate(context) {
       vscode.window.showErrorMessage(message);
     }
   });
-  context.subscriptions.push(disposable);
+
+  const previewGearIconCommand = vscode.commands.registerCommand("ccppToolsComplement.previewGearIcon", async () => {
+    vscode.window.showInformationMessage("Gear icon preview command.");
+  });
+
+  context.subscriptions.push(generateAndDebugCommand, previewGearIconCommand);
 }
 
 function deactivate() { }

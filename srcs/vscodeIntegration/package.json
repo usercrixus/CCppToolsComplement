@@ -50,6 +50,7 @@
   ],
   "activationEvents": [
     "onCommand:ccppToolsComplement.generateAndDebugFromCurrentFile",
+    "onCommand:ccppToolsComplement.previewGearIcon",
     "onLanguage:c",
     "onLanguage:cpp"
   ],
@@ -63,6 +64,14 @@
           "light": "resources/play-light.svg",
           "dark": "resources/play-dark.svg"
         }
+      },
+      {
+        "command": "ccppToolsComplement.previewGearIcon",
+        "title": "CCppToolsComplement: Preview Gear Icon",
+        "icon": {
+          "light": "resources/gear.svg",
+          "dark": "resources/gear.svg"
+        }
       }
     ],
     "menus": {
@@ -71,11 +80,20 @@
           "command": "ccppToolsComplement.generateAndDebugFromCurrentFile",
           "when": "resourceLangId == c || resourceLangId == cpp",
           "group": "navigation@1"
+        },
+        {
+          "command": "ccppToolsComplement.previewGearIcon",
+          "when": "resourceLangId == c || resourceLangId == cpp",
+          "group": "navigation@2"
         }
       ],
       "commandPalette": [
         {
           "command": "ccppToolsComplement.generateAndDebugFromCurrentFile",
+          "when": "resourceLangId == c || resourceLangId == cpp"
+        },
+        {
+          "command": "ccppToolsComplement.previewGearIcon",
           "when": "resourceLangId == c || resourceLangId == cpp"
         }
       ]
