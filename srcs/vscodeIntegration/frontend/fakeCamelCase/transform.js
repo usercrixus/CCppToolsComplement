@@ -14,7 +14,7 @@ function toFakeCamelCase(identifier) {
 
 function findFakeCamelCaseMatches(text) {
   const matches = [];
-  const pattern = /\b[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+\b/g;
+  const pattern = /\b[a-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+\b/g;
   let match = pattern.exec(text);
 
   while (match) {

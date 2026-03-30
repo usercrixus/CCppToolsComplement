@@ -3,6 +3,8 @@ const { findFakeCamelCaseMatches } = require("./transform");
 
 const SUPPORTED_LANGUAGES = new Set(["c", "cpp"]);
 const UPDATE_DELAY_MS = 120;
+const FUNCTION_COLOR = "#dcdcaa";
+const VARIABLE_COLOR = "#9cdcfe";
 
 function getFakeCamelCaseConfiguration() {
   return vscode.workspace.getConfiguration("ccppToolsComplement.fakeCamelCase");
@@ -16,6 +18,11 @@ function shouldForceEditorForeground() {
   return getFakeCamelCaseConfiguration().get("forceEditorForeground", false);
 }
 
+function getForcedColor() {
+  const configuredColor = getFakeCamelCaseConfiguration().get("forcedColor", "");
+  return typeof configuredColor === "string" ? configuredColor.trim() : "";
+}
+
 function isSupportedEditor(editor) {
   return Boolean(editor) && SUPPORTED_LANGUAGES.has(editor.document.languageId);
 }
@@ -27,15 +34,25 @@ function createDecorationType() {
   });
 }
 
-function createDecoration(editor, startOffset, endOffset, sourceText, displayText) {
+function getOverlayColor(match, visibleText) {
+  const forcedColor = getForcedColor();
+  if (forcedColor) {
+    return forcedColor;
+  }
+  if (shouldForceEditorForeground()) {
+    return new vscode.ThemeColor("editor.foreground");
+  }
+
+  const trailingText = visibleText.slice(match.index + match.source.length);
+  return /^\s*\(/.test(trailingText) ? FUNCTION_COLOR : VARIABLE_COLOR;
+}
+
+function createDecoration(editor, startOffset, endOffset, sourceText, displayText, color) {
   const after = {
     contentText: displayText,
-    margin: `0 0 0 -${sourceText.length}ch`
+    margin: `0 0 0 -${sourceText.length}ch`,
+    color
   };
-
-  if (shouldForceEditorForeground()) {
-    after.color = new vscode.ThemeColor("editor.foreground");
-  }
 
   return {
     range: new vscode.Range(
@@ -64,13 +81,15 @@ function updateEditor(editor, decorationType) {
     const matches = findFakeCamelCaseMatches(text);
 
     for (const match of matches) {
+      const color = getOverlayColor(match, text);
       decorations.push(
         createDecoration(
           editor,
           startOffset + match.index,
           startOffset + match.index + match.source.length,
           match.source,
-          match.display
+          match.display,
+          color
         )
       );
     }
