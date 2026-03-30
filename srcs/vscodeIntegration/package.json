@@ -87,6 +87,16 @@
           "type": "string",
           "default": "python3",
           "description": "Python executable used to run the generation scripts."
+        },
+        "ccppToolsComplement.fakeCamelCase.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Displays snake_case identifiers in C/C++ editors with a fake camelCase overlay without changing the file contents."
+        },
+        "ccppToolsComplement.fakeCamelCase.forceEditorForeground": {
+          "type": "boolean",
+          "default": false,
+          "description": "Forces the fake camelCase overlay to use the generic editor foreground color. Enable this only if your theme does not render the overlay text correctly."
         }
       }
     }

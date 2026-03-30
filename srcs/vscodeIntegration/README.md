@@ -17,6 +17,7 @@ It is designed for projects that generate build and debug configuration from tha
 - Lets you create a new program entry from inside VS Code.
 - Lets you update run arguments, compile flags, and link flags for an existing entry.
 - Starts the debugger through `ms-vscode.cpptools`.
+- Can visually overlay `snake_case` identifiers as fake `camelCase` in C/C++ editors without modifying the file.
 
 ### Menu Overview
 
@@ -95,6 +96,14 @@ Default:
 ```
 
 Set this if your system uses a different Python command, such as `python`.
+
+### `ccppToolsComplement.fakeCamelCase.enabled`
+
+Enable or disable the editor overlay that visually turns identifiers such as `my_int` into `myInt` while keeping the source file unchanged.
+
+### `ccppToolsComplement.fakeCamelCase.forceEditorForeground`
+
+Force the overlay text to use the generic editor foreground color. Leave this disabled to preserve the theme's original colors whenever the editor can do so correctly.
 
 ## Notes
 
