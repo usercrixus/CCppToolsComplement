@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 import os
 
@@ -51,8 +52,13 @@ def traverse_file_system(startPath, excludedFolderPath):
 
 # it get the path where it should start the traversing + a list of excluded folder
 def main():
-    startPath = "/"
-    excludedFolderPath = []  # get excluded folder from the args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("startPath")
+    parser.add_argument("excludedFolderPath", nargs="*")
+    args = parser.parse_args()
+
+    startPath = args.startPath
+    excludedFolderPath = args.excludedFolderPath
     traverse_file_system(startPath, excludedFolderPath)
 
 
