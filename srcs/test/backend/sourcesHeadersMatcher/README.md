@@ -16,6 +16,10 @@ python3 srcs/vscodeIntegration/backend/sourcesHeadersMatcher/main.py \
   srcs/test/backend/sourcesHeadersMatcher/project
 ```
 
+```bash
+git restore --source=HEAD -- srcs/test/backend/sourcesHeadersMatcher/project
+```
+
 Useful files:
 - `project/catalog/declarations.c`: misplaced declarations
 - `project/services/math/compute.c`: function implementation
