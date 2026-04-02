@@ -26,18 +26,28 @@ def _append_unique(target_list, seen_values, value):
     target_list.append(value)
 
 
-def _classify_proto(proto_text):
-    if get_struct_proto(proto_text):
-        return "struct"
-    if get_cpp_class_proto(proto_text):
-        return "class"
-    if get_c_function_proto(proto_text) or get_cpp_function_proto(proto_text):
-        return "function"
-    if get_macro_proto(proto_text):
-        return "macro"
-    if get_typedef_proto(proto_text):
-        return "typedef"
-    return None
+def _extract_grouped_proto(proto_text):
+    struct_matches = get_struct_proto(proto_text)
+    if struct_matches:
+        return (("struct", struct_matches),)
+
+    class_matches = get_cpp_class_proto(proto_text)
+    if class_matches:
+        return (("class", class_matches),)
+
+    function_matches = get_c_function_proto(proto_text) + get_cpp_function_proto(proto_text)
+    if function_matches:
+        return (("function", function_matches),)
+
+    macro_matches = get_macro_proto(proto_text)
+    if macro_matches:
+        return (("macro", macro_matches),)
+
+    typedef_matches = get_typedef_proto(proto_text)
+    if typedef_matches:
+        return (("typedef", typedef_matches),)
+
+    return ()
 
 
 def resolveProto(protoMap):
@@ -47,9 +57,8 @@ def resolveProto(protoMap):
     for entries in protoMap.values():
         for entry in entries:
             proto_text = _get_entry_text(entry).strip()
-            proto_type = _classify_proto(proto_text)
-            if proto_type is None:
-                continue
-            _append_unique(grouped_proto[proto_type], seen_group_values[proto_type], proto_text)
+            for proto_type, matches in _extract_grouped_proto(proto_text):
+                for match in matches:
+                    _append_unique(grouped_proto[proto_type], seen_group_values[proto_type], match)
 
     return [grouped_proto[proto_type] for proto_type in PROTO_GROUP_ORDER]
