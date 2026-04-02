@@ -1,7 +1,10 @@
 from getSourceProto import (
+    get_c_function_proto,
     get_c_function_imp,
     get_cpp_class_imp,
+    get_cpp_function_proto,
     get_macro_proto,
+    get_struct_forward_decl,
     get_struct_imp,
     get_struct_proto,
     get_typedef_proto,
@@ -45,6 +48,30 @@ def _count_symbol_usage(file_text, symbol_name):
     return len(re.findall(rf"\b{re.escape(symbol_name)}\b", file_text))
 
 
+def _remove_statements_from_text(file_text, statements):
+    updated_text = file_text
+    for statement in statements:
+        if not statement:
+            continue
+        updated_text = updated_text.replace(statement, "")
+    return updated_text
+
+
+def _strip_non_usage_statements(file_text):
+    non_usage_statements = list(
+        dict.fromkeys(
+            get_c_function_proto(file_text)
+            + get_cpp_function_proto(file_text)
+            + get_c_function_imp(file_text)
+            + get_struct_forward_decl(file_text)
+            + get_struct_imp(file_text)
+            + get_typedef_proto(file_text)
+            + get_cpp_class_imp(file_text)
+        )
+    )
+    return _remove_statements_from_text(file_text, non_usage_statements)
+
+
 def _build_recurence(file_path, file_text, symbol_name, source_texts_by_path):
     recurence = []
     all_source_texts = dict(source_texts_by_path)
@@ -52,9 +79,10 @@ def _build_recurence(file_path, file_text, symbol_name, source_texts_by_path):
     implementation_source = str(file_path)
 
     for source_path, source_text in all_source_texts.items():
-        times = _count_symbol_usage(source_text, symbol_name)
+        usage_text = _strip_non_usage_statements(source_text)
+        times = _count_symbol_usage(usage_text, symbol_name)
         if str(source_path) == implementation_source:
-            times = max(times - 1, 0)
+            times = max(times, 0)
         if times <= 0:
             continue
 
@@ -71,7 +99,7 @@ def _build_recurence(file_path, file_text, symbol_name, source_texts_by_path):
     return [
         {
             "source": str(file_path),
-            "times": max(_count_symbol_usage(file_text, symbol_name) - 1, 0),
+            "times": _count_symbol_usage(_strip_non_usage_statements(file_text), symbol_name),
         }
     ]
 
