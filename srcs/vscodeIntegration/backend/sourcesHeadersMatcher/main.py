@@ -43,6 +43,20 @@ def _merge_header_map(global_header_map, file_header_map):
         global_header_map.setdefault(proto_name, []).extend(entries)
 
 
+def _format_rendered_headers(rendered_headers):
+    if not rendered_headers:
+        return "No headers generated."
+
+    lines = []
+    for header_path in sorted(rendered_headers):
+        lines.append(f"{header_path}:")
+        for proto in rendered_headers[header_path]:
+            lines.append(f"  - {proto}")
+        lines.append("")
+
+    return "\n".join(lines).rstrip()
+
+
 def traverse_file_system(startPath, excludedFolderPath):
     start_path = Path(startPath).expanduser().resolve()
     excluded_paths = _normalize_excluded_paths(excludedFolderPath)
@@ -90,7 +104,7 @@ def main():
     traversal_result = traverse_file_system(startPath, excludedFolderPath)
     generated_headers = traversal_result["generatedHeaders"]
     rendered_headers = renderHeaders(generated_headers)
-    print(rendered_headers)
+    print(_format_rendered_headers(rendered_headers))
 
 
 if __name__ == "__main__":

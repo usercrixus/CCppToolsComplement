@@ -1,0 +1,16 @@
+1- Remove function proto from srcs
+2- Remove struct proto/declaration from srcs 
+3- Delete empty file
+
+
+manage typdef form:
+typedef struct runtime_flag {
+} runtime_flag_t;
+
+i suppose we should declare
+each struct proto first
+then
+each typedef proto
+then
+their implementation
+

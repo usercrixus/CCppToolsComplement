@@ -12,7 +12,7 @@ def _resolve_scan_path(folder_path):
 
 
 def _build_tmp_folder(scan_path, tmp_root):
-    safe_anchor = scan_path.anchor.replace(":", "")
+    safe_anchor = scan_path.anchor.replace(":", "").replace("/", "") or "root"
     relative_scan_path = scan_path.relative_to(scan_path.anchor)
     return Path(tmp_root) / TMP_HEADERS_ROOT_NAME / safe_anchor / relative_scan_path
 

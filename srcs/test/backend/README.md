@@ -34,3 +34,20 @@ The test is intended as an end-to-end validation of:
 - Makefile generation
 - rebuild behavior after a header change
 - VSCode task and launch generation
+
+## sourcesHeadersMatcher fixture project
+
+`srcs/test/backend/sourcesHeadersMatcher/project` is a small C fixture tree for
+`srcs/vscodeIntegration/backend/sourcesHeadersMatcher/main.py`.
+
+Run it with:
+
+```bash
+python3 srcs/vscodeIntegration/backend/sourcesHeadersMatcher/main.py srcs/test/backend/sourcesHeadersMatcher/project
+```
+
+What it contains:
+- no local headers at the start
+- declarations grouped in `project/catalog/declarations.c`
+- implementations split across `project/services/` and `project/config/`
+- a macro, forward-declared struct and typedef inside `project/config/feature.c`
