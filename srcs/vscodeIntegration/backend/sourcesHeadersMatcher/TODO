@@ -1,11 +1,5 @@
-1- Remove function proto from srcs
-2- Remove struct proto/declaration from srcs 
-3- Delete empty file
-
-
-manage typdef form:
-typedef struct runtime_flag {
-} runtime_flag_t;
+1 - manage include of headers
+2 - manage them who have implemented function in headers
 
 i suppose we should declare
 each struct proto first
