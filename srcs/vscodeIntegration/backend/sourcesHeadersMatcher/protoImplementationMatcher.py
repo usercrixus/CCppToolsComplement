@@ -43,6 +43,15 @@ def _count_recurence(file_text, symbol_name):
     return max(len(re.findall(rf"\b{re.escape(symbol_name)}\b", file_text)) - 1, 0)
 
 
+def _build_recurence(file_path, file_text, symbol_name):
+    return [
+        {
+            "source": str(file_path),
+            "times": _count_recurence(file_text, symbol_name),
+        }
+    ]
+
+
 def _find_matching_function_imp(proto, function_imps):
     proto_name = _extract_name(proto, FUNCTION_NAME_RE)
     if proto_name is None:
@@ -122,7 +131,7 @@ def build_proto_map(file_path, proto_groups, file_text):
             entry = {
                 "implementation": implementation,
                 "source": str(file_path),
-                "recurence": _count_recurence(file_text, symbol_name),
+                "recurence": _build_recurence(file_path, file_text, symbol_name),
             }
             result_map.setdefault(proto, []).append(entry)
 

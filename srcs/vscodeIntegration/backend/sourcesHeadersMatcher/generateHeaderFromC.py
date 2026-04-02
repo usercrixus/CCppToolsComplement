@@ -8,9 +8,12 @@ def _read_source(file_path):
 
 
 # return a map like myMap[proto] = [{implementation, source, recurence}]
-# myMap["MY_MACRO"] = [{"implementation": "MY_MACRO 10", "source": "file/path1.c", "recurence": 2}]
-# myMap["MY_MACRO"] = [{"implementation": "MY_MACRO 10", "source": "file/path1.c", "recurence": 2},
-#                      {"implementation": "MY_MACRO 10", "source": "file/path2.c", "recurence": 1}]
+# myMap["MY_MACRO"] = [{"implementation": "MY_MACRO 10", "source": "file/path1.c",
+#                       "recurence": [{"source": "file/path1.c", "times": 2}]}]
+# myMap["MY_MACRO"] = [{"implementation": "MY_MACRO 10", "source": "file/path1.c",
+#                       "recurence": [{"source": "file/path1.c", "times": 2}]},
+#                      {"implementation": "MY_MACRO 10", "source": "file/path2.c",
+#                       "recurence": [{"source": "file/path2.c", "times": 1}]}]
 # then we will put MY_MACRO in the header of file/path1.c, file/path1.h. then include it in all others
 def generateHeaderFromC(filePath, proto):
     source_path = Path(filePath).expanduser().resolve()
