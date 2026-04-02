@@ -9,6 +9,24 @@ from putAllHeaderInTmp import putAllHeaderInTmp
 
 C_SOURCE_EXTENSIONS = {".c"}
 CPP_SOURCE_EXTENSIONS = {".cc", ".cpp"}
+# To avoid recursive include
+# if limit = 1
+# If # myMap["MY_MACRO"] = {"MY_MACRO 10", "file/path1.c", 1} put it in file/path1.c
+# If # myMap["MY_MACRO"] = {"MY_MACRO 10", "file/path1.c", 0} put it in its own header
+# more complexe if limit = 0
+# If # myMap["MY_MACRO"] = {"MY_MACRO 10", "file/path1.c", 2} put it in file/path1.c
+# If # myMap["MY_MACRO"] = {"MY_MACRO 10", "file/path2.c", 1} put it in its own header
+# If # myMap["MY_MACRO"] = {"MY_MACRO2 10", "file/path1.c", 2} put it in file/path1.c
+# If # myMap["MY_MACRO"] = {"MY_MACRO2 10", "file/path2.c", 1} put it in its own header
+# Put MY_MACRO MY_MACRO2 in the same header as the have the same shared folder using them
+
+# Other possibilities :
+#  Do a compiler that manage recursive include...
+#  Let IA manage this part
+
+
+# I suppose that 
+RECURENCE_LIMIT = 0
 
 
 def _normalize_excluded_paths(excluded_folder_paths):
