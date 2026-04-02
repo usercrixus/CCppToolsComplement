@@ -15,7 +15,7 @@ def _read_source(file_path):
 #                      {"implementation": "MY_MACRO 10", "source": "file/path2.c",
 #                       "recurence": [{"source": "file/path2.c", "times": 1}]}]
 # then we will put MY_MACRO in the header of file/path1.c, file/path1.h. then include it in all others
-def generateHeaderFromC(filePath, proto):
+def generateHeader(filePath, proto):
     source_path = Path(filePath).expanduser().resolve()
     source_text = _read_source(source_path)
     return build_proto_map(source_path, proto, source_text)

@@ -2,8 +2,7 @@ import argparse
 import os
 from pathlib import Path
 
-from generateHeaderFromC import generateHeaderFromC
-from generateHeaderFromCpp import generateHeaderFromCPP
+from generateHeader import generateHeader
 from putAllHeaderInTmp import putAllHeaderInTmp
 from resolveProto import resolveProto
 
@@ -38,10 +37,17 @@ def _is_excluded(path, excluded_paths):
     return any(path == excluded_path or excluded_path in path.parents for excluded_path in excluded_paths)
 
 
+def _merge_header_map(global_header_map, file_header_map):
+    for proto_name, entries in file_header_map.items():
+        global_header_map.setdefault(proto_name, []).extend(entries)
+
+
 def traverse_file_system(startPath, excludedFolderPath):
     start_path = Path(startPath).expanduser().resolve()
     excluded_paths = _normalize_excluded_paths(excludedFolderPath)
-    proto = resolveProto(startPath, C_SOURCE_EXTENSIONS | CPP_SOURCE_EXTENSIONS, excludedFolderPath)
+    source_extensions = C_SOURCE_EXTENSIONS | CPP_SOURCE_EXTENSIONS
+    proto = resolveProto(startPath, source_extensions, excludedFolderPath)
+    generated_headers = {}
 
     for current_root, dir_names, file_names in os.walk(start_path):
         current_path = Path(current_root).resolve()
@@ -61,10 +67,14 @@ def traverse_file_system(startPath, excludedFolderPath):
             file_path = current_path / file_name
             suffix = file_path.suffix.lower()
 
-            if suffix in C_SOURCE_EXTENSIONS:
-                generateHeaderFromC(str(file_path), proto)
-            elif suffix in CPP_SOURCE_EXTENSIONS:
-                generateHeaderFromCPP(str(file_path))
+            if suffix in source_extensions:
+                file_header_map = generateHeader(str(file_path), proto)
+                _merge_header_map(generated_headers, file_header_map)
+
+    return {
+        "proto": proto,
+        "generatedHeaders": generated_headers,
+    }
 
 
 # it get the path where it should start the traversing + a list of excluded folder
@@ -76,7 +86,7 @@ def main():
 
     startPath = args.startPath
     excludedFolderPath = args.excludedFolderPath
-    traverse_file_system(startPath, excludedFolderPath)
+    return traverse_file_system(startPath, excludedFolderPath)
 
 
 if __name__ == "__main__":
