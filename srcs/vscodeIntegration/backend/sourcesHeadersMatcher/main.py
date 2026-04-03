@@ -4,6 +4,7 @@ import argparse
 import os
 from pathlib import Path
 
+from Classes.resolved_proto import ResolvedProto
 from Classes.traversal_result import TraversalResult
 from Classes.type_aliases import GeneratedHeaders, SourceTextsByPath
 from printer import format_stringified_headers
@@ -19,17 +20,19 @@ CPP_SOURCE_EXTENSIONS = {".cc", ".cpp"}
 RECURENCE_LIMIT = 0
 
 
-def _merge_header_map(global_header_map: GeneratedHeaders, file_header_map: GeneratedHeaders) -> None:
+def merge_header_map(global_header_map: GeneratedHeaders, file_header_map: GeneratedHeaders) -> None:
     for proto_name, entries in file_header_map.items():
         global_header_map.setdefault(proto_name, []).extend(entries)
 
 
-def _collect_sources(
+def collect_sources(
     start_path: Path,
     excluded_paths: set[Path],
     source_extensions: set[str],
-) -> SourceTextsByPath:
+    proto: ResolvedProto,
+) -> tuple[SourceTextsByPath, GeneratedHeaders]:
     source_texts: SourceTextsByPath = {}
+    generated_headers: GeneratedHeaders = {}
 
     for current_root, dir_names, file_names in os.walk(start_path):
         current_path = Path(current_root).resolve()
@@ -45,12 +48,14 @@ def _collect_sources(
 
         for file_name in file_names:
             file_path = current_path / file_name
-            if file_path.suffix.lower() not in source_extensions:
-                continue
-            resolved_path = str(file_path.resolve())
-            source_texts[resolved_path] = file_path.read_text(encoding="utf-8", errors="ignore")
+            if file_path.suffix.lower() in source_extensions:
+                resolved_path = str(file_path.resolve())
+                source_text = file_path.read_text(encoding="utf-8", errors="ignore")
+                source_texts[resolved_path] = source_text
+                file_header_map = build_proto_map(resolved_path, proto, source_text)
+                merge_header_map(generated_headers, file_header_map)
 
-    return source_texts
+    return source_texts, generated_headers
 
 
 def traverse_file_system(startPath: str, excludedFolderPath: list[str]) -> TraversalResult:
@@ -58,12 +63,12 @@ def traverse_file_system(startPath: str, excludedFolderPath: list[str]) -> Trave
     excluded_paths = _normalize_excluded_paths(excludedFolderPath)
     source_extensions = C_SOURCE_EXTENSIONS | CPP_SOURCE_EXTENSIONS
     proto = resolveProto(startPath, source_extensions, excludedFolderPath)
-    source_texts_by_path = _collect_sources(start_path, excluded_paths, source_extensions)
-    generated_headers: GeneratedHeaders = {}
-
-    for source_path, source_text in source_texts_by_path.items():
-        file_header_map = build_proto_map(source_path, proto, source_text)
-        _merge_header_map(generated_headers, file_header_map)
+    source_texts_by_path, generated_headers = collect_sources(
+        start_path,
+        excluded_paths,
+        source_extensions,
+        proto,
+    )
 
     return TraversalResult(
         proto=proto,

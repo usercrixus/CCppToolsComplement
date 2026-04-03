@@ -37,13 +37,11 @@ class ResolvedProto:
             values.add(value)
 
     def add_unique(self, other: "ResolvedProto") -> None:
-        for proto in other.classes:
-            self._add_unique_set_value(self.classes, proto)
-        for proto in other.functions:
-            self._add_unique_set_value(self.functions, proto)
-        for proto in other.macros:
-            self._add_unique_set_value(self.macros, proto)
-        for proto in other.structs:
-            self._add_unique_set_value(self.structs, proto)
-        for proto in other.typedefs:
-            self._add_unique_set_value(self.typedefs, proto)
+        current_groups = {
+            proto_type: protos
+            for proto_type, protos, _, _ in ResolvedProto.iter_proto_groups(self)
+        }
+        for proto_type, protos, _, _ in ResolvedProto.iter_proto_groups(other):
+            current_group = current_groups[proto_type]
+            for proto in protos:
+                self._add_unique_set_value(current_group, proto)
