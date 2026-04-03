@@ -18,7 +18,6 @@ def _collect_from_text(file_text: str) -> ResolvedProto:
     function_proto = list(dict.fromkeys(get_c_function_proto(file_text) + get_cpp_function_proto(file_text)))
     macro_proto = get_macro_proto(file_text)
     typedef_proto = get_typedef_proto(file_text)
-
     return ResolvedProto(
         classes=class_proto,
         functions=function_proto,

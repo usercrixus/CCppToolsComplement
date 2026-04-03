@@ -167,11 +167,12 @@ def extract_file_statements(file_text: str) -> ExtractedFileStatements:
 
 
 def build_proto_map(
-    file_path: Path,
+    file_path: str | Path,
     proto_groups: ResolvedProto,
     file_text: str,
     source_texts_by_path: SourceTextsByPath | None = None,
 ) -> GeneratedHeaders:
+    file_path = Path(file_path).expanduser().resolve()
     extracted_file_statements = extract_file_statements(file_text)
     result_map: GeneratedHeaders = {}
     source_texts_by_path = source_texts_by_path or {}
