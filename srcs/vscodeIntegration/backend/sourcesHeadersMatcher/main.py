@@ -6,8 +6,9 @@ from pathlib import Path
 
 from Classes.traversal_result import TraversalResult
 from Classes.type_aliases import GeneratedHeaders, SourceTextsByPath
-from generateHeader import generateHeader
 from printer import format_stringified_headers
+from protoImplementationMatcher import build_proto_map
+from recurence import setRecurence
 from resolveProto import resolveProto
 from stringify import stringify_headers
 from utils import _is_excluded, _normalize_excluded_paths
@@ -61,10 +62,14 @@ def traverse_file_system(startPath: str, excludedFolderPath: list[str]) -> Trave
     generated_headers: GeneratedHeaders = {}
 
     for source_path, source_text in source_texts_by_path.items():
-        file_header_map = generateHeader(source_path, proto, source_text, source_texts_by_path)
+        file_header_map = build_proto_map(source_path, proto, source_text)
         _merge_header_map(generated_headers, file_header_map)
 
-    return TraversalResult(proto=proto, generated_headers=generated_headers)
+    return TraversalResult(
+        proto=proto,
+        generated_headers=generated_headers,
+        source_texts_by_path=source_texts_by_path,
+    )
 
 
 def main() -> None:
@@ -72,12 +77,13 @@ def main() -> None:
     parser.add_argument("startPath")
     parser.add_argument("excludedFolderPath", nargs="*")
     args = parser.parse_args()
-
     startPath = args.startPath
     excludedFolderPath = args.excludedFolderPath
+
     traversal_result = traverse_file_system(startPath, excludedFolderPath)
-    generated_headers = traversal_result.generated_headers
-    stringified_headers = stringify_headers(generated_headers)
+    setRecurence(traversal_result.generated_headers, traversal_result.source_texts_by_path)
+
+    stringified_headers = stringify_headers(traversal_result.generated_headers)
     print(format_stringified_headers(stringified_headers))
 
 
