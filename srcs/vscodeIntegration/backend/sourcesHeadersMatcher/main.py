@@ -10,24 +10,12 @@ from generateHeader import generateHeader
 from printer import format_stringified_headers
 from resolveProto import resolveProto
 from stringify import stringify_headers
+from utils import _is_excluded, _normalize_excluded_paths
 
 
 C_SOURCE_EXTENSIONS = {".c"}
 CPP_SOURCE_EXTENSIONS = {".cc", ".cpp"}
 RECURENCE_LIMIT = 0
-
-
-def _normalize_excluded_paths(excluded_folder_paths: list[str]) -> set[Path]:
-    return {
-        Path(folder_path).expanduser().resolve()
-        for folder_path in excluded_folder_paths
-    }
-
-
-def _is_excluded(path: Path, excluded_paths: set[Path]) -> bool:
-    return any(path == excluded_path or excluded_path in path.parents for excluded_path in excluded_paths)
-
-
 def _merge_header_map(global_header_map: GeneratedHeaders, file_header_map: GeneratedHeaders) -> None:
     for proto_name, entries in file_header_map.items():
         global_header_map.setdefault(proto_name, []).extend(entries)

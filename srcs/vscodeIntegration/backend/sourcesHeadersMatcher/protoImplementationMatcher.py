@@ -19,16 +19,6 @@ from getSourceProto import (
     get_struct_proto,
     get_typedef_proto,
 )
-
-
-PROTO_TYPE_INDEX = {
-    "class": 0,
-    "function": 1,
-    "macro": 2,
-    "struct": 3,
-    "typedef": 4,
-}
-
 FUNCTION_NAME_RE = re.compile(r"([A-Za-z_]\w*)\s*\(")
 MACRO_NAME_RE = re.compile(r"#\s*define\s+([A-Za-z_]\w*)")
 CLASS_NAME_RE = re.compile(r"\bclass\s+([A-Za-z_]\w*)")
@@ -186,9 +176,14 @@ def build_proto_map(
     result_map: GeneratedHeaders = {}
     source_texts_by_path = source_texts_by_path or {}
 
-    for proto_type, proto_index in PROTO_TYPE_INDEX.items():
-        del proto_index
-        for proto in proto_groups.get_by_type(proto_type):
+    for proto_type, protos in (
+        ("class", proto_groups.classes),
+        ("function", proto_groups.functions),
+        ("macro", proto_groups.macros),
+        ("struct", proto_groups.structs),
+        ("typedef", proto_groups.typedefs),
+    ):
+        for proto in protos:
             implementation = _match_proto(proto_type, proto, extracted_file_statements)
             if implementation is None:
                 continue

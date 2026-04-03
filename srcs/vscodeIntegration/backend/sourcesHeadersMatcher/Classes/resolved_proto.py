@@ -5,21 +5,24 @@ from dataclasses import dataclass, field
 
 @dataclass(slots=True)
 class ResolvedProto:
-    classes: list[str] = field(default_factory=list)
-    functions: list[str] = field(default_factory=list)
-    macros: list[str] = field(default_factory=list)
-    structs: list[str] = field(default_factory=list)
-    typedefs: list[str] = field(default_factory=list)
+    classes: set[str] = field(default_factory=set)
+    functions: set[str] = field(default_factory=set)
+    macros: set[str] = field(default_factory=set)
+    structs: set[str] = field(default_factory=set)
+    typedefs: set[str] = field(default_factory=set)
 
-    def get_by_type(self, proto_type: str) -> list[str]:
-        if proto_type == "class":
-            return self.classes
-        if proto_type == "function":
-            return self.functions
-        if proto_type == "macro":
-            return self.macros
-        if proto_type == "struct":
-            return self.structs
-        if proto_type == "typedef":
-            return self.typedefs
-        raise KeyError(f"Unknown proto type '{proto_type}'.")
+    def _add_unique_set_value(self, values: set[str], value: str) -> None:
+        if value and value not in values:
+            values.add(value)
+
+    def add_unique(self, other: "ResolvedProto") -> None:
+        for proto in other.classes:
+            self._add_unique_set_value(self.classes, proto)
+        for proto in other.functions:
+            self._add_unique_set_value(self.functions, proto)
+        for proto in other.macros:
+            self._add_unique_set_value(self.macros, proto)
+        for proto in other.structs:
+            self._add_unique_set_value(self.structs, proto)
+        for proto in other.typedefs:
+            self._add_unique_set_value(self.typedefs, proto)

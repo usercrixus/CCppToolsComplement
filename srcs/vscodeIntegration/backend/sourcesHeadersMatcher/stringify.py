@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-
 from Classes.proto_match import ProtoMatch
 from Classes.render_job import RenderJob
 from Classes.type_aliases import GeneratedHeaders, HeaderMap, IncludeMap
