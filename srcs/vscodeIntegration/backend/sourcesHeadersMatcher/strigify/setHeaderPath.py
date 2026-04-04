@@ -12,11 +12,8 @@ def header_path_from_source(source_path: str) -> str:
     suffix = source.suffix.lower()
     if suffix in HEADER_EXTENSIONS:
         return str(source)
-    if suffix == ".c":
-        return str(source.with_suffix(".h"))
-    if suffix == ".cpp":
-        return str(source.with_suffix(".hpp"))
-    return str(source.with_suffix(".h"))
+    header_suffix = HEADER_EXTENSIONS[SOURCE_EXTENSIONS.index(suffix)]
+    return str(source.with_suffix(header_suffix))
 
 
 def best_recurence_path(entry: ProtoMatch) -> str | None:
