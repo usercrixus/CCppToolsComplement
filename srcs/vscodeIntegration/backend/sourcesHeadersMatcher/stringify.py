@@ -4,7 +4,8 @@ import os
 from pathlib import Path
 from Classes.proto_match import ProtoMatch
 from Classes.render_job import RenderJob
-from Classes.type_aliases import GeneratedHeaders, HeaderMap, IncludeMap
+from Classes.type_aliases import HeaderMap, IncludeMap
+from generatedHeaders import GeneratedHeaders
 
 
 def _append_unique(target_list: list[str], seen_values: set[str], value: str) -> None:

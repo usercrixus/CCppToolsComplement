@@ -6,7 +6,7 @@ from pathlib import Path
 from Classes.extracted_file_statements import ExtractedFileStatements
 from Classes.proto_match import ProtoMatch
 from Classes.resolved_proto import ResolvedProto
-from Classes.type_aliases import GeneratedHeaders
+from generatedHeaders import GeneratedHeaders
 from getSourceProto import (
     get_c_function_imp,
     get_cpp_class_imp,

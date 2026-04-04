@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
-from getTraversalResult import getTraversalResult
+from Classes.traversal_result import getTraversalResult
+from globals import C_SOURCE_EXTENSIONS, CPP_SOURCE_EXTENSIONS
+from getSourceTexts import getSourceTexts
 from printer import format_stringified_headers
-from recurence import setRecurence
 from stringify import stringify_headers
+from utils import normalize_excluded_paths
 
 
 def main() -> None:
@@ -15,9 +18,11 @@ def main() -> None:
     args = parser.parse_args()
     startPath = args.startPath
     excludedFolderPath = args.excludedFolderPath
-
-    traversal_result = getTraversalResult(startPath, excludedFolderPath)
-    setRecurence(traversal_result.generated_headers, traversal_result.source_texts_by_path)
+    start_path = Path(startPath).expanduser().resolve()
+    excluded_paths = normalize_excluded_paths(excludedFolderPath)
+    source_extensions = C_SOURCE_EXTENSIONS | CPP_SOURCE_EXTENSIONS
+    source_texts_by_path = getSourceTexts(start_path, excluded_paths, source_extensions)
+    traversal_result = getTraversalResult(startPath, excludedFolderPath, source_texts_by_path).setRecurence()
 
     stringified_headers = stringify_headers(traversal_result.generated_headers)
     print(format_stringified_headers(stringified_headers))
