@@ -10,12 +10,11 @@ from Classes.SourceTextsByPath import SourceTextsByPath
 from utils import is_excluded
 
 
-GeneratedHeaders: TypeAlias = dict[str, list[ProtoMatch]]
+GeneratedHeaders: TypeAlias = dict[str, ProtoMatch]
 
 
 def merge_header_map(global_header_map: GeneratedHeaders, file_header_map: GeneratedHeaders) -> None:
-    for proto_name, entries in file_header_map.items():
-        global_header_map.setdefault(proto_name, []).extend(entries)
+    global_header_map.update(file_header_map)
 
 
 def process_source_file(

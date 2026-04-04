@@ -69,8 +69,8 @@ class ExtractedFileStatements:
 ## Referenced aliases
 
 ```python
-GeneratedHeaders = dict[str, list[ProtoMatch]]
-# Maps one symbol name to all candidate matches found for it.
+GeneratedHeaders = dict[str, ProtoMatch]
+# Maps one symbol name to its match.
 
 SourceTextsByPath = dict[str, str]
 # Maps a file path to the full source text loaded from that file.

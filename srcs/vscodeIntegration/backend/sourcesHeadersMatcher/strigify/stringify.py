@@ -8,6 +8,7 @@ from Classes.Header import Header
 from Classes.ProtoMatch import ProtoMatch
 from Classes.RenderJob import RenderJob
 from Classes.TypeAliases import HeaderMap, IncludeMap
+from strigify.setHeaderPath import header_path_from_source, set_entry_header_paths
 
 
 def _append_unique(target_list: list[str], seen_values: set[str], value: str) -> None:
@@ -15,14 +16,6 @@ def _append_unique(target_list: list[str], seen_values: set[str], value: str) ->
         return
     seen_values.add(value)
     target_list.append(value)
-
-
-def _header_path_from_source(source_path: str) -> str:
-    return str(Path(source_path).with_suffix(".h"))
-
-
-def _entry_recurence_score(entry: ProtoMatch) -> int:
-    return sum(entry.recurence.values())
 
 
 def _header_bucket(header: Header, proto_type: str) -> list[str] | None:
@@ -64,72 +57,53 @@ def _append_typedef_entry(header: Header, seen_values: set[str], entry: ProtoMat
     _append_unique(header.typedef_declarations, seen_values, entry.declaration)
 
 
-def _target_headers_for_proto(entries: list[ProtoMatch]) -> list[str]:
-    if not entries:
-        return []
-    proto_type = entries[0].proto_type
-    if proto_type == "function":
-        return [_header_path_from_source(entry.source) for entry in entries]
-
-    if proto_type in {"macro", "struct", "typedef", "class"}:
-        best_entry = max(entries, key=_entry_recurence_score)
-        return [_header_path_from_source(best_entry.source)]
-
-    return []
-
-
 def _append_proto_entries_to_header_map(
     header_map: HeaderMap,
     seen_header_values: dict[str, set[str]],
-    entries: list[ProtoMatch],
+    entry: ProtoMatch,
 ) -> None:
-    if not entries:
-        return
-
-    proto_type = entries[0].proto_type
+    proto_type = entry.proto_type
     if proto_type == "function":
-        for entry in entries:
-            header_path = _header_path_from_source(entry.source)
-            if header_path not in header_map:
-                header_map[header_path] = Header(path=header_path)
-            seen_header_values.setdefault(header_path, set())
-            _append_unique(header_map[header_path].functions, seen_header_values[header_path], entry.declaration)
-        return
-
-    target_headers = _target_headers_for_proto(entries)
-    for header_path in target_headers:
+        header_path = header_path_from_source(entry.source)
         if header_path not in header_map:
             header_map[header_path] = Header(path=header_path)
         seen_header_values.setdefault(header_path, set())
-        for entry in entries:
-            if proto_type == "struct":
-                _append_struct_entry(header_map[header_path], seen_header_values[header_path], entry)
-                continue
-            if proto_type == "typedef":
-                _append_typedef_entry(header_map[header_path], seen_header_values[header_path], entry)
-                continue
-            target_bucket = _header_bucket(header_map[header_path], proto_type)
-            if target_bucket is None:
-                continue
-            _append_unique(target_bucket, seen_header_values[header_path], entry.declaration)
+        _append_unique(header_map[header_path].functions, seen_header_values[header_path], entry.declaration)
+        return
+
+    header_path = entry.header_path
+    if not header_path:
+        return
+    if header_path not in header_map:
+        header_map[header_path] = Header(path=header_path)
+    seen_header_values.setdefault(header_path, set())
+    if proto_type == "struct":
+        _append_struct_entry(header_map[header_path], seen_header_values[header_path], entry)
+        return
+    if proto_type == "typedef":
+        _append_typedef_entry(header_map[header_path], seen_header_values[header_path], entry)
+        return
+    target_bucket = _header_bucket(header_map[header_path], proto_type)
+    if target_bucket is None:
+        return
+    _append_unique(target_bucket, seen_header_values[header_path], entry.declaration)
 
 
 def _build_header_map(generated_headers: GeneratedHeaders) -> HeaderMap:
     header_map: HeaderMap = {}
     seen_header_values: dict[str, set[str]] = {}
 
-    for entries in generated_headers.values():
-        _append_proto_entries_to_header_map(header_map, seen_header_values, entries)
+    for entry in generated_headers.values():
+        _append_proto_entries_to_header_map(header_map, seen_header_values, entry)
 
     return header_map
 
 
 def _header_symbol_map(generated_headers: GeneratedHeaders) -> dict[str, set[str]]:
     symbol_to_headers: dict[str, set[str]] = {}
-    for symbol_name, entries in generated_headers.items():
-        for entry in entries:
-            if entry.header_path:
-                symbol_to_headers.setdefault(symbol_name, set()).add(str(Path(entry.header_path).resolve()))
+    for symbol_name, entry in generated_headers.items():
+        if entry.header_path:
+            symbol_to_headers.setdefault(symbol_name, set()).add(str(Path(entry.header_path).resolve()))
     return symbol_to_headers
 
 
@@ -147,17 +121,6 @@ def _set_header_includes(header_map: HeaderMap, generated_headers: GeneratedHead
                 for target_header in target_headers:
                     if target_header != current_header_path:
                         header.includes.add(target_header)
-
-
-def _set_entry_header_paths(generated_headers: GeneratedHeaders) -> None:
-    for entries in generated_headers.values():
-        target_headers = _target_headers_for_proto(entries)
-        if not target_headers:
-            continue
-
-        header_path = target_headers[0]
-        for entry in entries:
-            entry.header_path = header_path
 
 
 def _existing_include_lines(file_text: str) -> set[str]:
@@ -180,19 +143,18 @@ def _string_with_inserted_include(file_text: str, include_line: str) -> str:
 def _build_source_include_map(generated_headers: GeneratedHeaders) -> IncludeMap:
     include_map: IncludeMap = {}
 
-    for entries in generated_headers.values():
-        for entry in entries:
-            header_path = entry.header_path
-            if not header_path:
-                continue
+    for entry in generated_headers.values():
+        header_path = entry.header_path
+        if not header_path:
+            continue
 
-            implementation_source = str(Path(entry.source).resolve())
-            resolved_header_path = str(Path(header_path).resolve())
-            include_map.setdefault(implementation_source, set()).add(resolved_header_path)
+        implementation_source = str(Path(entry.source).resolve())
+        resolved_header_path = str(Path(header_path).resolve())
+        include_map.setdefault(implementation_source, set()).add(resolved_header_path)
 
-            for recurence_source in entry.recurence:
-                recurence_source = str(Path(recurence_source).resolve())
-                include_map.setdefault(recurence_source, set()).add(resolved_header_path)
+        for recurence_source in entry.recurence:
+            recurence_source = str(Path(recurence_source).resolve())
+            include_map.setdefault(recurence_source, set()).add(resolved_header_path)
 
     return include_map
 
@@ -219,7 +181,7 @@ def _build_source_jobs(generated_headers: GeneratedHeaders) -> list[RenderJob]:
 
 
 def stringify_headers(generated_headers: GeneratedHeaders) -> list[RenderJob]:
-    _set_entry_header_paths(generated_headers)
+    set_entry_header_paths(generated_headers)
     header_map = _build_header_map(generated_headers)
     _set_header_includes(header_map, generated_headers)
     header_jobs = [

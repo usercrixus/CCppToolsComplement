@@ -125,5 +125,5 @@ def build_proto_map(
                     source=str(file_path),
                     recurence={},
                 )
-                result_map.setdefault(symbol_name, []).append(entry)
+                result_map[symbol_name] = entry
     return result_map

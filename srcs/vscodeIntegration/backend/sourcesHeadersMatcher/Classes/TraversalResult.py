@@ -8,7 +8,7 @@ from Classes.GeneratedHeaders import GeneratedHeaders, getGeneratedHeaders
 from Classes.ProtoMatch import ProtoMatch
 from Classes.ResolvedProto import ResolvedProto, getResolvedProto
 from Classes.SourceTextsByPath import SourceTextsByPath
-from globals import C_SOURCE_EXTENSIONS, CPP_SOURCE_EXTENSIONS
+from globals import SOURCE_EXTENSIONS
 from utils import normalize_excluded_paths
 
 
@@ -34,13 +34,10 @@ class TraversalResult:
 
     def setRecurence(self) -> "TraversalResult":
         for source_path, source_text in self.source_texts_by_path.items():
-            for proto_matches in self.generated_headers.values():
-                if not proto_matches:
-                    continue
-                recurence = self.countProtoUsage(proto_matches[0], source_text)
+            for proto_match in self.generated_headers.values():
+                recurence = self.countProtoUsage(proto_match, source_text)
                 if recurence > 0:
-                    for proto_match in proto_matches:
-                        proto_match.recurence[source_path] = proto_match.recurence.get(source_path, 0) + recurence
+                    proto_match.recurence[source_path] = proto_match.recurence.get(source_path, 0) + recurence
         return self
 
 
@@ -51,7 +48,7 @@ def getTraversalResult(
 ) -> TraversalResult:
     start_path = Path(startPath).expanduser().resolve()
     excluded_paths = normalize_excluded_paths(excludedFolderPath)
-    source_extensions = C_SOURCE_EXTENSIONS | CPP_SOURCE_EXTENSIONS
+    source_extensions = SOURCE_EXTENSIONS
     protos = getResolvedProto(startPath, source_extensions, excludedFolderPath)
     generated_headers = getGeneratedHeaders(
         start_path,
