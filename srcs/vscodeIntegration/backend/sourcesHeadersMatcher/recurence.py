@@ -84,7 +84,6 @@ def symbol_name_from_proto(proto: str) -> str | None:
 
 
 def setRecurence(generated_headers: GeneratedHeaders, source_texts_by_path: SourceTextsByPath) -> None:
-    generated_headers
     for proto, entries in generated_headers.items():
         symbol_name = symbol_name_from_proto(proto)
         for entry in entries:
