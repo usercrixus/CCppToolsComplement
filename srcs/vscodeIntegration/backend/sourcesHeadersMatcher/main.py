@@ -6,8 +6,8 @@ from pathlib import Path
 from Classes.SourceTextsByPath import getSourceTexts
 from Classes.TraversalResult import getTraversalResult
 from globals import C_SOURCE_EXTENSIONS, CPP_SOURCE_EXTENSIONS
-from printer import format_stringified_headers
-from stringify import stringify_headers
+from text.printer import format_stringified_headers
+from text.stringify import stringify_headers
 from utils import normalize_excluded_paths
 
 
