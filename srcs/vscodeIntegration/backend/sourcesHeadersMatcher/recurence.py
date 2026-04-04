@@ -63,7 +63,6 @@ def _strip_non_usage_statements(file_text: str) -> str:
 
 
 def build_recurence(
-    file_path: str,
     symbol_name: str | None,
     source_texts_by_path: SourceTextsByPath,
 ) -> list[Recurrence]:
@@ -87,4 +86,4 @@ def setRecurence(generated_headers: GeneratedHeaders, source_texts_by_path: Sour
     for proto, entries in generated_headers.items():
         symbol_name = symbol_name_from_proto(proto)
         for entry in entries:
-            entry.recurence = build_recurence(entry.source, symbol_name, source_texts_by_path)
+            entry.recurence = build_recurence(symbol_name, source_texts_by_path)
