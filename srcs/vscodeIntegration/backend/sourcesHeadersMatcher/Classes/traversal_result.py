@@ -5,10 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from Classes.proto_match import ProtoMatch
-from Classes.resolved_proto import ResolvedProto
+from Classes.resolved_proto import ResolvedProto, getResolvedProto
 from Classes.type_aliases import SourceTextsByPath
 from generatedHeaders import GeneratedHeaders, getGeneratedHeaders
-from getResolvedProto import getResolvedProto
 from globals import C_SOURCE_EXTENSIONS, CPP_SOURCE_EXTENSIONS
 from utils import normalize_excluded_paths
 
