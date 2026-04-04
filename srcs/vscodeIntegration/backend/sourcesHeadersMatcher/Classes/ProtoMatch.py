@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from Classes.recurrence import Recurrence
+from Classes.Recurrence import Recurrence
 
 @dataclass(slots=True)
 class ProtoMatch:

@@ -4,9 +4,9 @@ import os
 from pathlib import Path
 from typing import TypeAlias
 
-from Classes.proto_match import ProtoMatch
-from Classes.resolved_proto import ResolvedProto
-from Classes.type_aliases import SourceTextsByPath
+from Classes.ProtoMatch import ProtoMatch
+from Classes.ResolvedProto import ResolvedProto
+from Classes.SourceTextsByPath import SourceTextsByPath
 from utils import is_excluded
 
 

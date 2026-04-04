@@ -3,10 +3,10 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from Classes.extracted_file_statements import ExtractedFileStatements
-from Classes.proto_match import ProtoMatch
-from Classes.resolved_proto import ResolvedProto
-from generatedHeaders import GeneratedHeaders
+from Classes.ExtractedFileStatements import ExtractedFileStatements
+from Classes.GeneratedHeaders import GeneratedHeaders
+from Classes.ProtoMatch import ProtoMatch
+from Classes.ResolvedProto import ResolvedProto
 from regexTools.getImplementation import (
     get_c_function_imp,
     get_cpp_class_imp,

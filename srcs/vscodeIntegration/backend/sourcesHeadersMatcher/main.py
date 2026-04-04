@@ -3,9 +3,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from Classes.traversal_result import getTraversalResult
+from Classes.SourceTextsByPath import getSourceTexts
+from Classes.TraversalResult import getTraversalResult
 from globals import C_SOURCE_EXTENSIONS, CPP_SOURCE_EXTENSIONS
-from getSourceTexts import getSourceTexts
 from printer import format_stringified_headers
 from stringify import stringify_headers
 from utils import normalize_excluded_paths

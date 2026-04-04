@@ -1,8 +1,13 @@
 from __future__ import annotations
+
 import os
 from pathlib import Path
-from Classes.type_aliases import SourceTextsByPath
+from typing import TypeAlias
+
 from utils import is_excluded
+
+
+SourceTextsByPath: TypeAlias = dict[str, str]
 
 
 def getSourceTexts(

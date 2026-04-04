@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from Classes.render_job import RenderJob
+from Classes.RenderJob import RenderJob
 
 
 def _group_label(file_path: str) -> str:
