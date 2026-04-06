@@ -4,11 +4,9 @@ from Classes.RenderJob import RenderJob
 from Classes.TypeAliases import Symbols
 from strigify.getHeaders import get_header_map
 from strigify.getSources import get_sources
-from strigify.setHeaderPath import set_entry_header_paths
 
 
 def stringify_headers(symbols: Symbols) -> list[RenderJob]:
-    set_entry_header_paths(symbols)
     headers = get_header_map(symbols)
     sources = get_sources(symbols)
     header_jobs = [

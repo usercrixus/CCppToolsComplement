@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 from Classes.ProtoMatch import ProtoMatch
+from Classes.RenderJob import RenderJob
 from Classes.ResolvedProto import ResolvedProto
 from regexTools.getSymbol import extract_struct_name, extract_typedef_name
 
@@ -70,6 +71,14 @@ class Header:
             + self.classes
             + self.functions
         )
+
+    @staticmethod
+    def create_include_set_render_job(path: str, include_set: set[str]) -> RenderJob:
+        include_lines = [f"#include {include}" for include in sorted(include_set)]
+        body = "\n".join(include_lines)
+        if body:
+            body = f"{body}\n"
+        return RenderJob(path=path, string=f"#pragma once\n\n{body}")
 
     def toString(self) -> str:
         include_lines = [

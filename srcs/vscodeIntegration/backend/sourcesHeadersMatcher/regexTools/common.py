@@ -27,6 +27,7 @@ STRUCT_BLOCK_START_RE = re.compile(
 )
 TYPEDEF_START_RE = re.compile(r"^\s*typedef\b")
 USING_PROTO_RE = re.compile(r"^\s*using\s+[A-Za-z_]\w*\s*=\s*.+;\s*$", re.MULTILINE)
+INCLUDE_RE = re.compile(r'^\s*#\s*include\s*([<"][^>"]+[>"])', re.MULTILINE)
 
 
 def extract_matches(text: str | None, pattern: re.Pattern[str]) -> list[str]:

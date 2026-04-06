@@ -10,6 +10,7 @@ from Classes.SourceTextsByPath import SourceTextsByPath
 from Classes.TypeAliases import Symbols
 from Classes.GeneratedHeaders import getSymbols
 from globals import SOURCE_EXTENSIONS
+from strigify.setHeaderPath import set_entry_header_paths
 from utils import normalize_excluded_paths
 
 
@@ -41,6 +42,17 @@ class TraversalResult:
                     proto_match.recurence[source_path] = proto_match.recurence.get(source_path, 0) + recurence
         return self
 
+    def correctIncludeSet(self, include_set: set[str]) -> set[str]:
+        for symbol in self.symbols.values():
+            if symbol.header_path is None:
+                continue
+            include_path = Path(symbol.header_path)
+            include_set.discard(symbol.header_path)
+            include_set.discard(include_path.name)
+            include_set.discard(f'"{include_path.name}"')
+            include_set.discard(f"<{include_path.name}>")
+        return include_set
+
 
 def getTraversalResult(
     startPath: str,
@@ -57,6 +69,7 @@ def getTraversalResult(
         source_extensions,
         protos,
     )
+    set_entry_header_paths(symbols)
     return TraversalResult(
         proto=protos,
         symbols=symbols,
