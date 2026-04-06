@@ -4,9 +4,9 @@ import re
 from pathlib import Path
 
 from Classes.ExtractedFileStatements import ExtractedFileStatements
-from Classes.GeneratedHeaders import GeneratedHeaders
 from Classes.ProtoMatch import ProtoMatch
 from Classes.ResolvedProto import ResolvedProto
+from Classes.TypeAliases import Symbols
 from regexTools.getImplementation import (
     get_c_function_imp,
     get_cpp_class_imp,
@@ -103,10 +103,10 @@ def build_proto_map(
     file_path: str | Path,
     proto_groups: ResolvedProto,
     file_text: str,
-) -> GeneratedHeaders:
+) -> Symbols:
     file_path = Path(file_path).expanduser().resolve()
     extracted_file_statements = extract_file_statements(file_text)
-    result_map: GeneratedHeaders = {}
+    result_map: dict[str, ProtoMatch] = {}
     for proto_type, (protos, symbol_pattern, fallback_symbol_pattern) in ResolvedProto.iter_proto_groups(proto_groups).items():
         for proto in protos:
             implementation = _match_proto(proto_type, proto, extracted_file_statements)

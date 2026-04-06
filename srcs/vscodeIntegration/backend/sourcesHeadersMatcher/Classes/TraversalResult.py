@@ -4,10 +4,11 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from Classes.GeneratedHeaders import GeneratedHeaders, getGeneratedHeaders
 from Classes.ProtoMatch import ProtoMatch
 from Classes.ResolvedProto import ResolvedProto, getResolvedProto
 from Classes.SourceTextsByPath import SourceTextsByPath
+from Classes.TypeAliases import Symbols
+from Classes.GeneratedHeaders import getSymbols
 from globals import SOURCE_EXTENSIONS
 from utils import normalize_excluded_paths
 
@@ -15,7 +16,7 @@ from utils import normalize_excluded_paths
 @dataclass(slots=True)
 class TraversalResult:
     proto: ResolvedProto
-    generated_headers: GeneratedHeaders
+    symbols: Symbols
     source_texts_by_path: SourceTextsByPath
 
     def usage_pattern_for_proto(self, proto_type: str | None, symbol_name: str | None) -> re.Pattern[str] | None:
@@ -34,7 +35,7 @@ class TraversalResult:
 
     def setRecurence(self) -> "TraversalResult":
         for source_path, source_text in self.source_texts_by_path.items():
-            for proto_match in self.generated_headers.values():
+            for proto_match in self.symbols.values():
                 recurence = self.countProtoUsage(proto_match, source_text)
                 if recurence > 0:
                     proto_match.recurence[source_path] = proto_match.recurence.get(source_path, 0) + recurence
@@ -50,7 +51,7 @@ def getTraversalResult(
     excluded_paths = normalize_excluded_paths(excludedFolderPath)
     source_extensions = SOURCE_EXTENSIONS
     protos = getResolvedProto(startPath, source_extensions, excludedFolderPath)
-    generated_headers = getGeneratedHeaders(
+    symbols = getSymbols(
         start_path,
         excluded_paths,
         source_extensions,
@@ -58,6 +59,6 @@ def getTraversalResult(
     )
     return TraversalResult(
         proto=protos,
-        generated_headers=generated_headers,
+        symbols=symbols,
         source_texts_by_path=source_texts_by_path,
     )

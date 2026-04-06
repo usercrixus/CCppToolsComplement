@@ -15,7 +15,7 @@ Recurrence = dict[str, int]
 @dataclass(slots=True)
 class ProtoMatch:
     declaration: str             # Original declaration string for this candidate.
-    symbol_name: str             # Parsed symbol name used as the GeneratedHeaders key.
+    symbol_name: str             # Parsed symbol name used as the Symbols key.
     proto_type: str              # One of function/macro/class/struct/typedef.
     implementation: str          # Full implementation or declaration text linked to the prototype.
     source: str                  # Source file considered the owner of this candidate.
@@ -40,8 +40,8 @@ class ResolvedProto:
 ```python
 @dataclass(slots=True)
 class TraversalResult:
-    proto: ResolvedProto                # Aggregated declarations found during traversal.
-    generated_headers: GeneratedHeaders # Prototype -> list of candidate matches.
+    proto: ResolvedProto         # Aggregated declarations found during traversal.
+    symbols: Symbols             # Symbol name -> matched candidate.
     source_texts_by_path: SourceTextsByPath  # Source file contents indexed by path.
 ```
 
@@ -69,13 +69,13 @@ class ExtractedFileStatements:
 ## Referenced aliases
 
 ```python
-GeneratedHeaders = dict[str, ProtoMatch]
+Symbols = dict[str, ProtoMatch]
 # Maps one symbol name to its match.
 
 SourceTextsByPath = dict[str, str]
 # Maps a file path to the full source text loaded from that file.
 
-HeaderMap = dict[str, list[str]]
+Headers = dict[str, list[str]]
 # Maps a header path to the declarations that should be written into it.
 
 IncludeMap = dict[str, set[str]]

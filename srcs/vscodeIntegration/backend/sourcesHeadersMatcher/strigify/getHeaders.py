@@ -3,12 +3,10 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from Classes.GeneratedHeaders import GeneratedHeaders
 from Classes.Header import Header
 from Classes.ProtoMatch import ProtoMatch
 from Classes.ResolvedProto import ResolvedProto
-from Classes.TypeAliases import HeaderMap
-from strigify.setHeaderPath import header_path_from_source
+from Classes.TypeAliases import Headers, Symbols
 
 
 def _append_unique(target_list: list[str], seen_values: set[str], value: str) -> None:
@@ -43,18 +41,18 @@ def _append_typedef_entry(header: Header, seen_values: set[str], entry: ProtoMat
     _append_unique(header.typedef_declarations, seen_values, entry.declaration)
 
 
-def _header_symbol_map(generated_headers: GeneratedHeaders) -> dict[str, set[str]]:
+def _header_symbol_map(symbols: Symbols) -> dict[str, set[str]]:
     symbol_to_headers: dict[str, set[str]] = {}
-    for symbol_name, entry in generated_headers.items():
+    for symbol_name, entry in symbols.items():
         if entry.header_path:
             symbol_to_headers.setdefault(symbol_name, set()).add(str(Path(entry.header_path).resolve()))
     return symbol_to_headers
 
 
-def set_header_includes(header_map: HeaderMap, generated_headers: GeneratedHeaders) -> None:
-    symbol_to_headers = _header_symbol_map(generated_headers)
+def set_header_includes(headers: Headers, symbols: Symbols) -> None:
+    symbol_to_headers = _header_symbol_map(symbols)
 
-    for header in header_map.values():
+    for header in headers.values():
         current_header_path = str(Path(header.path).resolve())
         for declaration in header.declarations():
             for symbol_name, target_headers in symbol_to_headers.items():
@@ -68,40 +66,35 @@ def set_header_includes(header_map: HeaderMap, generated_headers: GeneratedHeade
 
 
 def append_proto_entries_to_header_map(
-    header_map: HeaderMap,
+    headers: Headers,
     seen_header_values: dict[str, set[str]],
     entry: ProtoMatch,
 ) -> None:
     proto_type = entry.proto_type
-    if proto_type == "function":
-        header_path = header_path_from_source(entry.source)
-        if header_path not in header_map:
-            header_map[header_path] = Header(path=header_path)
-        seen_header_values.setdefault(header_path, set())
-        _append_unique(header_map[header_path].functions, seen_header_values[header_path], entry.declaration)
-        return
-
     header_path = entry.header_path
     if not header_path:
         return
-    if header_path not in header_map:
-        header_map[header_path] = Header(path=header_path)
-    seen_header_values.setdefault(header_path, set())
-    if proto_type == "struct":
-        _append_struct_entry(header_map[header_path], seen_header_values[header_path], entry)
-        return
-    if proto_type == "typedef":
-        _append_typedef_entry(header_map[header_path], seen_header_values[header_path], entry)
-        return
-    target_bucket = ResolvedProto.iter_proto_groups(header_map[header_path]).get(proto_type, (None, None, None))[0]
-    if target_bucket is None:
-        return
-    _append_unique(target_bucket, seen_header_values[header_path], entry.declaration)
+
+    if header_path not in headers:
+        headers[header_path] = Header(path=header_path)
+    seen_values = seen_header_values.setdefault(header_path, set())
+    header = headers[header_path]
+
+    if proto_type == "function":
+        _append_unique(header.functions, seen_values, entry.declaration)
+    elif proto_type == "struct":
+        _append_struct_entry(header, seen_values, entry)
+    elif proto_type == "typedef":
+        _append_typedef_entry(header, seen_values, entry)
+    else:
+        target_bucket = ResolvedProto.iter_proto_groups(header).get(proto_type, (None, None, None))[0]
+        if target_bucket is not None:
+            _append_unique(target_bucket, seen_values, entry.declaration)
 
 
-def get_header_map(generated_headers: GeneratedHeaders) -> HeaderMap:
-    header_map: HeaderMap = {}
+def get_header_map(symbols: Symbols) -> Headers:
+    headers: Headers = {}
     seen_header_values: dict[str, set[str]] = {}
-    for entry in generated_headers.values():
-        append_proto_entries_to_header_map(header_map, seen_header_values, entry)
-    return header_map
+    for entry in symbols.values():
+        append_proto_entries_to_header_map(headers, seen_header_values, entry)
+    return headers

@@ -24,7 +24,7 @@ def main() -> None:
     source_texts_by_path = getSourceTexts(start_path, excluded_paths, source_extensions)
     traversal_result = getTraversalResult(startPath, excludedFolderPath, source_texts_by_path).setRecurence()
 
-    stringified_headers = stringify_headers(traversal_result.generated_headers)
+    stringified_headers = stringify_headers(traversal_result.symbols)
     print(format_stringified_headers(stringified_headers))
 
 

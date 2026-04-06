@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from Classes.GeneratedHeaders import GeneratedHeaders
 from Classes.RenderJob import RenderJob
-from Classes.TypeAliases import IncludeMap
+from Classes.TypeAliases import IncludeMap, Symbols
 from strigify.getHeaders import get_header_map, set_header_includes
 from strigify.setHeaderPath import set_entry_header_paths
 
@@ -26,10 +25,10 @@ def _string_with_inserted_include(file_text: str, include_line: str) -> str:
     return "\n".join(updated_lines) + "\n"
 
 
-def _build_source_include_map(generated_headers: GeneratedHeaders) -> IncludeMap:
+def _build_source_include_map(symbols: Symbols) -> IncludeMap:
     include_map: IncludeMap = {}
 
-    for entry in generated_headers.values():
+    for entry in symbols.values():
         header_path = entry.header_path
         if not header_path:
             continue
@@ -45,9 +44,9 @@ def _build_source_include_map(generated_headers: GeneratedHeaders) -> IncludeMap
     return include_map
 
 
-def _build_source_jobs(generated_headers: GeneratedHeaders) -> list[RenderJob]:
+def _build_source_jobs(symbols: Symbols) -> list[RenderJob]:
     source_jobs: list[RenderJob] = []
-    include_map = _build_source_include_map(generated_headers)
+    include_map = _build_source_include_map(symbols)
 
     for source_path, header_paths in sorted(include_map.items()):
         source_file = Path(source_path)
@@ -66,14 +65,14 @@ def _build_source_jobs(generated_headers: GeneratedHeaders) -> list[RenderJob]:
     return source_jobs
 
 
-def stringify_headers(generated_headers: GeneratedHeaders) -> list[RenderJob]:
-    set_entry_header_paths(generated_headers)
-    header_map = get_header_map(generated_headers)
-    set_header_includes(header_map, generated_headers)
+def stringify_headers(symbols: Symbols) -> list[RenderJob]:
+    set_entry_header_paths(symbols)
+    headers = get_header_map(symbols)
+    set_header_includes(headers, symbols)
     header_jobs = [
         RenderJob(path=header.path, string=header.toString())
-        for _, header in sorted(header_map.items())
+        for _, header in sorted(headers.items())
     ]
-    source_jobs = _build_source_jobs(generated_headers)
+    source_jobs = _build_source_jobs(symbols)
 
     return header_jobs + source_jobs
