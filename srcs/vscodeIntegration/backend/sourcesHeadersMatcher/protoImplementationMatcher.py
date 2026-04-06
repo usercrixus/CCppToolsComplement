@@ -107,7 +107,7 @@ def build_proto_map(
     file_path = Path(file_path).expanduser().resolve()
     extracted_file_statements = extract_file_statements(file_text)
     result_map: GeneratedHeaders = {}
-    for proto_type, protos, symbol_pattern, fallback_symbol_pattern in ResolvedProto.iter_proto_groups(proto_groups):
+    for proto_type, (protos, symbol_pattern, fallback_symbol_pattern) in ResolvedProto.iter_proto_groups(proto_groups).items():
         for proto in protos:
             implementation = _match_proto(proto_type, proto, extracted_file_statements)
             if implementation:

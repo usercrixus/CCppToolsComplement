@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import ClassVar, Iterable
+from typing import ClassVar, Collection
 
 from regexTools.getProto import (
     get_c_function_proto,
@@ -34,14 +34,14 @@ class ResolvedProto:
     @staticmethod
     def iter_proto_groups(
         proto_groups: "ResolvedProto",
-    ) -> Iterable[tuple[str, set[str], re.Pattern[str], re.Pattern[str] | None]]:
-        return (
-            ("class", proto_groups.classes, ResolvedProto.CLASS_NAME_RE, None),
-            ("function", proto_groups.functions, ResolvedProto.FUNCTION_NAME_RE, None),
-            ("macro", proto_groups.macros, ResolvedProto.MACRO_NAME_RE, None),
-            ("struct", proto_groups.structs, ResolvedProto.STRUCT_NAME_RE, None),
-            ("typedef", proto_groups.typedefs, ResolvedProto.TYPEDEF_NAME_RE, ResolvedProto.USING_NAME_RE),
-        )
+    ) -> dict[str, tuple[Collection[str], re.Pattern[str], re.Pattern[str] | None]]:
+        return {
+            "class": (proto_groups.classes, ResolvedProto.CLASS_NAME_RE, None),
+            "function": (proto_groups.functions, ResolvedProto.FUNCTION_NAME_RE, None),
+            "macro": (proto_groups.macros, ResolvedProto.MACRO_NAME_RE, None),
+            "struct": (proto_groups.structs, ResolvedProto.STRUCT_NAME_RE, None),
+            "typedef": (proto_groups.typedefs, ResolvedProto.TYPEDEF_NAME_RE, ResolvedProto.USING_NAME_RE),
+        }
 
     def _add_unique_set_value(self, values: set[str], value: str) -> None:
         if value and value not in values:
@@ -50,9 +50,9 @@ class ResolvedProto:
     def add_unique(self, other: "ResolvedProto") -> None:
         current_groups = {
             proto_type: protos
-            for proto_type, protos, _, _ in ResolvedProto.iter_proto_groups(self)
+            for proto_type, (protos, _, _) in ResolvedProto.iter_proto_groups(self).items()
         }
-        for proto_type, protos, _, _ in ResolvedProto.iter_proto_groups(other):
+        for proto_type, (protos, _, _) in ResolvedProto.iter_proto_groups(other).items():
             current_group = current_groups[proto_type]
             for proto in protos:
                 self._add_unique_set_value(current_group, proto)

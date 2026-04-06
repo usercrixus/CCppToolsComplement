@@ -6,6 +6,7 @@ from pathlib import Path
 from Classes.GeneratedHeaders import GeneratedHeaders
 from Classes.Header import Header
 from Classes.ProtoMatch import ProtoMatch
+from Classes.ResolvedProto import ResolvedProto
 from Classes.TypeAliases import HeaderMap
 from strigify.setHeaderPath import header_path_from_source
 
@@ -15,16 +16,6 @@ def _append_unique(target_list: list[str], seen_values: set[str], value: str) ->
         return
     seen_values.add(value)
     target_list.append(value)
-
-
-def _header_buckets(header: Header) -> dict[str, list[str]]:
-    return {
-        "class": header.classes,
-        "function": header.functions,
-        "macro": header.macros,
-        "struct": header.structs,
-        "typedef": header.typedefs,
-    }
 
 
 def _append_struct_entry(header: Header, seen_values: set[str], entry: ProtoMatch) -> None:
@@ -102,7 +93,7 @@ def append_proto_entries_to_header_map(
     if proto_type == "typedef":
         _append_typedef_entry(header_map[header_path], seen_header_values[header_path], entry)
         return
-    target_bucket = _header_buckets(header_map[header_path]).get(proto_type)
+    target_bucket = ResolvedProto.iter_proto_groups(header_map[header_path]).get(proto_type, (None, None, None))[0]
     if target_bucket is None:
         return
     _append_unique(target_bucket, seen_header_values[header_path], entry.declaration)
