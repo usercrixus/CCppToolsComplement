@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from Classes.RenderJob import RenderJob
 from Classes.TypeAliases import IncludeMap, Symbols
-from strigify.getHeaders import get_header_map, set_header_includes
+from strigify.getHeaders import get_header_map
 from strigify.setHeaderPath import set_entry_header_paths
 
 
@@ -68,7 +68,6 @@ def _build_source_jobs(symbols: Symbols) -> list[RenderJob]:
 def stringify_headers(symbols: Symbols) -> list[RenderJob]:
     set_entry_header_paths(symbols)
     headers = get_header_map(symbols)
-    set_header_includes(headers, symbols)
     header_jobs = [
         RenderJob(path=header.path, string=header.toString())
         for _, header in sorted(headers.items())
