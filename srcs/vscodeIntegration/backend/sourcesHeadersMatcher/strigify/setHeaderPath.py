@@ -27,8 +27,9 @@ def best_recurence_path(entry: ProtoMatch) -> str | None:
 
 
 def set_entry_header_paths(generated_headers: GeneratedHeaders) -> None:
-    for entry in generated_headers.values():
+    for symbol_name, entry in list(generated_headers.items()):
         best_path = best_recurence_path(entry)
         if best_path is None:
-            best_path = entry.source
-        entry.header_path = header_path_from_source(best_path)
+            del generated_headers[symbol_name]
+        else:
+            entry.header_path = header_path_from_source(best_path)
