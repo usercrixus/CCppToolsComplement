@@ -17,18 +17,7 @@ from regexTools.getProto import (
     get_struct_proto,
     get_typedef_proto,
 )
-from regexTools.getSymbol import extract_name, extract_symbol_name
-
-
-def _typedef_name(statement: str) -> str | None:
-    using_name = extract_name(statement, ResolvedProto.USING_NAME_RE)
-    if using_name is not None:
-        return using_name
-
-    match = re.search(r"\b([A-Za-z_]\w*)\s*;\s*$", statement, re.DOTALL)
-    if match is None:
-        return None
-    return match.group(1)
+from regexTools.getSymbol import extract_name, extract_symbol_name, extract_typedef_name
 
 
 def _find_matching_function_imp(proto: str, function_imps: list[str]) -> str | None:
@@ -65,12 +54,12 @@ def _find_matching_class(proto: str, class_statements: list[str]) -> str | None:
 
 
 def _find_matching_typedef(proto: str, typedef_statements: list[str]) -> str | None:
-    proto_name = _typedef_name(proto)
+    proto_name = extract_typedef_name(proto)
     if proto_name is None:
         return None
 
     for typedef_statement in typedef_statements:
-        if _typedef_name(typedef_statement) == proto_name:
+        if extract_typedef_name(typedef_statement) == proto_name:
             return typedef_statement
     return None
 
@@ -112,7 +101,7 @@ def build_proto_map(
             implementation = _match_proto(proto_type, proto, extracted_file_statements)
             if implementation:
                 if proto_type == "typedef":
-                    symbol_name = _typedef_name(proto)
+                    symbol_name = extract_typedef_name(proto)
                 else:
                     symbol_name = extract_symbol_name(proto, symbol_pattern, fallback_symbol_pattern)
                 if symbol_name is None:

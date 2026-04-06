@@ -4,6 +4,10 @@ from dataclasses import dataclass, field
 import os
 from pathlib import Path
 
+from Classes.ProtoMatch import ProtoMatch
+from Classes.ResolvedProto import ResolvedProto
+from regexTools.getSymbol import extract_struct_name, extract_typedef_name
+
 
 @dataclass(slots=True)
 class Header:
@@ -16,6 +20,45 @@ class Header:
     typedefs: list[str] = field(default_factory=list)
     classes: list[str] = field(default_factory=list)
     functions: list[str] = field(default_factory=list)
+
+    def append_value(self, target_list: list[str], value: str) -> None:
+        if value:
+            target_list.append(value)
+
+    def append_struct_entry(self, entry: ProtoMatch) -> None:
+        struct_name = extract_struct_name(entry.declaration)
+        if "{" in entry.declaration and struct_name is not None:
+            self.append_value(self.struct_declarations, f"struct {struct_name};")
+            self.append_value(self.structs, entry.implementation)
+            return
+
+        self.append_value(self.struct_declarations, entry.declaration)
+
+    def append_typedef_entry(self, entry: ProtoMatch) -> None:
+        typedef_name = extract_typedef_name(entry.declaration)
+        struct_name = extract_struct_name(entry.declaration)
+        if "{" in entry.declaration and typedef_name is not None and struct_name is not None:
+            self.append_value(
+                self.typedef_declarations,
+                f"typedef struct {struct_name} {typedef_name};",
+            )
+            self.append_value(self.typedefs, entry.implementation)
+            return
+
+        self.append_value(self.typedef_declarations, entry.declaration)
+
+    def append_proto_entry(self, entry: ProtoMatch) -> None:
+        proto_type = entry.proto_type
+        if proto_type == "function":
+            self.append_value(self.functions, entry.declaration)
+        elif proto_type == "struct":
+            self.append_struct_entry(entry)
+        elif proto_type == "typedef":
+            self.append_typedef_entry(entry)
+        else:
+            target_bucket = ResolvedProto.iter_proto_groups(self).get(proto_type, (None, None, None))[0]
+            if target_bucket is not None:
+                self.append_value(target_bucket, entry.declaration)
 
     def declarations(self) -> list[str]:
         return (
