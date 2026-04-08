@@ -4,8 +4,8 @@ import re
 from dataclasses import dataclass
 from typing import ClassVar
 
-from Classes.ExtractedFileStatements import ExtractedFileStatements
-from Classes.Symbol.Symbol import Symbol
+from Classes.Symbol.Symbol import SYMBOL_TYPES, Symbol
+from regexTools.getImplementation import get_cpp_class_imp
 from regexTools.getProto import get_cpp_class_proto, get_struct_proto
 
 
@@ -19,16 +19,8 @@ class ClassSymbol(Symbol):
         return [declaration for declaration in get_cpp_class_proto(file_text) if declaration not in struct_declarations]
 
     @classmethod
-    def find_matching_implementation(
-        cls,
-        declaration: str,
-        extracted_file_statements: ExtractedFileStatements,
-    ) -> str | None:
-        declaration_name = cls.extract_symbol_name(declaration)
-        if declaration_name is None:
-            return None
+    def implementation_statements_from_text(cls, file_text: str) -> list[str]:
+        return get_cpp_class_imp(file_text)
 
-        for class_statement in extracted_file_statements.classes:
-            if cls.extract_symbol_name(class_statement) == declaration_name:
-                return class_statement
-        return None
+
+SYMBOL_TYPES.append(ClassSymbol)

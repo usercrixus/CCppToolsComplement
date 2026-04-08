@@ -4,8 +4,8 @@ import re
 from dataclasses import dataclass
 from typing import ClassVar
 
-from Classes.ExtractedFileStatements import ExtractedFileStatements
-from Classes.Symbol.Symbol import Symbol
+from Classes.Symbol.Symbol import SYMBOL_TYPES, Symbol
+from regexTools.getImplementation import get_struct_imp
 from regexTools.getProto import get_struct_proto
 
 
@@ -18,16 +18,8 @@ class StructSymbol(Symbol):
         return get_struct_proto(file_text)
 
     @classmethod
-    def find_matching_implementation(
-        cls,
-        declaration: str,
-        extracted_file_statements: ExtractedFileStatements,
-    ) -> str | None:
-        declaration_name = cls.extract_symbol_name(declaration)
-        if declaration_name is None:
-            return None
+    def implementation_statements_from_text(cls, file_text: str) -> list[str]:
+        return list(dict.fromkeys(get_struct_proto(file_text) + get_struct_imp(file_text)))
 
-        for struct_statement in extracted_file_statements.structs:
-            if cls.extract_symbol_name(struct_statement) == declaration_name:
-                return struct_statement
-        return None
+
+SYMBOL_TYPES.append(StructSymbol)

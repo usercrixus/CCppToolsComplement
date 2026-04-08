@@ -4,8 +4,7 @@ import re
 from dataclasses import dataclass
 from typing import ClassVar
 
-from Classes.ExtractedFileStatements import ExtractedFileStatements
-from Classes.Symbol.Symbol import Symbol
+from Classes.Symbol.Symbol import SYMBOL_TYPES, Symbol
 from regexTools.getProto import get_macro_proto
 
 
@@ -22,6 +21,9 @@ class MacroSymbol(Symbol):
     def find_matching_implementation(
         cls,
         declaration: str,
-        extracted_file_statements: ExtractedFileStatements,
+        file_text: str,
     ) -> str | None:
-        return declaration if declaration in extracted_file_statements.macros else None
+        return declaration if declaration in get_macro_proto(file_text) else None
+
+
+SYMBOL_TYPES.append(MacroSymbol)

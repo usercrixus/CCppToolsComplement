@@ -31,14 +31,6 @@ class StructSymbol(Symbol): ...
 class TypedefSymbol(Symbol): ...
 ```
 
-## `TraversalResult`
-
-```python
-@dataclass(slots=True)
-class TraversalResult:
-    symbols: dict[str, Symbol]   # Symbol name -> matched Symbol subclass instance.
-```
-
 ## `RenderJob`
 
 ```python

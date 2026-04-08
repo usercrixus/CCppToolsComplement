@@ -4,8 +4,7 @@ import re
 from dataclasses import dataclass
 from typing import ClassVar
 
-from Classes.ExtractedFileStatements import ExtractedFileStatements
-from Classes.Symbol.Symbol import Symbol
+from Classes.Symbol.Symbol import SYMBOL_TYPES, Symbol
 from regexTools.getProto import get_typedef_proto
 from regexTools.getSymbol import extract_name, extract_typedef_name
 
@@ -27,16 +26,8 @@ class TypedefSymbol(Symbol):
         return extract_typedef_name(statement)
 
     @classmethod
-    def find_matching_implementation(
-        cls,
-        declaration: str,
-        extracted_file_statements: ExtractedFileStatements,
-    ) -> str | None:
-        declaration_name = cls.extract_symbol_name(declaration)
-        if declaration_name is None:
-            return None
+    def implementation_statements_from_text(cls, file_text: str) -> list[str]:
+        return get_typedef_proto(file_text)
 
-        for typedef_statement in extracted_file_statements.typedefs:
-            if cls.extract_symbol_name(typedef_statement) == declaration_name:
-                return typedef_statement
-        return None
+
+SYMBOL_TYPES.append(TypedefSymbol)
