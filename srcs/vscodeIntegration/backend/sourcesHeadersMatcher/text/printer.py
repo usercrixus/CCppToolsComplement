@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from Classes.RenderJob import RenderJob
-
-
 def _group_label(file_path: str) -> str:
     suffix = Path(file_path).suffix.lower()
     if suffix in {".h", ".hpp"}:
@@ -19,13 +16,13 @@ def _format_content_preview(file_text: str) -> str:
     return "\n".join(f"    {line}" for line in lines)
 
 
-def format_stringified_headers(stringified_headers: list[RenderJob]) -> str:
+def format_stringified_headers(stringified_headers: list[dict[str, str]]) -> str:
     if not stringified_headers:
         return "No files to render."
 
-    grouped_entries: dict[str, list[RenderJob]] = {"Headers": [], "Sources": []}
+    grouped_entries: dict[str, list[dict[str, str]]] = {"Headers": [], "Sources": []}
     for entry in stringified_headers:
-        grouped_entries[_group_label(entry.path)].append(entry)
+        grouped_entries[_group_label(entry["path"])].append(entry)
 
     lines = []
     for group_name in ("Headers", "Sources"):
@@ -37,8 +34,8 @@ def format_stringified_headers(stringified_headers: list[RenderJob]) -> str:
         lines.append("")
 
         for entry in entries:
-            lines.append(str(entry.path))
-            lines.append(_format_content_preview(entry.string))
+            lines.append(str(entry["path"]))
+            lines.append(_format_content_preview(entry["string"]))
             lines.append("")
 
     return "\n".join(lines).rstrip()

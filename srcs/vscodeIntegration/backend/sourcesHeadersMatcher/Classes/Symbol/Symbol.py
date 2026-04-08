@@ -5,8 +5,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
 
-from Classes.Recurrence import Recurrence
-from Classes.SourceTextsByPath import SourceTextsByPath
 from globals import HEADER_EXTENSIONS, SOURCE_EXTENSIONS
 from regexTools.getSymbol import extract_name
 
@@ -17,7 +15,7 @@ class Symbol:
     declaration: str
     implementation: str
     source: str
-    recurence: Recurrence
+    recurence: dict[str, int]
     header_path: str | None = None
 
     NAME_RE: ClassVar[re.Pattern[str] | None] = None
@@ -97,7 +95,7 @@ def countProtoUsage(symbol: Symbol, source_text: str) -> int:
     return len(usage_pattern.findall(source_text))
 
 
-def setRecurence(symbols: dict[str, Symbol], source_texts_by_path: SourceTextsByPath) -> None:
+def setRecurence(symbols: dict[str, Symbol], source_texts_by_path: dict[str, str]) -> None:
     for source_path, source_text in source_texts_by_path.items():
         for symbol in symbols.values():
             recurence = countProtoUsage(symbol, source_text)
@@ -171,7 +169,7 @@ def process_source_text(
 
 
 def getSymbols(
-    source_texts_by_path: SourceTextsByPath,
+    source_texts_by_path: dict[str, str],
     merged_texts_by_path: dict[str, str],
 ) -> dict[str, Symbol]:
     symbols: dict[str, Symbol] = {}
@@ -184,7 +182,7 @@ def getSymbols(
 
 
 def getSymbolMap(
-    source_texts_by_path: SourceTextsByPath,
+    source_texts_by_path: dict[str, str],
     merged_texts_by_path: dict[str, str],
 ) -> dict[str, Symbol]:
     symbols = getSymbols(source_texts_by_path, merged_texts_by_path)

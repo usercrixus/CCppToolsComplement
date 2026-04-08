@@ -3,13 +3,14 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from Classes.Header import Header, move_header_implementations_to_sources
-from Classes.HeaderTextsByPath import getHeaderTexts, getIncludeSet
-from Classes.SourceTextsByPath import getSourceTexts
+from Classes.Header.Header import Header
+from Classes.Header.HeaderTexts import getHeaderTexts, getIncludeSet
+from Classes.Header.InlineSourceCleanup import move_header_implementations_to_sources
+from Classes.Source.SourceTexts import getSourceTexts
 from Classes.Symbol.Symbol import correctIncludeSet, getSymbolMap
 from globals import HEADER_EXTENSIONS, SOURCE_EXTENSIONS
 from text.printer import format_stringified_headers
-from strigify.stringify import stringify_headers
+from text.stringify import stringify
 from utils import normalize_excluded_paths
 
 
@@ -29,7 +30,7 @@ def main() -> None:
     include_set = getIncludeSet(merged_texts_by_path)
     symbols = getSymbolMap(source_texts_by_path, merged_texts_by_path)
     include_set = correctIncludeSet(symbols, include_set)
-    stringified_headers = stringify_headers(symbols)
+    stringified_headers = stringify(symbols)
     stringified_headers.append(Header.create_include_set_render_job(str(start_path / "remainingIncludes.h"), include_set))
     print(format_stringified_headers(stringified_headers))
 

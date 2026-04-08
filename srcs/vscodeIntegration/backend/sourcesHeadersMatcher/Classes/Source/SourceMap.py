@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from Classes.Symbol.Symbol import Symbol
+from Classes.Source.Source import Source
 from Classes.Symbol.FunctionSymbol import FunctionSymbol
-from Classes.Source import Source
+from Classes.Symbol.Symbol import Symbol
 
 
-def get_sources(symbols: dict[str, Symbol]) -> dict[str, Source]:
+def getSourceMap(symbols: dict[str, Symbol]) -> dict[str, Source]:
     sources: dict[str, Source] = {}
 
     for entry in symbols.values():

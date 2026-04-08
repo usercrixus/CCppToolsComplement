@@ -2,20 +2,16 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import TypeAlias
 
 from utils import is_excluded
-
-
-SourceTextsByPath: TypeAlias = dict[str, str]
 
 
 def getSourceTexts(
     start_path: Path,
     excluded_paths: set[Path],
     source_extensions: set[str],
-) -> SourceTextsByPath:
-    source_texts: SourceTextsByPath = {}
+) -> dict[str, str]:
+    source_texts: dict[str, str] = {}
 
     for current_root, dir_names, file_names in os.walk(start_path):
         current_path = Path(current_root).resolve()
