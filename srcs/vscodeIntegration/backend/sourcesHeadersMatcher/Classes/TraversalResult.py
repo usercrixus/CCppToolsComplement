@@ -7,8 +7,8 @@ from pathlib import Path
 from Classes.ProtoMatch import ProtoMatch
 from Classes.ResolvedProto import ResolvedProto, getResolvedProto
 from Classes.SourceTextsByPath import SourceTextsByPath
-from Classes.TypeAliases import Symbols
 from Classes.GeneratedHeaders import getSymbols
+from Classes.Symbols import Symbols
 from globals import SOURCE_EXTENSIONS
 from strigify.setHeaderPath import set_entry_header_paths
 from utils import normalize_excluded_paths

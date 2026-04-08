@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
+from typing import TypeAlias
 
 from Classes.ExtractedFileStatements import ExtractedFileStatements
 from Classes.ProtoMatch import ProtoMatch
 from Classes.ResolvedProto import ResolvedProto
-from Classes.TypeAliases import Symbols
 from regexTools.getImplementation import (
     get_c_function_imp,
     get_cpp_class_imp,
@@ -18,6 +17,8 @@ from regexTools.getProto import (
     get_typedef_proto,
 )
 from regexTools.getSymbol import extract_name, extract_symbol_name, extract_typedef_name
+
+Symbols: TypeAlias = dict[str, ProtoMatch]
 
 
 def _find_matching_function_imp(proto: str, function_imps: list[str]) -> str | None:

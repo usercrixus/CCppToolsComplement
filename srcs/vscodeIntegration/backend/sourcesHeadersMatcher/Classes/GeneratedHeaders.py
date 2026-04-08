@@ -5,8 +5,7 @@ from pathlib import Path
 
 from Classes.ResolvedProto import ResolvedProto
 from Classes.SourceTextsByPath import SourceTextsByPath
-from Classes.TypeAliases import Symbols
-from protoImplementationMatcher import build_proto_map
+from Classes.Symbols import Symbols, build_proto_map
 from utils import is_excluded
 
 

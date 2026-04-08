@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from Classes.RenderJob import RenderJob
-from Classes.TypeAliases import Symbols
+from Classes.Symbols import Symbols
 from strigify.getHeaders import get_header_map
 from strigify.getSources import get_sources
 

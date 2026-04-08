@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from Classes.ProtoMatch import ProtoMatch
-from Classes.TypeAliases import Symbols
+from Classes.Symbols import Symbols
 from globals import HEADER_EXTENSIONS, SOURCE_EXTENSIONS
 
 

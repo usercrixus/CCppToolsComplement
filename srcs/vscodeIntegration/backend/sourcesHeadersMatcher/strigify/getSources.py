@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from Classes.Source import Source
-from Classes.TypeAliases import Symbols
+from Classes.Symbols import Symbols
 
 
 def get_sources(symbols: Symbols) -> dict[str, Source]:

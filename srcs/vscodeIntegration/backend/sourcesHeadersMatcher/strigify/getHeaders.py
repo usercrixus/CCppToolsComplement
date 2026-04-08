@@ -4,7 +4,8 @@ from pathlib import Path
 
 from Classes.Header import Header
 from Classes.ProtoMatch import ProtoMatch
-from Classes.TypeAliases import Headers, Symbols
+from Classes.Symbols import Symbols
+from Classes.TypeAliases import Headers
 from strigify.setHeaderPath import header_path_from_source
 
 
