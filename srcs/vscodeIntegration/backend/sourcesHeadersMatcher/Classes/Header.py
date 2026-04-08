@@ -74,7 +74,14 @@ class Header:
 
     @staticmethod
     def create_include_set_render_job(path: str, include_set: set[str]) -> RenderJob:
-        include_lines = [f"#include {include}" for include in sorted(include_set)]
+        output_path = Path(path).resolve()
+        include_lines = []
+        for include in sorted(include_set):
+            if include.startswith("<") and include.endswith(">"):
+                include_lines.append(f"#include {include}")
+                continue
+            relative_include = Path(os.path.relpath(include, output_path.parent)).as_posix()
+            include_lines.append(f'#include "{relative_include}"')
         body = "\n".join(include_lines)
         if body:
             body = f"{body}\n"

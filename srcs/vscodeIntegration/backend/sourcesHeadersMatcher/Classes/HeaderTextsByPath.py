@@ -38,9 +38,21 @@ def getHeaderTexts(
     return header_texts
 
 
+def _resolve_include(file_path: str, include: str) -> str:
+    if include.startswith("<") and include.endswith(">"):
+        return include
+    if include.startswith('"') and include.endswith('"'):
+        include_path = include[1:-1]
+        return str((Path(file_path).resolve().parent / include_path).resolve())
+    return include
+
+
 def getIncludeSet(header_texts_by_path: HeaderTextsByPath) -> set[str]:
     include_set: set[str] = set()
 
-    for header_text in header_texts_by_path.values():
-        include_set.update(get_include(header_text))
+    for file_path, header_text in header_texts_by_path.items():
+        include_set.update(
+            _resolve_include(file_path, include)
+            for include in get_include(header_text)
+        )
     return include_set
