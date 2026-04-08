@@ -23,25 +23,15 @@ def main() -> None:
     excludedFolderPath = args.excludedFolderPath
     start_path = Path(startPath).expanduser().resolve()
     excluded_paths = normalize_excluded_paths(excludedFolderPath)
-    source_extensions = SOURCE_EXTENSIONS
-    header_extensions = HEADER_EXTENSIONS
-    source_texts_by_path = getSourceTexts(start_path, excluded_paths, source_extensions)
-    header_texts_by_path = getHeaderTexts(start_path, excluded_paths, header_extensions)
-    source_texts_by_path, header_texts_by_path = move_header_implementations_to_sources(
-        source_texts_by_path,
-        header_texts_by_path,
-    )
+    source_texts_by_path = getSourceTexts(start_path, excluded_paths, SOURCE_EXTENSIONS)
+    header_texts_by_path = getHeaderTexts(start_path, excluded_paths, HEADER_EXTENSIONS)
+    source_texts_by_path, header_texts_by_path = move_header_implementations_to_sources(source_texts_by_path, header_texts_by_path,)
     merged_texts_by_path = {**source_texts_by_path, **header_texts_by_path}
     include_set = getIncludeSet(merged_texts_by_path)
-    traversal_result = getTraversalResult(source_texts_by_path, merged_texts_by_path).setRecurence()
+    traversal_result = getTraversalResult(source_texts_by_path, merged_texts_by_path)
     include_set = traversal_result.correctIncludeSet(include_set)
     stringified_headers = stringify_headers(traversal_result.symbols)
-    stringified_headers.append(
-        Header.create_include_set_render_job(
-            str(start_path / "remainingIncludes.h"),
-            include_set,
-        )
-    )
+    stringified_headers.append(Header.create_include_set_render_job(str(start_path / "remainingIncludes.h"), include_set))
     print(format_stringified_headers(stringified_headers))
 
 

@@ -1,44 +1,17 @@
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from Classes.ProtoMatch import ProtoMatch
-from Classes.ResolvedProto import ResolvedProto, getResolvedProtoFromTexts
+from Classes.Symbol.Symbol import Symbol
 from Classes.SourceTextsByPath import SourceTextsByPath
 from Classes.GeneratedHeaders import getSymbols
-from Classes.Symbols import Symbols
 from strigify.setHeaderPath import set_entry_header_paths
 
 
 @dataclass(slots=True)
 class TraversalResult:
-    proto: ResolvedProto
-    symbols: Symbols
-    source_texts_by_path: SourceTextsByPath
-
-    def usage_pattern_for_proto(self, proto_type: str | None, symbol_name: str | None) -> re.Pattern[str] | None:
-        if not proto_type or not symbol_name:
-            return None
-        escaped_symbol_name = re.escape(symbol_name)
-        if proto_type in {"function", "macro"}:
-            return re.compile(rf"\b{escaped_symbol_name}\b\s*(?=\()")
-        return re.compile(rf"\b{escaped_symbol_name}\b")
-
-    def countProtoUsage(self, proto_match: ProtoMatch, source_text: str) -> int:
-        usage_pattern = self.usage_pattern_for_proto(proto_match.proto_type, proto_match.symbol_name)
-        if usage_pattern is None:
-            return 0
-        return len(usage_pattern.findall(source_text))
-
-    def setRecurence(self) -> "TraversalResult":
-        for source_path, source_text in self.source_texts_by_path.items():
-            for proto_match in self.symbols.values():
-                recurence = self.countProtoUsage(proto_match, source_text)
-                if recurence > 0:
-                    proto_match.recurence[source_path] = proto_match.recurence.get(source_path, 0) + recurence
-        return self
+    symbols: dict[str, Symbol]
 
     def correctIncludeSet(self, include_set: set[str]) -> set[str]:
         for symbol in self.symbols.values():
@@ -52,15 +25,28 @@ class TraversalResult:
         return include_set
 
 
+def countProtoUsage(symbol: Symbol, source_text: str) -> int:
+    usage_pattern = symbol.usage_pattern()
+    if usage_pattern is None:
+        return 0
+    return len(usage_pattern.findall(source_text))
+
+
+def setRecurence(symbols: dict[str, Symbol], source_texts_by_path: SourceTextsByPath) -> None:
+    for source_path, source_text in source_texts_by_path.items():
+        for symbol in symbols.values():
+            recurence = countProtoUsage(symbol, source_text)
+            if recurence > 0:
+                symbol.recurence[source_path] = symbol.recurence.get(source_path, 0) + recurence
+
+
 def getTraversalResult(
     source_texts_by_path: SourceTextsByPath,
     merged_texts_by_path: dict[str, str],
 ) -> TraversalResult:
-    protos = getResolvedProtoFromTexts(merged_texts_by_path)
-    symbols = getSymbols(source_texts_by_path, protos)
+    symbols = getSymbols(source_texts_by_path, merged_texts_by_path)
+    setRecurence(symbols, source_texts_by_path)
     set_entry_header_paths(symbols)
     return TraversalResult(
-        proto=protos,
         symbols=symbols,
-        source_texts_by_path=source_texts_by_path,
     )

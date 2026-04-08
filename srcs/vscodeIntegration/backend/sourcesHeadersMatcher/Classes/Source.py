@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 import os
 from pathlib import Path
 
-from Classes.ProtoMatch import ProtoMatch
+from Classes.Symbol.FunctionSymbol import FunctionSymbol
+from Classes.Symbol.Symbol import Symbol
 
 
 @dataclass(slots=True)
@@ -21,8 +22,8 @@ class Source:
         if value:
             target_list.append(value)
 
-    def append_proto_entry(self, entry: ProtoMatch) -> None:
-        if entry.proto_type == "function":
+    def append_proto_entry(self, entry: Symbol) -> None:
+        if isinstance(entry, FunctionSymbol):
             self.append_value(self.function_implementations, entry.implementation)
 
     def toString(self) -> str:

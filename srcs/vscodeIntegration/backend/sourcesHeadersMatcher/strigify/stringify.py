@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from Classes.RenderJob import RenderJob
-from Classes.Symbols import Symbols
+from Classes.Symbol.Symbol import Symbol
 from strigify.getHeaders import get_header_map
 from strigify.getSources import get_sources
 
 
-def stringify_headers(symbols: Symbols) -> list[RenderJob]:
+def stringify_headers(symbols: dict[str, Symbol]) -> list[RenderJob]:
     headers = get_header_map(symbols)
     sources = get_sources(symbols)
     header_jobs = [

@@ -4,9 +4,13 @@ from dataclasses import dataclass, field
 import os
 from pathlib import Path
 
-from Classes.ProtoMatch import ProtoMatch
 from Classes.RenderJob import RenderJob
-from Classes.ResolvedProto import ResolvedProto
+from Classes.Symbol.ClassSymbol import ClassSymbol
+from Classes.Symbol.FunctionSymbol import FunctionSymbol
+from Classes.Symbol.MacroSymbol import MacroSymbol
+from Classes.Symbol.Symbol import Symbol
+from Classes.Symbol.StructSymbol import StructSymbol
+from Classes.Symbol.TypedefSymbol import TypedefSymbol
 from regexTools.getSymbol import extract_struct_name, extract_typedef_name
 
 
@@ -26,7 +30,7 @@ class Header:
         if value:
             target_list.append(value)
 
-    def append_struct_entry(self, entry: ProtoMatch) -> None:
+    def append_struct_entry(self, entry: Symbol) -> None:
         struct_name = extract_struct_name(entry.declaration)
         if "{" in entry.declaration and struct_name is not None:
             self.append_value(self.struct_declarations, f"struct {struct_name};")
@@ -35,7 +39,7 @@ class Header:
 
         self.append_value(self.struct_declarations, entry.declaration)
 
-    def append_typedef_entry(self, entry: ProtoMatch) -> None:
+    def append_typedef_entry(self, entry: Symbol) -> None:
         typedef_name = extract_typedef_name(entry.declaration)
         struct_name = extract_struct_name(entry.declaration)
         if "{" in entry.declaration and typedef_name is not None and struct_name is not None:
@@ -48,18 +52,17 @@ class Header:
 
         self.append_value(self.typedef_declarations, entry.declaration)
 
-    def append_proto_entry(self, entry: ProtoMatch) -> None:
-        proto_type = entry.proto_type
-        if proto_type == "function":
-            self.append_value(self.functions, entry.declaration)
-        elif proto_type == "struct":
+    def append_proto_entry(self, entry: Symbol) -> None:
+        if isinstance(entry, MacroSymbol):
+            self.append_value(self.macros, entry.declaration)
+        elif isinstance(entry, StructSymbol):
             self.append_struct_entry(entry)
-        elif proto_type == "typedef":
+        elif isinstance(entry, TypedefSymbol):
             self.append_typedef_entry(entry)
-        else:
-            target_bucket = ResolvedProto.iter_proto_groups(self).get(proto_type, (None, None, None))[0]
-            if target_bucket is not None:
-                self.append_value(target_bucket, entry.declaration)
+        elif isinstance(entry, ClassSymbol):
+            self.append_value(self.classes, entry.declaration)
+        elif isinstance(entry, FunctionSymbol):
+            self.append_value(self.functions, entry.declaration)
 
     def declarations(self) -> list[str]:
         return (

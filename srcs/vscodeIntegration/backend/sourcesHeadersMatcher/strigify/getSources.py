@@ -2,15 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from Classes.Symbol.Symbol import Symbol
+from Classes.Symbol.FunctionSymbol import FunctionSymbol
 from Classes.Source import Source
-from Classes.Symbols import Symbols
 
 
-def get_sources(symbols: Symbols) -> dict[str, Source]:
+def get_sources(symbols: dict[str, Symbol]) -> dict[str, Source]:
     sources: dict[str, Source] = {}
 
     for entry in symbols.values():
-        if entry.proto_type != "function":
+        if not isinstance(entry, FunctionSymbol):
             continue
 
         source_path = str(Path(entry.source).resolve())

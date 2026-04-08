@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import re
 
-from Classes.ResolvedProto import ResolvedProto
+STRUCT_NAME_RE = re.compile(r"\bstruct\s+([A-Za-z_]\w*)")
+USING_NAME_RE = re.compile(r"\busing\s+([A-Za-z_]\w*)\s*=")
 
 
 def extract_name(statement: str, pattern: re.Pattern[str]) -> str | None:
@@ -13,11 +14,11 @@ def extract_name(statement: str, pattern: re.Pattern[str]) -> str | None:
 
 
 def extract_struct_name(statement: str) -> str | None:
-    return extract_name(statement, ResolvedProto.STRUCT_NAME_RE)
+    return extract_name(statement, STRUCT_NAME_RE)
 
 
 def extract_typedef_name(statement: str) -> str | None:
-    using_name = extract_name(statement, ResolvedProto.USING_NAME_RE)
+    using_name = extract_name(statement, USING_NAME_RE)
     if using_name is not None:
         return using_name
 

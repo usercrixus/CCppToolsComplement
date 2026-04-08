@@ -3,10 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from Classes.Header import Header
-from Classes.ProtoMatch import ProtoMatch
-from Classes.Symbols import Symbols
+from Classes.Symbol.Symbol import Symbol
 from Classes.TypeAliases import Headers
-from strigify.setHeaderPath import header_path_from_source
 
 
 def push_include(header: Header, include_path: str) -> None:
@@ -17,7 +15,7 @@ def push_include(header: Header, include_path: str) -> None:
 
 def set_include(
     headers: Headers,
-    symbols: Symbols,
+    symbols: dict[str, Symbol],
 ) -> None:
     for header_path, header in headers.items():
         for symbol in symbols.values():
@@ -27,8 +25,8 @@ def set_include(
 
 def append_proto_entries_to_header_map(
     headers: Headers,
-    entry: ProtoMatch,
-    symbols: Symbols,
+    entry: Symbol,
+    symbols: dict[str, Symbol],
 ) -> None:
     header_path = entry.header_path
     if header_path not in headers:
@@ -37,7 +35,7 @@ def append_proto_entries_to_header_map(
     header.append_proto_entry(entry)
 
 
-def get_header_map(symbols: Symbols) -> Headers:
+def get_header_map(symbols: dict[str, Symbol]) -> Headers:
     headers: Headers = {}
     for entry in symbols.values():
         append_proto_entries_to_header_map(headers, entry, symbols)
