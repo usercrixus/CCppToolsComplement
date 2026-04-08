@@ -47,7 +47,8 @@ python3 srcs/vscodeIntegration/backend/sourcesHeadersMatcher/main.py srcs/test/b
 ```
 
 What it contains:
-- no local headers at the start
 - declarations grouped in `project/catalog/declarations.c`
 - implementations split across `project/services/` and `project/config/`
+- local headers already present in `project/config/` and `project/services/`
+- one extra math pair `adjust.h` / `adjust.c` to widen coverage
 - a macro, forward-declared struct and typedef inside `project/config/feature.c`

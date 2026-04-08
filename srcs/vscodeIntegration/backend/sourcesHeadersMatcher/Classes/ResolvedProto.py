@@ -73,6 +73,14 @@ def collect_from_text(file_text: str) -> ResolvedProto:
     )
 
 
+def getResolvedProtoFromTexts(texts_by_path: dict[str, str]) -> ResolvedProto:
+    grouped_proto = ResolvedProto()
+    for file_text in texts_by_path.values():
+        file_grouped_proto = collect_from_text(file_text)
+        grouped_proto.add_unique(file_grouped_proto)
+    return grouped_proto
+
+
 def getResolvedProto(startPath: str, extensions: set[str], excludedFolderPath: list[str] | None = None) -> ResolvedProto:
     start_path = Path(startPath).expanduser().resolve()
     excluded_paths = normalize_excluded_paths(excludedFolderPath or [])

@@ -5,13 +5,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from Classes.ProtoMatch import ProtoMatch
-from Classes.ResolvedProto import ResolvedProto, getResolvedProto
+from Classes.ResolvedProto import ResolvedProto, getResolvedProtoFromTexts
 from Classes.SourceTextsByPath import SourceTextsByPath
 from Classes.GeneratedHeaders import getSymbols
 from Classes.Symbols import Symbols
-from globals import SOURCE_EXTENSIONS
 from strigify.setHeaderPath import set_entry_header_paths
-from utils import normalize_excluded_paths
 
 
 @dataclass(slots=True)
@@ -55,20 +53,11 @@ class TraversalResult:
 
 
 def getTraversalResult(
-    startPath: str,
-    excludedFolderPath: list[str],
     source_texts_by_path: SourceTextsByPath,
+    merged_texts_by_path: dict[str, str],
 ) -> TraversalResult:
-    start_path = Path(startPath).expanduser().resolve()
-    excluded_paths = normalize_excluded_paths(excludedFolderPath)
-    source_extensions = SOURCE_EXTENSIONS
-    protos = getResolvedProto(startPath, source_extensions, excludedFolderPath)
-    symbols = getSymbols(
-        start_path,
-        excluded_paths,
-        source_extensions,
-        protos,
-    )
+    protos = getResolvedProtoFromTexts(merged_texts_by_path)
+    symbols = getSymbols(source_texts_by_path, protos)
     set_entry_header_paths(symbols)
     return TraversalResult(
         proto=protos,
