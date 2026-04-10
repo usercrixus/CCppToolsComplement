@@ -1,3 +1,45 @@
+Structure cleaning :
+
+During structure cleaning resolve all include as if they were one
+so include all comb:
+#include "test.h"
+#include "test_conditional_M1.h"
+#include "test_conditional_M2.h"
+#include "test_conditional_M3.h"
+
+Launch cleaning :
+
+Resolve include on macro juste before launching
+so on 
+#include "test.h"
+#include "test_conditional_M1.h"
+#include "test_conditional_M2.h"
+#include "test_conditional_M3.h"
+just do like
+#include "test.h"
+// #include "test_conditional_M1.h"
+#include "test_conditional_M2.h"
+// #include "test_conditional_M3.h"
+or if we have cause the previous iteration:
+#include "test.h"
+#include "test_conditional_M1.h"
+// #include "test_conditional_M2.h"
+#include "test_conditional_M3.h"
+just do
+#include "test.h"
+// #include "test_conditional_M1.h"
+#include "test_conditional_M2.h"
+// #include "test_conditional_M3.h"
+
+
+Create one main by macro set
+main_conditional_M1.c
+main_conditional_M1.c
+
+depending on the macro, select the right main path.
+
+---------------
+
 carefull on generateVscodeIntegration.py to not erase field that are not managed by our extension ; now in jsonLaunch and jsonTask
 
 ---------------
