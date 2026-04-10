@@ -48,8 +48,8 @@ def expand_text_by_conditional_path(file_path: Path, file_text: str) -> dict[str
         if not conditions or not lines:
             continue
 
-        condition_suffix = "_".join(
-            f"{'' if is_positive else 'n'}{symbol}"
+        condition_suffix = "".join(
+            f"{'d' if is_positive else 'n'}{symbol}"
             for symbol, is_positive in conditions
         )
         conditional_path = file_path.with_name(

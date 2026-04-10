@@ -30,3 +30,5 @@ Useful files:
 - `project/services/io/log.c`: function implementation
 - `project/config/feature.c`: macro, struct, typedef and function implementation
 - `project/app/main.c`: consumer using the declarations
+- `project/conditional/variant.h`: nested `#ifdef` / `#ifndef` declarations for conditional path expansion
+- `project/conditional/variant.c`: nested `#ifdef` / `#ifndef` implementations for conditional path expansion
