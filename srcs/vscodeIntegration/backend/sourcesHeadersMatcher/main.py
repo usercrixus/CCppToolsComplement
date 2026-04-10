@@ -8,6 +8,7 @@ from Classes.Header.HeaderTexts import getHeaderTexts, getIncludeSet
 from Classes.Header.InlineSourceCleanup import move_header_implementations_to_sources
 from Classes.Source.SourceTexts import getSourceTexts
 from Classes.Symbol.Symbol import correctIncludeSet, getSymbolMap
+from conditionalPathExpander import expand_texts_by_conditional_path
 from globals import HEADER_EXTENSIONS, SOURCE_EXTENSIONS
 from text.printer import format_stringified_headers
 from text.stringify import stringify
@@ -25,6 +26,8 @@ def main() -> None:
     excluded_paths = normalize_excluded_paths(excludedFolderPath)
     source_texts_by_path = getSourceTexts(start_path, excluded_paths, SOURCE_EXTENSIONS)
     header_texts_by_path = getHeaderTexts(start_path, excluded_paths, HEADER_EXTENSIONS)
+    source_texts_by_path = expand_texts_by_conditional_path(source_texts_by_path)
+    header_texts_by_path = expand_texts_by_conditional_path(header_texts_by_path)
     source_texts_by_path, header_texts_by_path = move_header_implementations_to_sources(source_texts_by_path, header_texts_by_path,)
     merged_texts_by_path = {**source_texts_by_path, **header_texts_by_path}
     include_set = getIncludeSet(merged_texts_by_path)
