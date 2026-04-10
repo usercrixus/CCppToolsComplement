@@ -1,0 +1,186 @@
+Headers (12)
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant.h
+    #pragma once
+    
+    const char *variant_name(void);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FAST.h
+    #pragma once
+    
+    const char *variant_fast_label(void);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FASTnVARIANT_SAFE.h
+    #pragma once
+    
+    const char *variant_fast_unsafe_label(void);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FASTnVARIANT_SAFEdVARIANT_TRACE.h
+    #pragma once
+    
+    const char *variant_fast_unsafe_trace_label(void);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_nVARIANT_FAST.h
+    #pragma once
+    
+    const char *variant_default_label(void);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/config/feature.h
+    #pragma once
+    
+    struct feature_toggle;
+    struct feature_shadow;
+    
+    typedef runtime_flag_t runtime_flag_alias_t;
+    typedef struct runtime_flag runtime_flag_t;
+    
+    struct feature_toggle {
+        const char *name;
+        int enabled;
+    };
+    
+    typedef struct runtime_flag {
+        const char *label;
+        int is_active;
+    } runtime_flag_t;
+    
+    const char *feature_name(void);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/io/log.h
+    #pragma once
+    
+    void log_result(int value);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/io/log__header_impl.h
+    #pragma once
+    
+    int log_identity(int value);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/adjust.h
+    #pragma once
+    
+    int adjust_total(int value);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/adjust__header_impl.h
+    #pragma once
+    
+    int adjust_twice(int value);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/compute.h
+    #pragma once
+    
+    int compute_total(int base, int extra);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/remainingIncludes.h
+    #pragma once
+    
+    #include <stdio.h>
+
+Sources (11)
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant.c
+    #include "variant.h"
+    #include "variant_conditional_dVARIANT_FAST.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFE.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFEdVARIANT_TRACE.h"
+    #include "variant_conditional_nVARIANT_FAST.h"
+    
+    const char *variant_name(void)
+    {
+        return "variant";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FAST.c
+    #include "variant_conditional_dVARIANT_FAST.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFE.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFEdVARIANT_TRACE.h"
+    #include "variant_conditional_nVARIANT_FAST.h"
+    
+    const char *variant_fast_label(void)
+    {
+        return "fast";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FASTnVARIANT_SAFE.c
+    #include "variant_conditional_dVARIANT_FAST.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFE.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFEdVARIANT_TRACE.h"
+    #include "variant_conditional_nVARIANT_FAST.h"
+    
+    const char *variant_fast_unsafe_label(void)
+    {
+        return "fast-unsafe";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FASTnVARIANT_SAFEdVARIANT_TRACE.c
+    #include "variant_conditional_dVARIANT_FAST.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFE.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFEdVARIANT_TRACE.h"
+    #include "variant_conditional_nVARIANT_FAST.h"
+    
+    const char *variant_fast_unsafe_trace_label(void)
+    {
+        return "fast-unsafe-trace";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_nVARIANT_FAST.c
+    #include "variant_conditional_dVARIANT_FAST.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFE.h"
+    #include "variant_conditional_dVARIANT_FASTnVARIANT_SAFEdVARIANT_TRACE.h"
+    #include "variant_conditional_nVARIANT_FAST.h"
+    
+    const char *variant_default_label(void)
+    {
+        return "default";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/config/feature.c
+    #include "feature.h"
+    
+    const char *feature_name(void)
+    {
+        runtime_flag_t flag = {"fixture", 1};
+    
+        (void)flag;
+        return FEATURE_NAME;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/io/log.c
+    #include "log.h"
+    
+    void log_result(int value)
+    {
+        printf("result=%d\n", value);
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/io/log__header_impl.c
+    #include "log__header_impl.h"
+    
+    int log_identity(int value)
+    {
+        return value;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/adjust.c
+    #include "adjust.h"
+    
+    int adjust_total(int value)
+    {
+        return value + 8;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/adjust__header_impl.c
+    #include "adjust__header_impl.h"
+    
+    int adjust_twice(int value)
+    {
+        return value * 2;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/compute.c
+    #include "compute.h"
+    
+    int compute_total(int base, int extra)
+    {
+        return base + extra;
+    }

@@ -10,6 +10,7 @@ from Classes.Source.SourceTexts import getSourceTexts
 from Classes.Symbol.Symbol import correctIncludeSet, getSymbolMap
 from conditionalPathExpander import expand_texts_by_conditional_path
 from globals import HEADER_EXTENSIONS, SOURCE_EXTENSIONS
+from regexTools.getMains import get_mains_source_paths
 from text.printer import format_stringified_headers
 from text.stringify import stringify
 from utils import normalize_excluded_paths
@@ -24,9 +25,10 @@ def main() -> None:
     excludedFolderPath = args.excludedFolderPath
     start_path = Path(startPath).expanduser().resolve()
     excluded_paths = normalize_excluded_paths(excludedFolderPath)
+    main_source_paths = get_mains_source_paths(start_path, excluded_paths, SOURCE_EXTENSIONS)
     source_texts_by_path = getSourceTexts(start_path, excluded_paths, SOURCE_EXTENSIONS)
     header_texts_by_path = getHeaderTexts(start_path, excluded_paths, HEADER_EXTENSIONS)
-    source_texts_by_path = expand_texts_by_conditional_path(source_texts_by_path)
+    source_texts_by_path = expand_texts_by_conditional_path(source_texts_by_path, main_source_paths)
     header_texts_by_path = expand_texts_by_conditional_path(header_texts_by_path)
     source_texts_by_path, header_texts_by_path = move_header_implementations_to_sources(source_texts_by_path, header_texts_by_path,)
     merged_texts_by_path = {**source_texts_by_path, **header_texts_by_path}

@@ -48,9 +48,10 @@ def expand_text_by_conditional_path(file_path: Path, file_text: str) -> dict[str
         if not conditions or not lines:
             continue
 
+        sorted_conditions = sorted(conditions, key=lambda condition: condition[0])
         condition_suffix = "".join(
             f"{'d' if is_positive else 'n'}{symbol}"
-            for symbol, is_positive in conditions
+            for symbol, is_positive in sorted_conditions
         )
         conditional_path = file_path.with_name(
             f"{file_path.stem}_conditional_{condition_suffix}{file_path.suffix}"
@@ -60,12 +61,24 @@ def expand_text_by_conditional_path(file_path: Path, file_text: str) -> dict[str
     return expanded_texts_by_path
 
 
-def expand_texts_by_conditional_path(texts_by_path: dict[str, str]) -> dict[str, str]:
+def expand_texts_by_conditional_path(
+    texts_by_path: dict[str, str],
+    excluded_file_paths: set[Path] | None = None,
+) -> dict[str, str]:
+    normalized_excluded_file_paths = {
+        excluded_file_path.expanduser().resolve()
+        for excluded_file_path in (excluded_file_paths or set())
+    }
     expanded_texts_by_path: dict[str, str] = {}
 
     for file_path, file_text in texts_by_path.items():
+        resolved_file_path = Path(file_path).expanduser().resolve()
+        if resolved_file_path in normalized_excluded_file_paths:
+            expanded_texts_by_path[str(resolved_file_path)] = file_text
+            continue
+
         expanded_texts_by_path.update(
-            expand_text_by_conditional_path(Path(file_path), file_text)
+            expand_text_by_conditional_path(resolved_file_path, file_text)
         )
 
     return expanded_texts_by_path

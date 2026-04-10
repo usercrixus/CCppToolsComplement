@@ -35,6 +35,10 @@ ENDIF_RE = re.compile(r"^\s*#\s*endif\b")
 ELIF_DEFINED_RE = re.compile(
     r"^\s*#\s*elif\s+(!\s*)?defined\s*(?:\(\s*([A-Za-z_]\w*)\s*\)|\s+([A-Za-z_]\w*))"
 )
+MAIN_FUNCTION_RE = re.compile(
+    r"^\s*int\s+main\s*\([^;{}]*\)\s*(?:\{|$)",
+    re.MULTILINE,
+)
 
 
 def extract_matches(text: str | None, pattern: re.Pattern[str]) -> list[str]:
