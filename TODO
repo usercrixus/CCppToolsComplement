@@ -38,6 +38,8 @@ main_conditional_M1.c
 
 depending on the macro, select the right main path.
 
+It could probably be usefull to create a script to simplify tree on macro set. Like it remove all the conditional files and merge it in the parent. Giving the possibility to get the tree for a single bundle of condition with no ifdef ifndef.
+
 ---------------
 
 carefull on generateVscodeIntegration.py to not erase field that are not managed by our extension ; now in jsonLaunch and jsonTask
