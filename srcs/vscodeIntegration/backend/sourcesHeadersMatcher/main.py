@@ -35,9 +35,9 @@ def main() -> None:
     include_set = getIncludeSet(merged_texts_by_path)
     symbols = getSymbolMap(source_texts_by_path, merged_texts_by_path)
     include_set = correctIncludeSet(symbols, include_set)
-    stringified_headers = stringify(symbols)
-    stringified_headers.append(Header.create_include_set_render_job(str(start_path / "remainingIncludes.h"), include_set))
-    print(format_stringified_headers(stringified_headers))
+    files = stringify(symbols)
+    files.append(Header.create_include_set_file(str(start_path / "remainingIncludes.h"), include_set))
+    print(format_stringified_headers(files))
 
 
 if __name__ == "__main__":

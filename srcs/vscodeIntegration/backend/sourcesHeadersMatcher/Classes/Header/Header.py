@@ -75,7 +75,7 @@ class Header:
         )
 
     @staticmethod
-    def create_include_set_render_job(path: str, include_set: set[str]) -> dict[str, str]:
+    def create_include_set_file(path: str, include_set: set[str]) -> dict[str, str]:
         output_path = Path(path).resolve()
         include_lines = []
         for include in sorted(include_set):
