@@ -16,7 +16,7 @@ def _format_content_preview(file_text: str) -> str:
     return "\n".join(f"    {line}" for line in lines)
 
 
-def format_stringified_headers(stringified_headers: list[dict[str, str]]) -> str:
+def format_stringified(stringified_headers: list[dict[str, str]]) -> str:
     if not stringified_headers:
         return "No files to render."
 

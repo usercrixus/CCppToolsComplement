@@ -99,3 +99,22 @@ def expand_texts_to_full_conditional_variants(
         )
 
     return expanded_texts_by_path
+
+
+def build_main_variant_files(
+    source_texts_by_path: dict[str, str],
+    main_source_paths: set[Path],
+) -> list[dict[str, str]]:
+    main_variant_texts_by_path = expand_texts_to_full_conditional_variants(
+        source_texts_by_path,
+        main_source_paths,
+    )
+    normalized_main_source_paths = {
+        main_source_path.expanduser().resolve()
+        for main_source_path in main_source_paths
+    }
+    return [
+        {"path": file_path, "string": file_text}
+        for file_path, file_text in sorted(main_variant_texts_by_path.items())
+        if Path(file_path).expanduser().resolve() not in normalized_main_source_paths
+    ]

@@ -9,9 +9,10 @@ from Classes.Header.InlineSourceCleanup import move_header_implementations_to_so
 from Classes.Source.SourceTexts import getSourceTexts
 from Classes.Symbol.Symbol import correctIncludeSet, getSymbolMap
 from conditionalPathExpander import expand_texts_by_conditional_path
+from fullConditionalPathExpander import build_main_variant_files
 from globals import HEADER_EXTENSIONS, SOURCE_EXTENSIONS
 from regexTools.getMains import get_mains_source_paths
-from text.printer import format_stringified_headers
+from text.printer import format_stringified
 from text.stringify import stringify
 from utils import normalize_excluded_paths
 
@@ -36,8 +37,10 @@ def main() -> None:
     symbols = getSymbolMap(source_texts_by_path, merged_texts_by_path)
     include_set = correctIncludeSet(symbols, include_set)
     files = stringify(symbols)
-    files.append(Header.create_include_set_file(str(start_path / "remainingIncludes.h"), include_set))
-    print(format_stringified_headers(files))
+    main_variant_files = build_main_variant_files(source_texts_by_path, main_source_paths)
+    files.extend(main_variant_files)
+    files.append(Header.create_include_file(str(start_path / "remainingIncludes.h"), include_set))
+    print(format_stringified(files))
 
 
 if __name__ == "__main__":

@@ -31,8 +31,8 @@ Headers (12)
     struct feature_toggle;
     struct feature_shadow;
     
-    typedef runtime_flag_t runtime_flag_alias_t;
     typedef struct runtime_flag runtime_flag_t;
+    typedef runtime_flag_t runtime_flag_alias_t;
     
     struct feature_toggle {
         const char *name;
@@ -76,7 +76,7 @@ Headers (12)
     
     #include <stdio.h>
 
-Sources (11)
+Sources (25)
 
 /home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant.c
     #include "variant.h"
@@ -179,6 +179,157 @@ Sources (11)
 
 /home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/compute.c
     #include "compute.h"
+    
+    int compute_total(int base, int extra)
+    {
+        return base + extra;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/app/main_full_conditional_dMAIN_APPLY_IDENTITY_TWICE.c
+    #include <stdio.h>
+    #include "../config/feature.h"
+    #include "../services/io/log.h"
+    #include "../services/math/adjust.h"
+    #include "../services/math/compute.h"
+    
+    int main(void)
+    {
+        int total = compute_total(20, 14);
+    
+    
+        total = adjust_total(total);
+        total = adjust_twice(total);
+    
+        total = log_identity(total);
+    
+        total = log_identity(total);
+    
+        log_result(total);
+        printf("%s\n", feature_name());
+        return 0;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/app/main_full_conditional_dMAIN_LOG_BEFORE_ADJUST.c
+    #include <stdio.h>
+    #include "../config/feature.h"
+    #include "../services/io/log.h"
+    #include "../services/math/adjust.h"
+    #include "../services/math/compute.h"
+    
+    int main(void)
+    {
+        int total = compute_total(20, 14);
+    
+        log_result(total);
+    
+        total = adjust_total(total);
+        total = adjust_twice(total);
+    
+    
+        total = log_identity(total);
+    
+        log_result(total);
+        printf("%s\n", feature_name());
+        return 0;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/catalog/declarations.c
+    int compute_total(int base, int extra);
+    int adjust_total(int value);
+    int adjust_twice(int value);
+    void log_result(int value);
+    int log_identity(int value);
+    const char *feature_name(void);
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant.c
+    #include "variant.h"
+    
+    const char *variant_name(void)
+    {
+        return "variant";
+    }
+    
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FAST.c
+    const char *variant_fast_label(void)
+    {
+        return "fast";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FASTnVARIANT_SAFE.c
+    const char *variant_fast_unsafe_label(void)
+    {
+        return "fast-unsafe";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_dVARIANT_FASTnVARIANT_SAFEdVARIANT_TRACE.c
+    const char *variant_fast_unsafe_trace_label(void)
+    {
+        return "fast-unsafe-trace";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/conditional/variant_conditional_nVARIANT_FAST.c
+    const char *variant_default_label(void)
+    {
+        return "default";
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/config/feature.c
+    #define FEATURE_NAME "sourcesHeadersMatcher fixture"
+    
+    typedef struct runtime_flag {
+        const char *label;
+        int is_active;
+    } runtime_flag_t;
+    typedef runtime_flag_t runtime_flag_alias_t;
+    
+    struct feature_toggle;
+    struct feature_shadow;
+    const char *feature_name(void);
+    
+    struct feature_toggle {
+        const char *name;
+        int enabled;
+    };
+    
+    const char *feature_name(void)
+    {
+        runtime_flag_t flag = {"fixture", 1};
+    
+        (void)flag;
+        return FEATURE_NAME;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/io/log.c
+    #include <stdio.h>
+    
+    void log_result(int value);
+    
+    void log_result(int value)
+    {
+        printf("result=%d\n", value);
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/io/log__header_impl.c
+    int log_identity(int value)
+    {
+        return value;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/adjust.c
+    int adjust_total(int value)
+    {
+        return value + 8;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/adjust__header_impl.c
+    int adjust_twice(int value)
+    {
+        return value * 2;
+    }
+
+/home/achaisne/Documents/CCppToolsComplement/srcs/test/backend/sourcesHeadersMatcher/project/services/math/compute.c
+    int compute_total(int base, int extra);
     
     int compute_total(int base, int extra)
     {
