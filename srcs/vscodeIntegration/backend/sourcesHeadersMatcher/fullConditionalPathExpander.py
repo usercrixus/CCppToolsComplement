@@ -91,7 +91,6 @@ def expand_texts_to_full_conditional_variants(
     for file_path, file_text in texts_by_path.items():
         resolved_file_path = Path(file_path).expanduser().resolve()
         if normalized_target_file_paths and resolved_file_path not in normalized_target_file_paths:
-            expanded_texts_by_path[str(resolved_file_path)] = file_text
             continue
 
         expanded_texts_by_path.update(
@@ -109,12 +108,7 @@ def build_main_variant_files(
         source_texts_by_path,
         main_source_paths,
     )
-    normalized_main_source_paths = {
-        main_source_path.expanduser().resolve()
-        for main_source_path in main_source_paths
-    }
     return [
         {"path": file_path, "string": file_text}
         for file_path, file_text in sorted(main_variant_texts_by_path.items())
-        if Path(file_path).expanduser().resolve() not in normalized_main_source_paths
     ]
