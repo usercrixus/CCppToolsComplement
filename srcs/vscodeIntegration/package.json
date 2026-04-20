@@ -49,10 +49,7 @@
     "ms-vscode.cpptools"
   ],
   "activationEvents": [
-    "onCommand:ccppToolsComplement.generateAndDebugFromCurrentFile",
-    "onCommand:ccppToolsComplement.previewGearIcon",
-    "onLanguage:c",
-    "onLanguage:cpp"
+    "onStartupFinished"
   ],
   "main": "./frontend/extension.js",
   "contributes": {
