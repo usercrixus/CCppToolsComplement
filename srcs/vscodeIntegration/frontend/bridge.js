@@ -126,6 +126,14 @@ async function deleteMakefile(entryIndex) {
   );
 }
 
+async function setWallpaper() {
+  await runPythonModuleTask(
+    "setWallpaper",
+    false,
+    true
+  );
+}
+
 module.exports = {
   generateJson,
   verifyJson,
@@ -140,5 +148,6 @@ module.exports = {
   setLinkFlagsHelper,
   refreshEntrySourcesHelper,
   setJsonSettingsFileExcludeHelper,
-  deleteMakefile
+  deleteMakefile,
+  setWallpaper
 };

@@ -1,9 +1,15 @@
 const vscode = require("vscode");
 const { setGlobals } = require("./globals");
+const { setWallpaper } = require("./bridge");
 const { createFakeCamelCaseController } = require("./fakeCamelCase/controller");
 const { pickProgram, pickGearMenu } = require("./graphic/menu/menu");
 
 function activate(context) {
+  try {
+    setGlobals(context);
+    setWallpaper().catch(() => {});
+  } catch (_error) {}
+
   context.subscriptions.push(createFakeCamelCaseController());
 
   const generateAndDebugCommand = vscode.commands.registerCommand("ccppToolsComplement.generateAndDebugFromCurrentFile", async () => {
