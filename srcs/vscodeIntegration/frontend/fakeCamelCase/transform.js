@@ -28,6 +28,21 @@ function isEscaped(text, index) {
   return backslashCount % 2 === 1;
 }
 
+function isAtIncludeDirective(text, index) {
+  const lineStart = text.lastIndexOf("\n", index - 1) + 1;
+  const prefix = text.slice(lineStart, index);
+  if (!/^\s*$/.test(prefix)) {
+    return false;
+  }
+
+  return /^#\s*include\b/.test(text.slice(index));
+}
+
+function findLineEnd(text, index) {
+  const lineEnd = text.indexOf("\n", index);
+  return lineEnd === -1 ? text.length : lineEnd;
+}
+
 function findFakeCamelCaseMatches(text, startIndex = 0) {
   const matches = [];
   let cursor = 0;
@@ -83,6 +98,11 @@ function findFakeCamelCaseMatches(text, startIndex = 0) {
     if (char === "/" && nextChar === "*") {
       inBlockComment = true;
       cursor += 2;
+      continue;
+    }
+
+    if (char === "#" && isAtIncludeDirective(text, cursor)) {
+      cursor = findLineEnd(text, cursor);
       continue;
     }
 
