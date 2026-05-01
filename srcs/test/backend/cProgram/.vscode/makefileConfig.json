@@ -5,11 +5,11 @@
       {
         "ext": ".c",
         "compiler": "gcc",
-        "flags": ""
+        "flags": "-Wall"
       }
     ],
     "link_compiler": "gcc",
-    "link_flags": "",
+    "link_flags": "-Wall",
     "run_args": "",
     "bin_name": "main01.out",
     "rel_sources": [
@@ -25,11 +25,11 @@
       {
         "ext": ".c",
         "compiler": "gcc",
-        "flags": "-Wall -Wextra -Werror"
+        "flags": "-Wall"
       }
     ],
     "link_compiler": "gcc",
-    "link_flags": "-Wall -Wextra -Werror",
+    "link_flags": "-Wall",
     "run_args": "",
     "bin_name": "main02.out",
     "rel_sources": [

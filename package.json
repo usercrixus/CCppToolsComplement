@@ -1,5 +1,8 @@
 {
   "devDependencies": {
-    "@vscode/vsce": "^3.7.1"
+    "@vscode/vsce": "2.15.0"
+  },
+  "overrides": {
+    "cheerio": "1.0.0-rc.12"
   }
 }

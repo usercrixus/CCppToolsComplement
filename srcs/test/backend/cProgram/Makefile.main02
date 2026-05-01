@@ -1,5 +1,5 @@
 LINK_COMPILER = gcc
-LINK_FLAGS = -Wall -Wextra -Werror -g3 -O0 -MMD -MP
+LINK_FLAGS = -Wall -g3 -O0 -MMD -MP
 ARGS = 
 BIN = main02.out
 SRCS = main2.c one.c subfolder/two.c
@@ -12,7 +12,7 @@ $(BIN): $(OBJS)
 	$(LINK_COMPILER) $(LINK_FLAGS) $^ -o $@
 
 %.o: %.c
-	gcc -Wall -Wextra -Werror -g3 -O0 -MMD -MP -c $< -o $@
+	gcc -Wall -g3 -O0 -MMD -MP -c $< -o $@
 
 run: $(BIN)
 	./$(BIN) $(ARGS)
